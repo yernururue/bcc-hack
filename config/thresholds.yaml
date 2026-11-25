@@ -1,0 +1,41 @@
+# Пороги вердикта и проверок (docs/02-trd.md, §5). Вердикт считает код, а не модель (ADR-003).
+
+verdict:
+  # «Нельзя начинать разработку», если блокирующих находок не меньше этого числа
+  block_development_if_blockers_at_least: 1
+  # «Можно с оговорками», если блокирующих нет, а существенных не меньше этого числа
+  caution_if_major_at_least: 3
+  # «Нельзя начинать тест-дизайн», если есть непроверяемые требования или нет критериев приёмки
+  block_testing_if_unverifiable_at_least: 1
+  block_testing_if_no_acceptance: true
+
+verify:
+  # Минимальное сходство цитаты с текстом документа (rapidfuzz partial_ratio, 0–100)
+  quote_min_similarity: 90
+
+check_each:
+  batch_size: 15
+
+check_set:
+  duplicate_min_similarity: 85
+
+report:
+  max_questions: 10
+  max_top_fixes: 5
+
+# Серьёзность по умолчанию для категорий (модель может повысить с объяснением)
+default_severity:
+  ambiguous: major
+  unverifiable: blocker
+  incomplete: major
+  composite: minor
+  design_decision: minor
+  infeasible: major
+  incorrect: major
+  unnecessary: minor
+  nonconforming: minor
+  contradiction: blocker
+  duplicate: minor
+  terminology: minor
+  missing_topic: major
+  traceability: minor

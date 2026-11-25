@@ -15,11 +15,12 @@
 | `rapidfuzz` | 3.14.x | core | Нечёткий поиск цитат |
 | `jinja2` | 3.1.x | core | Шаблоны отчёта (MD и HTML для PDF) |
 | `pyyaml` | 6.0.x | core | `config/*.yaml`, `expected.yaml` |
-| `python-dotenv` | 1.2.x | core | Чтение `.env` |
+| `pydantic-settings` | 2.16.x | core | Настройки из окружения и `.env`, `SecretStr` для ключа (как в прошлом проекте команды) |
 | `fastapi` | 0.165.x | extra `server` | HTTP API + OpenAPI-спецификация для интеграторов |
 | `uvicorn` | 0.54.x | extra `server` | ASGI-сервер |
 | `python-multipart` | 0.0.34 | extra `server` | Загрузка файлов в FastAPI |
 | `pytest` | 9.2.x | dev | Тесты |
+| `ruff` | 0.17.x | dev | Линтер и сортировка импортов |
 | `reportlab` | 5.1.x | dev | Генерация PDF-фикстур (готовые PDF коммитятся) |
 | `python-docx` | 1.2.x | extra `docx` (P1) | DOCX вход/выход |
 
@@ -35,7 +36,7 @@
 |---|---|---|
 | `LLM_API_KEY` | — (обязательна) | Ключ OpenRouter или шлюза. Фолбэк: `OPENROUTER_API_KEY` |
 | `LLM_BASE_URL` | `https://openrouter.ai/api/v1` | Любой OpenAI-совместимый эндпоинт |
-| `LLM_MODEL` | выбирается по итогам сравнения моделей, см. §4 | Модель по умолчанию |
+| `LLM_MODEL` | `deepseek/deepseek-v4.1-flash` (самая дешёвая; итоговая — по сравнению моделей, §4) | Модель по умолчанию |
 | `LLM_MAX_COST_USD` | `0.50` | Предохранитель бюджета на прогон |
 | `REQCHECK_CACHE_DIR` | `.cache/reqcheck` | Дисковый кэш ответов LLM |
 | `REQCHECK_LOG_LEVEL` | `INFO` | Уровень логов |
