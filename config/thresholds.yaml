@@ -19,6 +19,13 @@ check_each:
 check_set:
   duplicate_min_similarity: 85
 
+# Фильтр шума: что не попадает в отчёт (остаётся в debug.suppressed_findings JSON-отчёта)
+findings_filter:
+  # Максимум находок на одно требование; лишние — с наименьшей серьёзностью
+  max_per_requirement: 3
+  # «Неясно» с серьёзностью minor в отчёт не выводим
+  drop_unclear_minor: true
+
 report:
   max_questions: 10
   max_top_fixes: 5

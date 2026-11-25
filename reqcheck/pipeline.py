@@ -177,11 +177,17 @@ def run(
     t = time.monotonic()
     per_req = verify.requirement_findings(reqs, judged, rule_findings, doc, th, crit)
     per_set = verify.set_findings(raw_set, reqs, doc, th, crit)
-    findings = verify.number(per_req.findings + per_set.findings, reqs)
+    kept, suppressed = verify.suppress_noise(
+        per_req.findings + per_set.findings, th.findings_filter
+    )
+    findings = verify.number(kept, reqs)
     dropped = per_req.dropped + per_set.dropped
     reqs = verify.apply_assessments(reqs, judged, findings)
     timed("verify", t)
-    progress(f"Проверка: подтверждено находок {len(findings)}, отброшено без цитаты {len(dropped)}")
+    progress(
+        f"Проверка: в отчёте находок {len(findings)}, отброшено без цитаты {len(dropped)}, "
+        f"отфильтровано как шум {len(suppressed)}"
+    )
 
     progress("Этап:     вопросы к автору")
     known = {r.report_id for r in reqs}
@@ -221,7 +227,12 @@ def run(
         questions=qs,
         summary=summary,
         verdict=decision,
-        debug=Debug(dropped_findings=dropped, stage_errors=errors, timings_ms=timings),
+        debug=Debug(
+            dropped_findings=dropped,
+            suppressed_findings=suppressed,
+            stage_errors=errors,
+            timings_ms=timings,
+        ),
     )
 
     from reqcheck import render

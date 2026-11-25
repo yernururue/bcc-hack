@@ -6,7 +6,7 @@
 
 from dataclasses import dataclass, field
 
-from reqcheck.config import Criteria, Thresholds
+from reqcheck.config import Criteria, FindingsFilter, Thresholds
 from reqcheck.schemas import (
     Assessment,
     Category,
@@ -191,3 +191,25 @@ def number(findings: list[Finding], reqs: list[Requirement]) -> list[Finding]:
 
     ordered = sorted(findings, key=key)
     return [f.model_copy(update={"finding_id": f"F-{i:03d}"}) for i, f in enumerate(ordered, 1)]
+
+
+def suppress_noise(
+    findings: list[Finding], rules: FindingsFilter
+) -> tuple[list[Finding], list[Finding]]:
+    """Убирает шум из находок требований: minor-«неясно» и всё сверх лимита на требование.
+    Находки набора не трогаем. Возвращает (оставленные, убранные)."""
+    kept: list[Finding] = []
+    suppressed: list[Finding] = []
+    per_req: dict[str, list[Finding]] = {}
+    for f in findings:
+        if f.scope != "requirement":
+            kept.append(f)
+        elif rules.drop_unclear_minor and f.verdict == "unclear" and f.severity == Severity.MINOR:
+            suppressed.append(f)
+        else:
+            per_req.setdefault(f.requirement_ids[0], []).append(f)
+    for group in per_req.values():
+        group.sort(key=lambda f: (SEVERITY_RANK[f.severity], f.verdict != "violation"))
+        kept.extend(group[: rules.max_per_requirement])
+        suppressed.extend(group[rules.max_per_requirement :])
+    return kept, suppressed

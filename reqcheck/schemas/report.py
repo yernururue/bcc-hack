@@ -115,6 +115,7 @@ class StageError(Strict):
 
 class Debug(Strict):
     dropped_findings: list[Finding] = Field(default_factory=list)
+    suppressed_findings: list[Finding] = Field(default_factory=list)  # отфильтрованный шум
     stage_errors: list[StageError] = Field(default_factory=list)
     timings_ms: dict[str, int] = Field(default_factory=dict)
 

@@ -65,3 +65,38 @@ def test_lexicon_matches_word_forms_not_substrings() -> None:
     assert vague.search("и т.д.")
     assert not vague.search("предоставляет простоту")  # «простоту» не в списке форм
     assert not vague.search("максимум один push")
+
+
+def test_suppress_noise_keeps_set_and_top_findings() -> None:
+    from reqcheck.config import FindingsFilter
+    from reqcheck.schemas import Finding
+    from reqcheck.stages.verify import suppress_noise
+
+    def f(sev: str, verdict: str = "violation", scope: str = "requirement") -> Finding:
+        return Finding(
+            finding_id="F-000",
+            scope=scope,
+            requirement_ids=["R-001"],
+            category="ambiguous",
+            severity=sev,
+            verdict=verdict,
+            quote="q",
+            anchor=Anchor(),
+            explanation="e",
+            source="llm",
+        )
+
+    items = [
+        f("minor"),
+        f("minor", "unclear"),
+        f("blocker"),
+        f("major"),
+        f("minor"),
+        f("minor", scope="set"),
+    ]
+    kept, suppressed = suppress_noise(
+        items, FindingsFilter(max_per_requirement=3, drop_unclear_minor=True)
+    )
+    assert [x.severity for x in kept if x.scope == "requirement"] == ["blocker", "major", "minor"]
+    assert any(x.scope == "set" for x in kept)
+    assert len(suppressed) == 2

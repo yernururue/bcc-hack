@@ -78,10 +78,18 @@ class VerdictRules(BaseModel):
     block_testing_if_no_acceptance: bool
 
 
+class FindingsFilter(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    max_per_requirement: int = Field(ge=1)
+    drop_unclear_minor: bool
+
+
 class Thresholds(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     verdict: VerdictRules
+    findings_filter: FindingsFilter
     verify: dict[str, float]
     check_each: dict[str, int]
     check_set: dict[str, int]
