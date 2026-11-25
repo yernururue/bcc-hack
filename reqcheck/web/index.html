@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ReqCheck — проверка требований</title>
+  <meta name="description" content="Статическое ревью документа требований по ISO/IEC/IEEE 29148 и IEEE 830">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230052FF'/%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="top">
+    <span class="wordmark">ReqCheck</span>
+    <span class="top-meta mono" id="build">v0.1</span>
+  </header>
+
+  <main class="col">
+    <h1 class="title">Проверка требований</h1>
+    <p class="subtitle">ISO/IEC/IEEE 29148 · IEEE 830</p>
+
+    <section class="source" aria-label="Документ">
+      <div class="source-slot" id="slot">
+        <label class="drop" id="drop" for="file">
+          <svg class="drop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6M9.5 13.5 12 11l2.5 2.5"/></svg>
+          <span class="drop-text">Перетащите PDF или Markdown</span>
+          <span class="drop-sub">или <span class="drop-link">выберите файл</span></span>
+          <input class="sr-only" type="file" id="file" accept=".pdf,.md,.markdown,.txt">
+        </label>
+
+        <div class="chip" id="chip" hidden>
+          <svg class="chip-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+          <span class="chip-name mono" id="chip-name"></span>
+          <span class="chip-meta" id="chip-meta"></span>
+          <button class="chip-remove" id="chip-remove" type="button" aria-label="Убрать файл">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <p class="field-error" id="drop-error" role="alert"></p>
+      <button class="link" id="example" type="button">Попробовать на примере</button>
+    </section>
+
+    <div class="field">
+      <label class="field-label" for="model">Модель</label>
+      <div class="select">
+        <select id="model"></select>
+        <svg class="select-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <p class="field-hint mono" id="model-hint"></p>
+    </div>
+
+    <div class="run" id="run">
+      <p class="run-status" id="run-status" aria-live="polite">
+        <span id="run-stage"></span>
+        <span class="mono run-clock" id="run-clock"></span>
+      </p>
+      <button class="btn btn-primary run-btn" id="start" type="button" disabled>
+        <span class="btn-label">Проверить</span>
+        <span class="run-fill" aria-hidden="true"></span>
+      </button>
+      <div class="progress-a11y sr-only" role="progressbar" id="progress"
+           aria-label="Прогресс проверки" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+    </div>
+
+    <section class="stages" id="stages" aria-label="Этапы проверки" hidden>
+      <button class="stages-summary" id="stages-summary" type="button" aria-expanded="true" aria-controls="stages-body">
+        <span id="stages-summary-text"></span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="collapse" id="stages-body">
+        <ol class="stage-list" id="stage-list"></ol>
+      </div>
+    </section>
+
+    <section class="result" id="result" hidden aria-live="assertive">
+      <h2 class="verdict" id="verdict"></h2>
+      <p class="verdict-sub" id="verdict-sub"></p>
+
+      <dl class="stats" id="stats"></dl>
+
+      <h3 class="section-title">Исправить в первую очередь</h3>
+      <ol class="fixes" id="fixes"></ol>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="download-main" type="button"></button>
+        <button class="btn btn-secondary" id="download-json" type="button">JSON</button>
+        <button class="btn btn-secondary btn-push" id="reset" type="button">Новая проверка</button>
+      </div>
+      <p class="field-hint" id="download-hint"></p>
+    </section>
+
+    <section class="failure" id="failure" hidden>
+      <p class="field-error is-visible" id="failure-text" role="alert"></p>
+      <button class="btn btn-secondary" id="retry" type="button">Повторить</button>
+    </section>
+  </main>
+
+  <template id="tpl-stage">
+    <li class="stage" data-state="wait">
+      <span class="stage-icon" aria-hidden="true">
+        <svg viewBox="0 0 16 16"><path class="stage-check" d="M3.5 8.5l3 3 6-6.5"/></svg>
+      </span>
+      <span class="stage-name"></span>
+      <span class="stage-note"></span>
+      <span class="stage-time mono"></span>
+    </li>
+  </template>
+
+  <template id="tpl-fix">
+    <li class="fix">
+      <button class="fix-head" type="button" aria-expanded="false">
+        <span class="fix-id mono"></span>
+        <span class="fix-sev"></span>
+        <span class="fix-title"></span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="collapse is-collapsed">
+        <div class="fix-body">
+          <p class="fix-anchor mono"></p>
+          <blockquote class="fix-quote"></blockquote>
+          <p class="fix-text"></p>
+          <p class="fix-suggestion"><span class="fix-label">Предложение</span> <span class="fix-suggestion-text"></span></p>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
