@@ -12,12 +12,10 @@
 <body>
   <header class="top">
     <span class="wordmark">ReqCheck</span>
-    <span class="top-meta mono" id="build">v0.1</span>
   </header>
 
   <main class="col">
     <h1 class="title">Проверка требований</h1>
-    <p class="subtitle">ISO/IEC/IEEE 29148 · IEEE 830</p>
 
     <section class="source" aria-label="Документ">
       <div class="source-slot" id="slot">
@@ -30,7 +28,7 @@
 
         <div class="chip" id="chip" hidden>
           <svg class="chip-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
-          <span class="chip-name mono" id="chip-name"></span>
+          <span class="chip-name" id="chip-name"></span>
           <span class="chip-meta" id="chip-meta"></span>
           <button class="chip-remove" id="chip-remove" type="button" aria-label="Убрать файл">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
@@ -47,13 +45,12 @@
         <select id="model"></select>
         <svg class="select-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
       </div>
-      <p class="field-hint mono" id="model-hint"></p>
     </div>
 
     <div class="run" id="run">
       <p class="run-status" id="run-status" aria-live="polite">
         <span id="run-stage"></span>
-        <span class="mono run-clock" id="run-clock"></span>
+        <span class="mono run-count" id="run-count"></span>
       </p>
       <button class="btn btn-primary run-btn" id="start" type="button" disabled>
         <span class="btn-label">Проверить</span>
@@ -64,10 +61,6 @@
     </div>
 
     <section class="stages" id="stages" aria-label="Этапы проверки" hidden>
-      <button class="stages-summary" id="stages-summary" type="button" aria-expanded="true" aria-controls="stages-body">
-        <span id="stages-summary-text"></span>
-        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
       <div class="collapse" id="stages-body">
         <ol class="stage-list" id="stage-list"></ol>
       </div>
@@ -103,7 +96,6 @@
       </span>
       <span class="stage-name"></span>
       <span class="stage-note"></span>
-      <span class="stage-time mono"></span>
     </li>
   </template>
 
@@ -117,7 +109,7 @@
       </button>
       <div class="collapse is-collapsed">
         <div class="fix-body">
-          <p class="fix-anchor mono"></p>
+          <p class="fix-anchor"></p>
           <blockquote class="fix-quote"></blockquote>
           <p class="fix-text"></p>
           <p class="fix-suggestion"><span class="fix-label">Предложение</span> <span class="fix-suggestion-text"></span></p>

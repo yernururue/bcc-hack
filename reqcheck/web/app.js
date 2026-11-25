@@ -13,28 +13,20 @@ const SEV = { blocker: 'блокирующий', major: 'существенны�
 const el = {
   drop: $('drop'), file: $('file'), chip: $('chip'), chipName: $('chip-name'), chipMeta: $('chip-meta'),
   chipRemove: $('chip-remove'), dropError: $('drop-error'), example: $('example'),
-  model: $('model'), modelHint: $('model-hint'),
-  run: $('run'), start: $('start'), stage: $('run-stage'), clock: $('run-clock'), progress: $('progress'),
+  model: $('model'),
+  run: $('run'), start: $('start'), stage: $('run-stage'), count: $('run-count'), progress: $('progress'),
   stages: $('stages'), stageList: $('stage-list'), stagesBody: $('stages-body'),
-  stagesSummary: $('stages-summary'), stagesSummaryText: $('stages-summary-text'),
   result: $('result'), verdict: $('verdict'), verdictSub: $('verdict-sub'), stats: $('stats'), fixes: $('fixes'),
   downloadMain: $('download-main'), downloadJson: $('download-json'), downloadHint: $('download-hint'), reset: $('reset'),
   failure: $('failure'), failureText: $('failure-text'), retry: $('retry'),
 };
 
-const state = { file: null, models: [], report: null, running: false, timer: null, t0: 0 };
-
-$('build').textContent = 'v0.1 · демо-данные';
+const state = { file: null, models: [], report: null, running: false };
 
 // ---------- утилиты ----------
 
 const fmtMoney = (v) => (v < 0.01 ? '< $0,01' : '≈ $' + v.toFixed(2).replace('.', ','));
-const fmtPrice = (v) => '$' + String(+v.toFixed(3)).replace('.', ',');
 const fmtSize = (b) => (b < 1024 * 1024 ? Math.max(1, Math.round(b / 1024)) + ' КБ' : (b / 1048576).toFixed(1).replace('.', ',') + ' МБ');
-const fmtClock = (ms) => {
-  const s = Math.floor(ms / 1000);
-  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
-};
 const plural = (n, one, few, many) => {
   const m10 = n % 10, m100 = n % 100;
   if (m10 === 1 && m100 !== 11) return one;
@@ -65,19 +57,11 @@ async function loadModels() {
     if (m.default) opt.selected = true;
     el.model.append(opt);
   }
-  updateModelHint();
 }
 
 function currentModel() {
   return state.models.find((m) => m.id === el.model.value);
 }
-
-function updateModelHint() {
-  const m = currentModel();
-  el.modelHint.textContent = m ? `${fmtPrice(m.in)} / ${fmtPrice(m.out)} за 1M токенов · ${fmtMoney(estimateRun(m))} за прогон` : '';
-}
-
-el.model.addEventListener('change', updateModelHint);
 
 // ---------- файл ----------
 
@@ -167,10 +151,11 @@ function onEvent(ev) {
   if (ev.type !== 'stage') return;
   const li = el.stageList.children[ev.index];
   li.dataset.state = ev.state;
-  if (ev.note) li.querySelector('.stage-note').textContent = ev.note;
-  if (ev.ms != null) li.querySelector('.stage-time').textContent = (ev.ms / 1000).toFixed(1).replace('.', ',') + ' с';
+  // Пояснение у этапа показываем только при ошибке: в обычном прогоне это лишний текст.
+  if (ev.state === 'error' && ev.note) li.querySelector('.stage-note').textContent = ev.note;
   if (ev.state === 'active') {
-    el.stage.textContent = `Этап ${ev.index + 1} из ${STAGE_NAMES.length} · ${STAGE_NAMES[ev.index]}`;
+    el.stage.textContent = STAGE_NAMES[ev.index];
+    el.count.textContent = `${ev.index + 1} / ${STAGE_NAMES.length}`;
   }
   if (ev.state === 'done') setProgress((ev.index + 1) / STAGE_NAMES.length);
 }
@@ -180,14 +165,12 @@ function setProgress(p) {
   el.progress.setAttribute('aria-valuenow', Math.round(p * 100));
 }
 
-function setStagesCollapsed(collapsed) {
-  el.stagesBody.classList.toggle('is-collapsed', collapsed);
-  el.stagesSummary.setAttribute('aria-expanded', String(!collapsed));
+// После прогона этапы больше не нужны: сворачиваем и убираем, на экране остаётся только результат.
+async function dismissStages() {
+  el.stagesBody.classList.add('is-collapsed');
+  await wait(200);
+  el.stages.hidden = true;
 }
-
-el.stagesSummary.addEventListener('click', () => {
-  setStagesCollapsed(el.stagesSummary.getAttribute('aria-expanded') === 'true');
-});
 
 // ---------- запуск ----------
 
@@ -217,45 +200,35 @@ async function start() {
   el.start.classList.remove('is-error', 'is-collapsed');
   setProgress(0);
   renderStages();
-  setStagesCollapsed(false);
-  el.stages.classList.remove('is-done');
+  el.stagesBody.classList.remove('is-collapsed');
   el.stages.hidden = false;
 
   el.stage.textContent = 'Подготовка';
-  state.t0 = performance.now();
-  el.clock.textContent = '00:00';
-  state.timer = setInterval(() => (el.clock.textContent = fmtClock(performance.now() - state.t0)), 250);
+  el.count.textContent = '';
 
   morphToProgress();
 
   try {
-    const model = currentModel();
-    const report = await api.run(state.file, model, onEvent);
+    const report = await api.run(state.file, currentModel(), onEvent);
     state.report = report;
-    await finish(report, performance.now() - state.t0);
+    await finish(report);
   } catch (err) {
     fail(err);
   } finally {
-    clearInterval(state.timer);
     state.running = false;
   }
 }
 
-async function finish(report, elapsed) {
+async function finish(report) {
   setProgress(1);
   el.stage.textContent = 'Готово';
   await wait(400);
 
   el.start.classList.add('is-collapsed');
-  await wait(200);
+  await Promise.all([wait(200), dismissStages()]);
   el.run.classList.add('is-gone');
 
   const s = report.summary;
-  el.stagesSummaryText.textContent =
-    `${STAGE_NAMES.length} этапов · ${fmtClock(elapsed)} · ${report.run.llm.calls} вызовов LLM · ${fmtMoney(report.run.llm.cost_usd)}`;
-  el.stages.classList.add('is-done');
-  setStagesCollapsed(true);
-
   const blockers = s.by_severity.blocker;
   const can = report.verdict.can_start_development;
   el.verdict.textContent = can ? 'Можно начинать разработку' : 'Нельзя начинать разработку';

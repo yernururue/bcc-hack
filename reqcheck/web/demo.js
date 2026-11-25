@@ -19,14 +19,14 @@ export const MODELS = [
 export const estimateRun = (m) => (40_000 * m.in + 30_000 * m.out) / 1e6;
 
 const STAGES = [
-  { name: 'Чтение документа', ms: 500, note: '212 блоков, 2 части' },
-  { name: 'Выделение требований', ms: 1400, note: '24 требования, 3 составных' },
-  { name: 'Проверка каждого требования', ms: 2600, note: '9 характеристик × 24' },
-  { name: 'Проверка набора', ms: 1900, note: '11 кандидатов → 4 противоречия' },
-  { name: 'Проверка цитат', ms: 600, note: '29 из 30 подтверждены' },
-  { name: 'Вопросы к автору', ms: 1000, note: '6 вопросов' },
-  { name: 'Вердикт', ms: 250, note: 'правило: блокирующих ≥ 1' },
-  { name: 'Отчёт', ms: 450, note: 'отчёт + JSON' },
+  { name: 'Чтение документа', ms: 500 },
+  { name: 'Выделение требований', ms: 1400 },
+  { name: 'Проверка каждого требования', ms: 2600 },
+  { name: 'Проверка набора', ms: 1900 },
+  { name: 'Проверка цитат', ms: 600 },
+  { name: 'Вопросы к автору', ms: 1000 },
+  { name: 'Вердикт', ms: 250 },
+  { name: 'Отчёт', ms: 450 },
 ];
 export const STAGE_NAMES = STAGES.map((s) => s.name);
 
@@ -150,13 +150,12 @@ export class DemoApi {
     for (let i = 0; i < STAGES.length; i++) {
       const s = STAGES[i];
       onEvent({ type: 'stage', index: i, state: 'active' });
-      const t0 = performance.now();
       await sleep(s.ms);
       if (this.failAtStage === i) {
-        onEvent({ type: 'stage', index: i, state: 'error', note: 'ответ не по схеме' });
+        onEvent({ type: 'stage', index: i, state: 'error' });
         throw new Error(`Модель дважды вернула ответ не по схеме. Этап «${s.name}» не выполнен.`);
       }
-      onEvent({ type: 'stage', index: i, state: 'done', note: s.note, ms: performance.now() - t0 });
+      onEvent({ type: 'stage', index: i, state: 'done' });
     }
     return buildReport(file, model);
   }
