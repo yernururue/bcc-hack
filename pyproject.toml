@@ -44,6 +44,10 @@ module-root = ""
 [tool.pytest.ini_options]
 addopts = "-ra"
 testpaths = ["tests"]
+filterwarnings = [
+    # SWIG-обёртки PyMuPDF на Python 3.12: шум, не наша ошибка
+    "ignore:builtin type .* has no __module__ attribute:DeprecationWarning",
+]
 
 [tool.ruff]
 line-length = 100

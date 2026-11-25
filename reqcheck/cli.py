@@ -74,7 +74,7 @@ def main(argv: Sequence[str] | None = None, settings: Settings | None = None) ->
                 "в .env: LLM_API_KEY=... (пример — .env.example)"
             )
 
-        pipeline.run(source, options)
+        pipeline.run(source, options, progress=lambda msg: print(msg, file=sys.stderr))
     except ReqCheckError as e:
         print(f"Ошибка: {e.message}", file=sys.stderr)
         return int(e.exit_code)

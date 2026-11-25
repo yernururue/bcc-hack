@@ -47,8 +47,14 @@ def test_dry_run_needs_no_key_and_resolves_output(
     err = capsys.readouterr().err
     assert f"{tmp_path / 'o.md'} (md)" in err
     assert "deepseek/deepseek-v4.1-flash" in err
-    assert code == ExitCode.ERROR  # конвейер ещё не реализован (каркас)
-    assert "Каркас" in err
+    assert code == ExitCode.OK  # dry-run: только разбор, без вызовов LLM
+    assert "блоков 2, с номером пункта 1" in err
+
+
+def test_real_run_stops_after_ingest_for_now(doc: Path, tmp_path: Path, capsys: Capsys) -> None:
+    code = main([str(doc), str(tmp_path / "o.md")], settings=settings("k"))
+    assert code == ExitCode.ERROR
+    assert "Каркас" in capsys.readouterr().err
 
 
 def test_model_and_cost_flags(doc: Path, tmp_path: Path, capsys: Capsys) -> None:

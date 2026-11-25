@@ -175,12 +175,12 @@ hackathon/
 ├── README.md  CLAUDE.md  .env.example  .gitignore  Dockerfile (P1)
 ├── config/
 │   ├── criteria.yaml  lexicon.yaml  thresholds.yaml
-│   ├── completeness.yaml  models.yaml
+│   ├── completeness.yaml  models.yaml  ingest.yaml
 ├── reqcheck/
 │   ├── __init__.py             # публичный API: validate(), Report
 │   ├── cli.py  pipeline.py  settings.py  budget.py  events.py
 │   ├── schemas/                # Pydantic: document, requirement, finding, report
-│   ├── ingest/                 # base.py, pdf.py, markdown.py, text.py
+│   ├── ingest/                 # __init__.py (ingest), markdown.py (MD/TXT и страницы PDF), pdf.py, normalize.py
 │   ├── stages/                 # extract, rules, check_each, check_set, verify, questions, verdict
 │   ├── llm/                    # base.py (Protocol), openai_compat.py, cache.py, retry.py
 │   ├── render/                 # markdown.py, pdf.py, json.py, templates/*.j2, fonts/*.ttf
