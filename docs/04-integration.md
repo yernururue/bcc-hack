@@ -56,6 +56,8 @@ requirements-review:
 | `GET` | `/checks/{id}` | Статус: `queued`, `running`, `done`, `failed`; текущий этап; доля выполнения |
 | `GET` | `/checks/{id}/events` | SSE-поток событий `stage`, `progress`, `done`, `error` |
 | `GET` | `/checks/{id}/report?format=json\|md\|pdf` | Отчёт; по умолчанию формат входа |
+| `GET` | `/checks/{id}/annotated` | P1: исходный PDF с пометками (выделения + комментарии) |
+| `GET` | `/checks/{id}/findings/{finding_id}/snippet` | P1: PNG фрагмента страницы с подсвеченной цитатой (PDF) или JSON с абзацами (Markdown) |
 | `DELETE` | `/checks/{id}` | Удалить задание и файлы |
 | `GET` | `/models` | Список моделей из `config/models.yaml` с ценами |
 | `GET` | `/healthz` | Проверка живости |

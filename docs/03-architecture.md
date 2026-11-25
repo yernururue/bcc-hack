@@ -55,7 +55,7 @@ flowchart TB
 | `LLMClient` | `OpenAICompatClient` (OpenRouter) | Внутренний шлюз через `LLM_BASE_URL`, или свой класс |
 | `Cache` | `FileCache` (диск) | Redis, S3, отключение |
 | `JobStore` | `InMemoryJobStore` (один процесс) | Redis/БД при нескольких репликах |
-| `Renderer` | `MarkdownRenderer`, `PdfRenderer`, `JsonRenderer` | `DocxRenderer` (P1), `ConfluenceRenderer` |
+| `Renderer` | `MarkdownRenderer`, `PdfRenderer`, `JsonRenderer`; P1: `AnnotatedSourceRenderer` (исходник с пометками), `SnippetRenderer` (фрагмент страницы с подсветкой) | `DocxRenderer` (P1), `ConfluenceRenderer` |
 | `Ingestor` | `PdfIngestor`, `MarkdownIngestor`, `TextIngestor` | `DocxIngestor` (P1), `ConfluenceIngestor` |
 
 Реестр ингесторов и рендеров — словарь `расширение → класс`. Новый формат добавляется одним классом без правок конвейера.
@@ -81,6 +81,7 @@ classDiagram
     section_path: str[]
     item: str|None
     line: int|None
+    rects: Rect[]  (P1, координаты цитаты в PDF)
     +label() str
   }
   class Requirement {
