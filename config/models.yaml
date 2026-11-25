@@ -1,6 +1,7 @@
 # Модели для выбора в CLI и UI. Цены OpenRouter на 2026-11-25, $ за 1M токенов.
 # tier: dev — разработка и тесты; cheap — кандидаты по умолчанию; strong — только финальный прогон (дорого).
 # temperature: принимает ли модель параметр temperature на OpenRouter.
+# reasoning: off — отключать рассуждения (иначе они съедают max_tokens и content пустой); on — оставить.
 
 models:
   - id: deepseek/deepseek-v4.1-flash
@@ -8,6 +9,7 @@ models:
     price_in: 0.051
     price_out: 0.203
     temperature: true
+    reasoning: "off"
   - id: openai/gpt-6-luna
     tier: cheap
     price_in: 0.10

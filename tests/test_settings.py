@@ -63,3 +63,11 @@ def test_env_file_is_read(tmp_path: Path) -> None:
     s = Settings(_env_file=env)  # type: ignore[call-arg]
     assert s.llm_model == "openai/gpt-6-luna"
     assert s.llm_api_key.get_secret_value() == "from-file"  # type: ignore[union-attr]
+
+
+def test_env_local_overrides_env(tmp_path: Path) -> None:
+    (tmp_path / ".env").write_text("LLM_MODEL=a/base\nLLM_API_KEY=k1\n", encoding="utf-8")
+    (tmp_path / ".env.local").write_text("LLM_MODEL=b/local\n", encoding="utf-8")
+    s = Settings(_env_file=(tmp_path / ".env", tmp_path / ".env.local"))  # type: ignore[call-arg]
+    assert s.llm_model == "b/local"
+    assert s.llm_api_key.get_secret_value() == "k1"  # type: ignore[union-attr]

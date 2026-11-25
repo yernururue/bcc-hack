@@ -77,7 +77,9 @@ OpenRouter совместим с OpenAI API: `base_url=https://openrouter.ai/api
 
 ### Структурированный вывод
 - `response_format={"type": "json_schema", "json_schema": {"name": ..., "strict": true, "schema": <Pydantic.model_json_schema()>}}`.
-- Для OpenRouter добавляем `extra_body={"provider": {"require_parameters": true}}`, чтобы запрос шёл только к провайдерам, поддерживающим все параметры запроса.
+- Для OpenRouter добавляем `extra_body={"provider": {"require_parameters": true, "sort": "price"}}`: только провайдеры, поддерживающие все параметры запроса, и среди них самый дешёвый. Проверено 2026-11-25: без `sort` запрос к `deepseek/deepseek-v4.1-flash` ушёл к провайдеру с ценой выхода около $1.3/1M вместо витринных $0.203/1M.
+- Рассуждения модели отключаются (`"reasoning": {"enabled": false}`), если в `config/models.yaml` у модели `reasoning: off`. Проверено 2026-11-25: с включёнными рассуждениями deepseek потратил все 400 токенов `max_tokens` на рассуждение и вернул пустой `content` (`finish_reason: length`); без них — валидный JSON за 111 токенов.
+- Ключ проверяется бесплатно: `GET {base}/key` (200 — ключ рабочий) и `GET {base}/credits` (баланс аккаунта). Генерация для этого не нужна.
 - В strict-режиме все поля обязательны, `additionalProperties: false`. Поэтому в схемах нет полей со значением по умолчанию; необязательность выражаем через `X | None`.
 - Ответ всегда валидируем Pydantic. При ошибке валидации — один повтор с текстом ошибки в сообщении; затем этап помечается как неудавшийся, прогон продолжается.
 

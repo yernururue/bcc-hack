@@ -13,7 +13,10 @@ DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash"
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    # .env.local перекрывает .env (локальные ключи разработчика); оба в .gitignore.
+    model_config = SettingsConfigDict(
+        env_file=(".env", ".env.local"), env_file_encoding="utf-8", extra="ignore"
+    )
 
     llm_api_key: SecretStr | None = Field(
         default=None, validation_alias=AliasChoices("LLM_API_KEY", "OPENROUTER_API_KEY")
