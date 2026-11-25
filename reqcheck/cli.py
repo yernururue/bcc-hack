@@ -42,7 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None, settings: Settings | None = None) -> int:
     args = build_parser().parse_args(argv)
     logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
+        level=logging.DEBUG if args.verbose else logging.WARNING,
         format="%(asctime)s %(levelname)s %(message)s",
         stream=sys.stderr,
     )
@@ -74,13 +74,37 @@ def main(argv: Sequence[str] | None = None, settings: Settings | None = None) ->
                 "в .env: LLM_API_KEY=... (пример — .env.example)"
             )
 
-        pipeline.run(source, options, progress=lambda msg: print(msg, file=sys.stderr))
+        outcome = pipeline.run(
+            source,
+            target,
+            options,
+            settings,
+            progress=lambda msg: print(msg, file=sys.stderr),
+        )
     except ReqCheckError as e:
         print(f"Ошибка: {e.message}", file=sys.stderr)
         return int(e.exit_code)
     except pipeline.NotImplementedYet as e:
-        print(f"Каркас: {e}", file=sys.stderr)
+        print(f"Не реализовано: {e}", file=sys.stderr)
         return int(ExitCode.ERROR)
+
+    report = outcome.report
+    if report is None:  # dry-run
+        return int(ExitCode.OK)
+    u = report.run.llm
+    print(
+        f"Готово:   {', '.join(str(p) for p in outcome.written)}\n"
+        f"Расход:   вызовов {u.calls} (из кэша {u.cached_calls}), "
+        f"{u.prompt_tokens} вход / {u.completion_tokens} выход, ${u.cost_usd:.4f}\n"
+        f"Итог:     {report.verdict.reason}",
+        file=sys.stderr,
+    )
+    if not report.run.complete:
+        print(f"Внимание: отчёт неполный — {report.run.incomplete_reason}", file=sys.stderr)
+    if outcome.budget_exceeded:
+        return int(ExitCode.BUDGET)
+    if args.fail_on == "blocker" and report.summary.by_severity.get("blocker", 0) > 0:
+        return int(ExitCode.FAIL_ON)
     return int(ExitCode.OK)
 
 

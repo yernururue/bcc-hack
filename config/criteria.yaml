@@ -1,0 +1,116 @@
+# Характеристики отдельного требования: ISO/IEC/IEEE 29148:2018 п. 5.2.5, IEEE 830-1998 п. 4.3.
+# short — подпись столбца в отчёте; category — категория находки при нарушении.
+
+characteristics:
+  unambiguous:
+    name: Однозначность
+    short: Однозн.
+    category: ambiguous
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Unambiguous); IEEE 830 4.3.2
+    definition: >-
+      Требование допускает только одно толкование. Нет расплывчатых слов («быстро», «удобно»,
+      «при необходимости»), неопределённых местоимений, двусмысленных условий и единиц.
+  complete:
+    name: Полнота
+    short: Полнота
+    category: incomplete
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Complete); IEEE 830 4.3.3
+    definition: >-
+      Требование описывает возможность полностью: заданы условия, ограничения, граничные значения,
+      поведение при ошибках и исключениях. Нет «TBD» и ссылок на неопределённое.
+  singular:
+    name: Единичность
+    short: Единичн.
+    category: composite
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Singular)
+    definition: >-
+      Требование описывает одну возможность или одно свойство. Несколько независимых действий,
+      связанных «и/или», — признак составного требования.
+  feasible:
+    name: Реализуемость
+    short: Реализ.
+    category: infeasible
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Feasible)
+    definition: >-
+      Требование можно реализовать в разумных технических и временных рамках, без абсолютов
+      («всегда», «100 %», «мгновенно», «никогда не отказывает»).
+  verifiable:
+    name: Проверяемость
+    short: Провер.
+    category: unverifiable
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Verifiable); IEEE 830 4.3.6
+    definition: >-
+      Выполнение требования можно доказать тестом, анализом, осмотром или демонстрацией:
+      есть измеримый критерий (число с единицей, конкретный результат), а не оценка.
+  correct:
+    name: Корректность
+    short: Коррект.
+    category: incorrect
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Correct); IEEE 830 4.3.1
+    definition: >-
+      Требование точно отражает потребность и не противоречит фактам и другим данным в этом же месте
+      (арифметика, форматы, единицы, коды ответов).
+  necessary:
+    name: Необходимость
+    short: Необход.
+    category: unnecessary
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Necessary)
+    definition: >-
+      Без требования система лишится важной возможности; оно не избыточно и не повторяет другое.
+  implementation_free:
+    name: Независимость от реализации
+    short: Без реализ.
+    category: design_decision
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Implementation free)
+    definition: >-
+      Требование говорит «что», а не «как»: не навязывает технологию, архитектуру, конкретный
+      продукт или структуру данных без причины.
+  conforming:
+    name: Соответствие
+    short: Соотв.
+    category: nonconforming
+    standard_ref: ISO/IEC/IEEE 29148:2018 5.2.5 (Conforming); IEEE 830 4.3.8
+    definition: >-
+      Требование оформлено по принятому шаблону: идентификатор, формулировка «система должна…»,
+      единая терминология.
+
+# Подзаголовки раздела «Проверка всего набора» и категории, которые туда попадают.
+set_sections:
+  - title: Противоречия
+    categories: [contradiction]
+  - title: Полнота набора
+    categories: [missing_topic]
+  - title: Дубли
+    categories: [duplicate]
+  - title: Единообразие терминов
+    categories: [terminology]
+  - title: Ранжирование и трассируемость (IEEE 830)
+    categories: [traceability]
+  - title: Прочее
+    categories: [ambiguous, unverifiable, incomplete, composite, design_decision, infeasible, incorrect, unnecessary, nonconforming]
+
+# Названия категорий для отчёта.
+category_names:
+  ambiguous: Неоднозначность
+  unverifiable: Непроверяемость
+  incomplete: Неполнота
+  composite: Составное требование
+  design_decision: Проектное решение в требовании
+  infeasible: Нереализуемость
+  incorrect: Некорректность
+  unnecessary: Избыточность
+  nonconforming: Несоответствие шаблону
+  contradiction: Противоречие
+  duplicate: Дубль
+  terminology: Разнобой терминов
+  missing_topic: Пропущенная тема
+  traceability: Трассируемость
+
+kind_names:
+  functional: функциональное
+  nfr: нефункциональное
+  data: данные
+  integration: интеграция
+  acceptance: критерий приёмки
+  api: API
+  other: прочее

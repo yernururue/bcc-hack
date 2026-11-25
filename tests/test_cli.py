@@ -51,10 +51,15 @@ def test_dry_run_needs_no_key_and_resolves_output(
     assert "блоков 2, с номером пункта 1" in err
 
 
-def test_real_run_stops_after_ingest_for_now(doc: Path, tmp_path: Path, capsys: Capsys) -> None:
-    code = main([str(doc), str(tmp_path / "o.md")], settings=settings("k"))
+def test_pdf_report_not_ready_fails_before_llm(doc: Path, tmp_path: Path, capsys: Capsys) -> None:
+    code = main([str(doc), str(tmp_path / "o.pdf")], settings=settings("k"))
     assert code == ExitCode.ERROR
-    assert "Каркас" in capsys.readouterr().err
+    assert ".md" in capsys.readouterr().err
+
+
+def test_estimate_printed_in_dry_run(doc: Path, tmp_path: Path, capsys: Capsys) -> None:
+    main([str(doc), str(tmp_path / "o.md"), "--dry-run"], settings=settings())
+    assert "Оценка:" in capsys.readouterr().err
 
 
 def test_model_and_cost_flags(doc: Path, tmp_path: Path, capsys: Capsys) -> None:

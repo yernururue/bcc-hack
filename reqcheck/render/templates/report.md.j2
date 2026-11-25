@@ -1,0 +1,115 @@
+# Отчёт о проверке требований: {{ r.run.document.name }}
+
+{% if not r.run.complete -%}
+> **Отчёт неполный:** {{ r.run.incomplete_reason }}
+
+{% endif -%}
+## 1. Паспорт прогона
+
+| Поле | Значение |
+|---|---|
+| Документ | `{{ r.run.document.name }}`{% if r.run.document.pages %} ({{ r.run.document.pages }} стр.){% endif %} |
+| SHA-256 | `{{ r.run.document.sha256 }}` |
+| Дата прогона | {{ started }} |
+| Модель | `{{ r.run.model }}` через {{ provider }} |
+| Версия агента | `{{ r.run.agent_version }}` |
+| Вызовы LLM / токены / стоимость | {{ r.run.llm.calls }}{% if r.run.llm.cached_calls %} (+{{ r.run.llm.cached_calls }} из кэша){% endif %} / {{ num(r.run.llm.prompt_tokens) }} вход, {{ num(r.run.llm.completion_tokens) }} выход / ${{ "%.4f"|format(r.run.llm.cost_usd) }} |
+| Стандарты | ISO/IEC/IEEE 29148:2018 (п. 5.2.5, 5.2.6), IEEE 830-1998 (п. 4.3) |
+| Статус | {{ "Полный" if r.run.complete else "Неполный — " ~ r.run.incomplete_reason }} |
+
+## 2. Как агент нарезал требования
+
+Всего требований: {{ r.requirements|length }}{% if r.summary.split_composites %}, из них получено разделением составных: {{ r.summary.split_composites }} блок(а){% endif %}.
+
+| ID в отчёте | ID в документе | Тип | Краткая формулировка | Место |
+|---|---|---|---|---|
+{% for q in r.requirements -%}
+| {{ q.report_id }} | {{ q.doc_id or "—" }} | {{ kind(q.kind) }} | {{ cell(q.summary) }}{% if q.split_from %} (часть {{ q.split_from }}){% endif %} | {{ cell(q.anchor.label()) }} |
+{% endfor %}
+{% set no_id = r.requirements | selectattr("doc_id", "none") | list %}
+{%- if no_id %}
+
+Требования без номера в документе (дословно):
+{% for q in no_id %}
+- **{{ q.report_id }}** — «{{ inline(q.quote) }}»
+{%- endfor %}
+{% endif %}
+
+## 3. Проверка каждого требования
+
+Обозначения: ✓ соблюдено, ✗ нарушено, ? неясно, · не оценено.
+
+{% for q in r.requirements -%}
+{% set fs = by_req.get(q.report_id, []) -%}
+### {{ q.report_id }}{% if q.doc_id %} ({{ q.doc_id }}){% endif %} · {{ q.anchor.label() }}
+
+> «{{ inline(q.quote) }}»
+
+{% if fs or not ok(q) -%}
+| {% for c in chars %}{{ crit.characteristics[c].short }} | {% endfor %}
+|{% for c in chars %}---|{% endfor %}
+| {% for c in chars %}{{ mark(q.assessment.get(c)) }} | {% endfor %}
+
+{% for f in fs -%}
+**{{ f.finding_id }} · {{ f.severity.value }} · {{ cat(f.category) }}**{% if f.verdict == "unclear" %} (неясно){% endif %}{% if f.source == "rule" %} · проверка кодом{% endif %}. {{ f.explanation }}
+Цитата: «{{ inline(f.quote) }}»{% if f.suggestion %}
+Предложение: {{ f.suggestion }}{% endif %}
+
+{% endfor -%}
+{% else -%}
+Все характеристики соблюдены.
+
+{% endif -%}
+{% endfor %}
+## 4. Проверка всего набора
+
+{% for title, fs in set_groups -%}
+### {{ title }}
+
+{% if fs -%}
+{% for f in fs -%}
+**{{ f.finding_id }} · {{ f.severity.value }} · {{ cat(f.category) }}.** {{ places(f) }}
+{{ quotes(f) }}
+{{ f.explanation }}{% if f.suggestion %}
+Предложение: {{ f.suggestion }}{% endif %}
+
+{% endfor -%}
+{% else -%}
+Проблем не найдено.
+
+{% endif -%}
+{% endfor %}
+## 5. Сводка
+
+- Требований: {{ r.summary.requirements_total }}{% if r.summary.split_composites %} (разделено составных блоков: {{ r.summary.split_composites }}){% endif %}
+- Нарушений: {{ r.summary.violations_total }} (blocker {{ r.summary.by_severity.get("blocker", 0) }}, major {{ r.summary.by_severity.get("major", 0) }}, minor {{ r.summary.by_severity.get("minor", 0) }}); неясно: {{ r.summary.unclear_total }}
+- Критичные дефекты:
+  - Непроверяемые: {{ refs(r.summary.critical.unverifiable) }}
+  - Противоречивые: {{ refs(r.summary.critical.contradictory) }}
+  - Неполные: {{ refs(r.summary.critical.incomplete) }}
+{% if r.debug.dropped_findings %}- Отброшено находок без подтверждённой цитаты: {{ r.debug.dropped_findings|length }}
+{% endif %}
+
+## 6. Вопросы к автору документа
+
+{% if r.questions -%}
+| # | Вопрос | Варианты | На что влияет | Допущение без ответа |
+|---|---|---|---|---|
+{% for q in r.questions -%}
+| {{ loop.index }} | {{ cell(q.question) }} | {{ cell(options(q.options)) }} | {{ cell(impacts(q.impacts)) }} | {{ cell(q.default_assumption) }} |
+{% endfor %}
+{%- else -%}
+Вопросов нет.
+{% endif %}
+
+## 7. Итог
+
+- Разработка: **{{ dev }}**
+- Тестирование: **{{ test }}**
+{% if r.verdict.top_fixes -%}
+- Исправить в первую очередь:
+{% for fid in r.verdict.top_fixes -%}
+{% set f = by_id[fid] %}  {{ loop.index }}. {{ fid }} ({{ f.severity.value }}, {{ cat(f.category) }}, {{ ", ".join(f.requirement_ids) or "набор" }}): {{ inline(f.explanation) }}
+{% endfor -%}
+{% endif %}
+- Правило вердикта (решение принял код, а не модель): {{ r.verdict.rule }}

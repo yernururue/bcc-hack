@@ -3,10 +3,12 @@
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from reqcheck.schemas.common import Category, Characteristic, RequirementKind, Severity
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 
@@ -44,3 +46,122 @@ class IngestConfig(BaseModel):
 @lru_cache
 def ingest_config() -> IngestConfig:
     return IngestConfig.model_validate(load_yaml("ingest.yaml"))
+
+
+class ModelInfo(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    id: str
+    tier: Literal["dev", "cheap", "strong"]
+    price_in: float = Field(ge=0)  # $ за 1M входных токенов
+    price_out: float = Field(ge=0)
+    temperature: bool = False
+    reasoning: Literal["on", "off"] | None = None
+
+
+class ModelsConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    models: list[ModelInfo]
+    test_tiers: list[str] = Field(default_factory=lambda: ["dev", "cheap"])
+
+    def get(self, model_id: str) -> ModelInfo | None:
+        return next((m for m in self.models if m.id == model_id), None)
+
+
+class VerdictRules(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    block_development_if_blockers_at_least: int = Field(ge=1)
+    caution_if_major_at_least: int = Field(ge=1)
+    block_testing_if_unverifiable_at_least: int = Field(ge=1)
+    block_testing_if_no_acceptance: bool
+
+
+class Thresholds(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    verdict: VerdictRules
+    verify: dict[str, float]
+    check_each: dict[str, int]
+    check_set: dict[str, int]
+    report: dict[str, int]
+    default_severity: dict[Category, Severity]
+
+    @property
+    def quote_min_similarity(self) -> float:
+        return float(self.verify["quote_min_similarity"])
+
+    @property
+    def batch_size(self) -> int:
+        return int(self.check_each["batch_size"])
+
+
+class CharacteristicInfo(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    name: str
+    short: str
+    category: Category
+    standard_ref: str
+    definition: str
+
+
+class SetSection(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    title: str
+    categories: list[Category]
+
+
+class Criteria(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    characteristics: dict[Characteristic, CharacteristicInfo]
+    set_sections: list[SetSection]
+    category_names: dict[Category, str]
+    kind_names: dict[RequirementKind, str]
+
+
+class LexiconRule(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    category: Category
+    characteristic: Characteristic
+    explanation: str
+    patterns: list[str] = Field(min_length=1)
+
+    def compiled(self) -> re.Pattern[str]:
+        joined = "|".join(f"(?:{p})" for p in self.patterns)
+        return re.compile(rf"(?<!\w)(?:{joined})(?!\w)", re.IGNORECASE)
+
+
+class Lexicon(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    vague: LexiconRule
+    tbd: LexiconRule
+    quote_context_words: int = Field(default=3, ge=0)
+
+    def rules(self) -> list[LexiconRule]:
+        return [self.vague, self.tbd]
+
+
+@lru_cache
+def models_config() -> ModelsConfig:
+    return ModelsConfig.model_validate(load_yaml("models.yaml"))
+
+
+@lru_cache
+def thresholds() -> Thresholds:
+    return Thresholds.model_validate(load_yaml("thresholds.yaml"))
+
+
+@lru_cache
+def criteria() -> Criteria:
+    return Criteria.model_validate(load_yaml("criteria.yaml"))
+
+
+@lru_cache
+def lexicon() -> Lexicon:
+    return Lexicon.model_validate(load_yaml("lexicon.yaml"))

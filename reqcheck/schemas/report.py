@@ -41,6 +41,7 @@ class Finding(Strict):
     quote: str
     anchor: Anchor
     related_anchors: list[Anchor] = Field(default_factory=list)
+    related_quotes: list[str] = Field(default_factory=list)  # по одной на related_anchors
     explanation: str
     suggestion: str | None = None
     source: Literal["rule", "llm"]
@@ -101,6 +102,8 @@ class Verdict(Strict):
     can_start_development: bool
     can_start_testing: bool
     reason: str
+    development: str = ""  # «нельзя начинать — блокирующих дефектов: 3»
+    testing: str = ""
     rule: str
     top_fixes: list[str] = Field(default_factory=list, max_length=5)
 
