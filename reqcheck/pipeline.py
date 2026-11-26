@@ -15,8 +15,10 @@ from reqcheck.ingest import ingest
 from reqcheck.llm.base import LLMClient
 from reqcheck.llm.openai_compat import LLMCallError, OpenAICompatClient
 from reqcheck.schemas import (
+    Category,
     Debug,
     DocumentInfo,
+    Finding,
     LLMUsage,
     Report,
     RunPassport,
@@ -230,16 +232,34 @@ def run(
     per_set = verify.set_findings(raw_set, reqs, doc, th, crit)
     timed("verify", t)
 
-    refuted_idx: set[int] = set()
+    decisions: dict[int, confirm.ConfirmItem] = {}
     if confirm.candidates(per_set.findings):
         progress("Этап:     подтверждение противоречий")
-        refuted_idx = guarded(
-            "confirm", lambda: confirm.run(per_set.findings, reqs, client), set[int]()
+        decisions = guarded(
+            "confirm",
+            lambda: confirm.run(per_set.findings, reqs, client),
+            dict[int, confirm.ConfirmItem](),
         )
     end("check_set", "confirm")
     begin("verify")
-    refuted = [f for i, f in enumerate(per_set.findings) if i in refuted_idx]
-    set_kept = [f for i, f in enumerate(per_set.findings) if i not in refuted_idx]
+    refuted: list[Finding] = []
+    set_kept: list[Finding] = []
+    for i, f in enumerate(per_set.findings):
+        item = decisions.get(i)
+        if item is None:
+            set_kept.append(f)
+        elif item.verdict == "other_issue":
+            converted = confirm.as_other_issue(
+                f, item.reason, th.default_severity[Category.INCORRECT]
+            )
+            # то же требование уже отмечено как некорректное судьёй: второй раз не повторяем
+            seen = any(
+                g.category == Category.INCORRECT and set(g.requirement_ids) & set(f.requirement_ids)
+                for g in per_req.findings
+            )
+            (refuted if seen else set_kept).append(converted if not seen else f)
+        else:
+            refuted.append(f)
 
     t = time.monotonic()
     kept, suppressed = verify.suppress_noise(per_req.findings + set_kept, th.findings_filter)

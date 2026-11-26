@@ -131,7 +131,9 @@ class FakeLLM:
             }
         if schema is ConfirmResult:
             ids = re.findall(r"^(C-\d+) ·", user, re.M)
-            return {"items": [{"id": i, "conflict": True, "reason": "расходятся"} for i in ids]}
+            return {
+                "items": [{"id": i, "verdict": "conflict", "reason": "расходятся"} for i in ids]
+            }
         if schema is QuestionsResult:
             return {
                 "questions": [
@@ -263,7 +265,9 @@ def test_refuted_contradiction_goes_to_debug(tmp_path: Path, monkeypatch) -> Non
     def answer(self, schema, user):
         if schema is ConfirmResult:
             ids = re.findall(r"^(C-\d+) ·", user, re.M)
-            return {"items": [{"id": i, "conflict": False, "reason": "совместимы"} for i in ids]}
+            return {
+                "items": [{"id": i, "verdict": "compatible", "reason": "совместимы"} for i in ids]
+            }
         return original(self, schema, user)
 
     monkeypatch.setattr(FakeLLM, "_answer", answer)
@@ -290,3 +294,26 @@ def test_confirm_failure_keeps_contradiction(tmp_path: Path, monkeypatch) -> Non
     assert report is not None
     assert [f.category for f in report.findings if f.category == "contradiction"]
     assert not report.run.complete and report.debug.stage_errors[0].stage == "confirm"
+
+
+def test_other_issue_keeps_finding_as_incorrect(tmp_path: Path, monkeypatch) -> None:
+    """Пара не противоречива, но проблема есть: находка не теряется, категория — incorrect."""
+    original = FakeLLM._answer
+
+    def answer(self, schema, user):
+        if schema is ConfirmResult:
+            ids = re.findall(r"^(C-\d+) ·", user, re.M)
+            return {
+                "items": [
+                    {"id": i, "verdict": "other_issue", "reason": "Неверный тип."} for i in ids
+                ]
+            }
+        return original(self, schema, user)
+
+    monkeypatch.setattr(FakeLLM, "_answer", answer)
+    report = run(tmp_path)[0].report
+    assert report is not None
+    assert not [f for f in report.findings if f.category == "contradiction"]
+    kept = next(f for f in report.findings if f.scope == "set" and f.category == "incorrect")
+    assert kept.explanation == "Неверный тип." and kept.severity == "major" and kept.verified
+    assert not report.debug.suppressed_findings
