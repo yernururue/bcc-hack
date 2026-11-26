@@ -4,8 +4,29 @@
     {
       "name": "ui-mockup",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "5173", "--bind", "127.0.0.1", "--directory", "reqcheck/web"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5173",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "reqcheck/web"
+      ],
       "port": 5173
+    },
+    {
+      "name": "reqcheck-server",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": [
+        "run",
+        "python",
+        "-m",
+        "reqcheck.server",
+        "--port",
+        "8000"
+      ],
+      "port": 8000
     }
   ]
 }
