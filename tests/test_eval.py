@@ -97,13 +97,17 @@ def test_contradiction_needs_both_places() -> None:
                 "c",
                 "contradiction",
                 "не более 5 адресов доставки",
-                "хранится до 10 адресов доставки",
+                "Максимальное число адресов доставки в профиле покупателя равно 10",
                 min_quotes=2,
             )
         ]
     )
     one = finding("contradiction", "не более 5 адресов доставки")
-    both = finding("contradiction", "не более 5 адресов доставки", "до 10 адресов доставки")
+    both = finding(
+        "contradiction",
+        "не более 5 адресов доставки",
+        "Максимальное число адресов доставки в профиле покупателя равно 10",
+    )
     assert score_fixture("f", spec, [one], RULES).found == 0
     assert score_fixture("f", spec, [both], RULES).found == 1
 
@@ -190,7 +194,11 @@ def test_baseline_verifies_quotes_by_code() -> None:
     answer = BaselineResult.model_validate(
         {
             "findings": [
-                _bl("contradiction", "не более 5 адресов доставки", "хранится до 10 адресов"),
+                _bl(
+                    "contradiction",
+                    "не более 5 адресов доставки",
+                    "Максимальное число адресов доставки в профиле покупателя равно 10",
+                ),
                 _bl("contradiction", "не более 5 адресов доставки", "выдуманная цитата здесь"),
                 _bl("ambiguous", "этого текста в документе нет совсем"),
             ]

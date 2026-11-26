@@ -82,7 +82,10 @@ class FindingsFilter(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     max_per_requirement: int = Field(ge=1)
-    drop_unclear_minor: bool
+    # «Неясно» не строже этой серьёзности в отчёт не выводим (остаётся в debug)
+    drop_unclear_up_to: Severity
+    # Лимит находок набора по категориям; лишние (менее серьёзные) убираются в debug
+    max_set_per_category: dict[Category, int] = Field(default_factory=dict)
 
 
 class EvalRules(BaseModel):
@@ -103,6 +106,8 @@ class Thresholds(BaseModel):
     check_set: dict[str, int]
     report: dict[str, int]
     default_severity: dict[Category, Severity]
+    # Модель может повысить серьёзность выше умолчания, но не выше этого потолка
+    max_severity: dict[Category, Severity] = Field(default_factory=dict)
 
     @property
     def quote_min_similarity(self) -> float:

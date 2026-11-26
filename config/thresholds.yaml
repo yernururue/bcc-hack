@@ -23,8 +23,14 @@ check_set:
 findings_filter:
   # Максимум находок на одно требование; лишние — с наименьшей серьёзностью
   max_per_requirement: 3
-  # «Неясно» с серьёзностью minor в отчёт не выводим
-  drop_unclear_minor: true
+  # «Неясно» с серьёзностью не выше этой в отчёт не выводим: сомнение без нарушения — шум.
+  # Остаётся только «неясно» с серьёзностью blocker
+  drop_unclear_up_to: major
+  # Находки набора: не больше N на категорию (остальные — в debug.suppressed_findings)
+  max_set_per_category:
+    missing_topic: 3
+    terminology: 2
+    traceability: 1
 
 # Оценка качества (python -m reqcheck.eval, docs/02-trd.md §10)
 eval:
@@ -49,6 +55,20 @@ default_severity:
   unnecessary: minor
   nonconforming: minor
   contradiction: blocker
+  duplicate: minor
+  terminology: minor
+  missing_topic: major
+  traceability: minor
+
+# Потолок серьёзности: модель повышает находку выше умолчания, но не выше этого значения.
+# Для категорий, которых здесь нет, потолка нет.
+max_severity:
+  ambiguous: major
+  composite: minor
+  design_decision: minor
+  infeasible: major
+  unnecessary: minor
+  nonconforming: minor
   duplicate: minor
   terminology: minor
   missing_topic: major

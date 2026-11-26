@@ -13,6 +13,7 @@ from reqcheck.schemas import LLMUsage, Report
 from reqcheck.settings import Settings
 from reqcheck.stages.check_each import JudgeResult
 from reqcheck.stages.check_set import SetResult
+from reqcheck.stages.confirm import ConfirmResult
 from reqcheck.stages.extract import ExtractResult
 from reqcheck.stages.questions import QuestionsResult
 
@@ -128,6 +129,9 @@ class FakeLLM:
                     },
                 ]
             }
+        if schema is ConfirmResult:
+            ids = re.findall(r"^(C-\d+) ·", user, re.M)
+            return {"items": [{"id": i, "conflict": True, "reason": "расходятся"} for i in ids]}
         if schema is QuestionsResult:
             return {
                 "questions": [
@@ -155,7 +159,7 @@ def run(tmp_path: Path) -> tuple[pipeline.RunOutcome, Path, FakeLLM]:
 
 def test_full_run_writes_md_and_json(tmp_path: Path) -> None:
     outcome, md_path, llm = run(tmp_path)
-    assert llm.stages == ["extract", "check_each", "check_set", "questions"]
+    assert llm.stages == ["extract", "check_each", "check_set", "confirm", "questions"]
     md = md_path.read_text(encoding="utf-8")
     for title in (
         "## 1. Паспорт прогона",
@@ -223,7 +227,7 @@ def test_questions_filtered(tmp_path: Path) -> None:
     report = run(tmp_path)[0].report
     assert report is not None
     assert report.questions[0].impacts == ["R-001", "R-003"]
-    assert report.run.llm.calls == 4 and report.run.complete
+    assert report.run.llm.calls == 5 and report.run.complete
 
 
 def test_failed_stage_marks_report_incomplete(tmp_path: Path) -> None:
@@ -250,3 +254,39 @@ def test_failed_stage_marks_report_incomplete(tmp_path: Path) -> None:
     assert not outcome.report.run.complete
     assert "check_set" in (outcome.report.run.incomplete_reason or "")
     assert "Неполный" in target.path.read_text(encoding="utf-8")
+
+
+def test_refuted_contradiction_goes_to_debug(tmp_path: Path, monkeypatch) -> None:
+    """Если модель-подтверждающий говорит «совместимы», противоречие не попадает в отчёт."""
+    original = FakeLLM._answer
+
+    def answer(self, schema, user):
+        if schema is ConfirmResult:
+            ids = re.findall(r"^(C-\d+) ·", user, re.M)
+            return {"items": [{"id": i, "conflict": False, "reason": "совместимы"} for i in ids]}
+        return original(self, schema, user)
+
+    monkeypatch.setattr(FakeLLM, "_answer", answer)
+    report = run(tmp_path)[0].report
+    assert report is not None
+    assert not [f for f in report.findings if f.category == "contradiction"]
+    assert [f.category for f in report.debug.suppressed_findings] == ["contradiction"]
+    assert report.verdict.can_start_development is False  # блокирует непроверяемость Ф-2
+    assert report.summary.critical.contradictory == []
+
+
+def test_confirm_failure_keeps_contradiction(tmp_path: Path, monkeypatch) -> None:
+    from reqcheck.llm.openai_compat import LLMCallError
+
+    original = FakeLLM._answer
+
+    def answer(self, schema, user):
+        if schema is ConfirmResult:
+            raise LLMCallError("confirm: нет связи")
+        return original(self, schema, user)
+
+    monkeypatch.setattr(FakeLLM, "_answer", answer)
+    report = run(tmp_path)[0].report
+    assert report is not None
+    assert [f.category for f in report.findings if f.category == "contradiction"]
+    assert not report.run.complete and report.debug.stage_errors[0].stage == "confirm"

@@ -24,7 +24,16 @@ from reqcheck.schemas import (
 )
 from reqcheck.schemas.document import Document
 from reqcheck.settings import Settings
-from reqcheck.stages import check_each, check_set, extract, questions, rules, verdict, verify
+from reqcheck.stages import (
+    check_each,
+    check_set,
+    confirm,
+    extract,
+    questions,
+    rules,
+    verdict,
+    verify,
+)
 from reqcheck.version import agent_version
 
 Progress = Callable[[str], None]
@@ -43,6 +52,7 @@ STAGES = (
     "extract",
     "check_each",
     "check_set",
+    "confirm",
     "verify",
     "questions",
     "verdict",
@@ -195,13 +205,24 @@ def run(
     t = time.monotonic()
     per_req = verify.requirement_findings(reqs, judged, rule_findings, doc, th, crit)
     per_set = verify.set_findings(raw_set, reqs, doc, th, crit)
-    kept, suppressed = verify.suppress_noise(
-        per_req.findings + per_set.findings, th.findings_filter
-    )
+    timed("verify", t)
+
+    refuted_idx: set[int] = set()
+    if confirm.candidates(per_set.findings):
+        progress("Этап:     подтверждение противоречий")
+        refuted_idx = guarded(
+            "confirm", lambda: confirm.run(per_set.findings, reqs, client), set[int]()
+        )
+    refuted = [f for i, f in enumerate(per_set.findings) if i in refuted_idx]
+    set_kept = [f for i, f in enumerate(per_set.findings) if i not in refuted_idx]
+
+    t = time.monotonic()
+    kept, suppressed = verify.suppress_noise(per_req.findings + set_kept, th.findings_filter)
+    suppressed += refuted
     findings = verify.number(kept, reqs)
     dropped = per_req.dropped + per_set.dropped
     reqs = verify.apply_assessments(reqs, judged, findings)
-    timed("verify", t)
+    timings["verify"] = timings.get("verify", 0) + round((time.monotonic() - t) * 1000)
     progress(
         f"Проверка: в отчёте находок {len(findings)}, отброшено без цитаты {len(dropped)}, "
         f"отфильтровано как шум {len(suppressed)}"

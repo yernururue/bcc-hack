@@ -34,7 +34,11 @@ def final_severity(
     base = thresholds.default_severity[category]
     if category == Category.UNVERIFIABLE and RequirementKind.FUNCTIONAL not in kinds:
         base = Severity.MAJOR  # blocker — только для функциональных (docs/06-report-spec.md §3)
-    return min(base, proposed, key=SEVERITY_RANK.__getitem__)
+    chosen = min(base, proposed, key=SEVERITY_RANK.__getitem__)
+    cap = thresholds.max_severity.get(category)
+    if cap is not None and SEVERITY_RANK[chosen] < SEVERITY_RANK[cap]:
+        return cap
+    return chosen
 
 
 @dataclass
@@ -196,20 +200,32 @@ def number(findings: list[Finding], reqs: list[Requirement]) -> list[Finding]:
 def suppress_noise(
     findings: list[Finding], rules: FindingsFilter
 ) -> tuple[list[Finding], list[Finding]]:
-    """Убирает шум из находок требований: minor-«неясно» и всё сверх лимита на требование.
-    Находки набора не трогаем. Возвращает (оставленные, убранные)."""
+    """Убирает шум: слабое «неясно», лишние находки на требование и сверх лимита по категориям
+    набора. Возвращает (оставленные, убранные); убранные видны в debug JSON-отчёта."""
     kept: list[Finding] = []
     suppressed: list[Finding] = []
     per_req: dict[str, list[Finding]] = {}
+    per_category: dict[Category, list[Finding]] = {}
+    drop_up_to = SEVERITY_RANK[rules.drop_unclear_up_to]
     for f in findings:
-        if f.scope != "requirement":
-            kept.append(f)
-        elif rules.drop_unclear_minor and f.verdict == "unclear" and f.severity == Severity.MINOR:
+        if f.verdict == "unclear" and SEVERITY_RANK[f.severity] >= drop_up_to:
             suppressed.append(f)
-        else:
+        elif f.scope == "requirement":
             per_req.setdefault(f.requirement_ids[0], []).append(f)
+        else:
+            per_category.setdefault(f.category, []).append(f)
     for group in per_req.values():
         group.sort(key=lambda f: (SEVERITY_RANK[f.severity], f.verdict != "violation"))
         kept.extend(group[: rules.max_per_requirement])
         suppressed.extend(group[rules.max_per_requirement :])
+    for category, group in per_category.items():
+        limit = rules.max_set_per_category.get(category)
+        if limit is None:
+            kept.extend(group)
+            continue
+        group.sort(
+            key=lambda f: SEVERITY_RANK[f.severity]
+        )  # устойчивая: порядок модели сохраняется
+        kept.extend(group[:limit])
+        suppressed.extend(group[limit:])
     return kept, suppressed

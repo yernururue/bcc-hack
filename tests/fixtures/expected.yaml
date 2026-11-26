@@ -72,7 +72,7 @@ fixtures:
         min_quotes: 2
         quotes:
           - "не более 5 адресов доставки"
-          - "хранится до 10 адресов доставки"
+          - "Максимальное число адресов доставки в профиле покупателя равно 10"
       - id: C-cancel-window
         category: contradiction
         accept: [incorrect]

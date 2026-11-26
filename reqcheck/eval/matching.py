@@ -48,6 +48,10 @@ class EvalFinding(Strict):
     severity: str
     quotes: list[str]
     explanation: str = ""
+    # Для разбора шума: откуда находка (rule/llm), область (requirement/set), вердикт модели.
+    source: str = ""
+    scope: str = ""
+    verdict: str = ""
 
 
 class DefectResult(Strict):

@@ -95,8 +95,77 @@ def test_suppress_noise_keeps_set_and_top_findings() -> None:
         f("minor", scope="set"),
     ]
     kept, suppressed = suppress_noise(
-        items, FindingsFilter(max_per_requirement=3, drop_unclear_minor=True)
+        items, FindingsFilter(max_per_requirement=3, drop_unclear_up_to="minor")
     )
     assert [x.severity for x in kept if x.scope == "requirement"] == ["blocker", "major", "minor"]
     assert any(x.scope == "set" for x in kept)
     assert len(suppressed) == 2
+
+
+def _finding(category: str, sev: str, verdict: str = "violation", scope: str = "set"):
+    from reqcheck.schemas import Finding
+
+    return Finding(
+        finding_id="F-000",
+        scope=scope,
+        requirement_ids=["R-001"],
+        category=category,
+        severity=sev,
+        verdict=verdict,
+        quote="q",
+        anchor=Anchor(),
+        explanation="e",
+        source="llm",
+    )
+
+
+def test_unclear_dropped_up_to_configured_severity() -> None:
+    from reqcheck.config import FindingsFilter
+    from reqcheck.stages.verify import suppress_noise
+
+    rules = FindingsFilter(max_per_requirement=3, drop_unclear_up_to="major")
+    items = [
+        _finding("ambiguous", "major", "unclear", "requirement"),
+        _finding("ambiguous", "blocker", "unclear", "requirement"),
+        _finding("ambiguous", "major", "violation", "requirement"),
+    ]
+    kept, suppressed = suppress_noise(items, rules)
+    assert [(f.severity, f.verdict) for f in kept] == [
+        ("blocker", "unclear"),
+        ("major", "violation"),
+    ]
+    assert len(suppressed) == 1
+
+
+def test_set_findings_capped_per_category_keeping_most_severe() -> None:
+    from reqcheck.config import FindingsFilter
+    from reqcheck.stages.verify import suppress_noise
+
+    rules = FindingsFilter(
+        max_per_requirement=3, drop_unclear_up_to="minor", max_set_per_category={"missing_topic": 2}
+    )
+    items = [
+        _finding("missing_topic", "minor"),
+        _finding("missing_topic", "major"),
+        _finding("missing_topic", "blocker"),
+        _finding("contradiction", "blocker"),
+        _finding("contradiction", "blocker"),
+    ]
+    kept, suppressed = suppress_noise(items, rules)
+    assert sorted(f.severity for f in kept if f.category == "missing_topic") == ["blocker", "major"]
+    assert [f.severity for f in suppressed] == ["minor"]
+    assert sum(f.category == "contradiction" for f in kept) == 2  # без лимита — не трогаем
+
+
+def test_model_cannot_raise_severity_above_cap() -> None:
+    from reqcheck.config import thresholds
+    from reqcheck.schemas import Category, RequirementKind, Severity
+    from reqcheck.stages.verify import final_severity
+
+    th = thresholds()
+    fn = RequirementKind.FUNCTIONAL
+    assert final_severity(Category.TRACEABILITY, Severity.BLOCKER, [fn], th) == Severity.MINOR
+    assert final_severity(Category.MISSING_TOPIC, Severity.BLOCKER, [fn], th) == Severity.MAJOR
+    # без потолка действует прежнее правило: не ниже умолчания, модель может повысить
+    assert final_severity(Category.INCOMPLETE, Severity.BLOCKER, [fn], th) == Severity.BLOCKER
+    assert final_severity(Category.CONTRADICTION, Severity.MINOR, [fn], th) == Severity.BLOCKER

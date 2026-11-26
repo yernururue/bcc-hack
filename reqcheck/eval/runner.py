@@ -134,6 +134,9 @@ def run_model(
                     severity=f.severity.value,
                     quotes=[f.quote, *f.related_quotes],
                     explanation=f.explanation,
+                    source=f.source,
+                    scope=f.scope,
+                    verdict=f.verdict,
                 )
                 for f in report.findings
                 if f.verified
