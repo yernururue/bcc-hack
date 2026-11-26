@@ -112,12 +112,6 @@ def run(
     def timed(stage: str, t0: float) -> None:
         timings[stage] = round((time.monotonic() - t0) * 1000)
 
-    if target.format == "pdf":
-        # Проверяем до вызовов LLM, чтобы не тратить деньги впустую.
-        raise NotImplementedYet(
-            "PDF-отчёт появится на следующем этапе; пока укажите отчёт с расширением .md"
-        )
-
     t0 = time.monotonic()
     doc = ingest(source)
     timed("ingest", t0)

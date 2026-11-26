@@ -1,0 +1,117 @@
+<html>
+<body>
+<p class="kicker">Отчёт о проверке требований</p>
+<h1>{{ r.run.document.name }}</h1>
+<p class="lead">
+Разработка: <b class="{{ 'no' if not r.verdict.can_start_development else '' }}">{{ dev }}</b><br/>
+Тестирование: <b class="{{ 'no' if not r.verdict.can_start_testing else '' }}">{{ test }}</b>
+</p>
+{% if not r.run.complete %}<p class="warn">Отчёт неполный: {{ r.run.incomplete_reason }}</p>{% endif %}
+
+<h2 id="s1">1. Паспорт прогона</h2>
+<table class="kv">
+<tr><td class="k">Документ</td><td>{{ r.run.document.name }}{% if r.run.document.pages %} · {{ r.run.document.pages }} стр.{% endif %}</td></tr>
+<tr><td class="k">SHA-256</td><td><code class="small">{{ r.run.document.sha256 }}</code></td></tr>
+<tr><td class="k">Дата прогона</td><td>{{ started }}</td></tr>
+<tr><td class="k">Модель</td><td><code>{{ r.run.model }}</code> через {{ provider }}</td></tr>
+<tr><td class="k">Версия агента</td><td><code>{{ r.run.agent_version }}</code></td></tr>
+<tr><td class="k">Вызовы LLM</td><td>{{ r.run.llm.calls }}{% if r.run.llm.cached_calls %} (+{{ r.run.llm.cached_calls }} из кэша){% endif %} · {{ num(r.run.llm.prompt_tokens) }} вход / {{ num(r.run.llm.completion_tokens) }} выход · ${{ "%.4f"|format(r.run.llm.cost_usd) }}</td></tr>
+<tr><td class="k">Стандарты</td><td>ISO/IEC/IEEE 29148:2018 (п. 5.2.5, 5.2.6), IEEE 830-1998 (п. 4.3)</td></tr>
+<tr><td class="k">Статус</td><td>{{ "Полный" if r.run.complete else "Неполный — " ~ r.run.incomplete_reason }}</td></tr>
+</table>
+
+<h2 id="s2">2. Как агент нарезал требования</h2>
+<p>Всего требований: {{ r.requirements|length }}{% if r.summary.split_composites %}; разделено составных блоков: {{ r.summary.split_composites }}{% endif %}.</p>
+<table class="grid">
+<tr><th>ID</th><th>В документе</th><th>Тип</th><th>Краткая формулировка</th><th>Место</th></tr>
+{% for q in r.requirements %}
+<tr><td><a href="#{{ q.report_id }}"><code>{{ q.report_id }}</code></a></td><td>{{ q.doc_id or "—" }}</td><td class="muted">{{ kind(q.kind) }}</td><td>{{ q.summary }}{% if q.split_from %} <span class="muted">(часть {{ q.split_from }})</span>{% endif %}</td><td class="muted">{{ q.anchor.label() }}</td></tr>
+{% endfor %}
+</table>
+{% if no_id %}
+<p class="muted">Требования без номера в документе — дословно:</p>
+{% for q in no_id %}<p class="quote-line"><code>{{ q.report_id }}</code> «{{ inline(q.quote) }}»</p>
+{% endfor %}
+{% endif %}
+
+<h2 id="s3">3. Проверка каждого требования</h2>
+<p class="muted">✓ соблюдено · ✗ нарушено · ? неясно · пусто — не оценено</p>
+{% for q in r.requirements %}
+{% set fs = by_req.get(q.report_id, []) %}
+<h3 id="{{ q.report_id }}"><code>{{ q.report_id }}</code>{% if q.doc_id %} · {{ q.doc_id }}{% endif %} <span class="where">{{ q.anchor.label() }}</span></h3>
+<p class="quote">«{{ inline(q.quote) }}»</p>
+{% if fs or not ok(q) %}
+<table class="marks">
+<tr>{% for c in chars %}<th>{{ crit.characteristics[c].short }}</th>{% endfor %}</tr>
+<tr>{% for c in chars %}{% set m = q.assessment.get(c) %}<td class="{{ 'bad' if m == 'violation' else '' }}">{{ mark(m) if m else "" }}</td>{% endfor %}</tr>
+</table>
+{% for f in fs %}
+<div class="finding" id="{{ f.finding_id }}">
+<p class="fh"><code>{{ f.finding_id }}</code> · <span class="{{ 'sev-blocker' if f.severity == 'blocker' else 'sev' }}">{{ f.severity.value }}</span> · <b>{{ cat(f.category) }}</b>{% if f.verdict == "unclear" %} <span class="muted">(неясно)</span>{% endif %}{% if f.source == "rule" %} <span class="muted">· проверка кодом</span>{% endif %}</p>
+<p>{{ f.explanation }}</p>
+<p class="cite">Цитата: «{{ inline(f.quote) }}»</p>
+{% if f.suggestion %}<p class="fix">Предложение: {{ f.suggestion }}</p>{% endif %}
+</div>
+{% endfor %}
+{% else %}
+<p class="muted">Все характеристики соблюдены.</p>
+{% endif %}
+{% endfor %}
+
+<h2 id="s4">4. Проверка всего набора</h2>
+{% for title, fs in set_groups %}
+<h3>{{ title }}</h3>
+{% if fs %}
+{% for f in fs %}
+<div class="finding" id="{{ f.finding_id }}">
+<p class="fh"><code>{{ f.finding_id }}</code> · <span class="{{ 'sev-blocker' if f.severity == 'blocker' else 'sev' }}">{{ f.severity.value }}</span> · <b>{{ cat(f.category) }}</b>{% if f.requirement_ids %} · {% for rid in f.requirement_ids %}<a href="#{{ rid }}"><code>{{ rid }}</code></a>{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</p>
+<p class="where">{{ places(f)|join(" ↔ ") }}</p>
+{% for qt in quotes(f) %}<p class="cite">«{{ qt }}»</p>
+{% endfor %}
+<p>{{ f.explanation }}</p>
+{% if f.suggestion %}<p class="fix">Предложение: {{ f.suggestion }}</p>{% endif %}
+</div>
+{% endfor %}
+{% else %}
+<p class="muted">Проблем не найдено.</p>
+{% endif %}
+{% endfor %}
+
+<h2 id="s5">5. Сводка</h2>
+<table class="kv">
+<tr><td class="k">Требований</td><td>{{ r.summary.requirements_total }}{% if r.summary.split_composites %} (разделено составных блоков: {{ r.summary.split_composites }}){% endif %}</td></tr>
+<tr><td class="k">Нарушений</td><td>{{ r.summary.violations_total }}: <span class="{{ 'sev-blocker' if r.summary.by_severity.get('blocker', 0) else '' }}">blocker {{ r.summary.by_severity.get("blocker", 0) }}</span>, major {{ r.summary.by_severity.get("major", 0) }}, minor {{ r.summary.by_severity.get("minor", 0) }}; неясно: {{ r.summary.unclear_total }}</td></tr>
+<tr><td class="k">Непроверяемые</td><td>{% for i in r.summary.critical.unverifiable %}<a href="#{{ i }}"><code>{{ i }}</code></a>{% if not loop.last %}, {% endif %}{% else %}нет{% endfor %}</td></tr>
+<tr><td class="k">Противоречивые</td><td>{% for i in r.summary.critical.contradictory %}<a href="#{{ i }}"><code>{{ i }}</code></a>{% if not loop.last %}, {% endif %}{% else %}нет{% endfor %}</td></tr>
+<tr><td class="k">Неполные</td><td>{% for i in r.summary.critical.incomplete %}<a href="#{{ i }}"><code>{{ i }}</code></a>{% if not loop.last %}, {% endif %}{% else %}нет{% endfor %}</td></tr>
+{% if r.debug.dropped_findings %}<tr><td class="k">Отброшено</td><td>{{ r.debug.dropped_findings|length }} находок без подтверждённой цитаты</td></tr>{% endif %}
+</table>
+
+<h2 id="s6">6. Вопросы к автору документа</h2>
+{% if r.questions %}
+{% for q in r.questions %}
+<div class="question">
+<p class="fh"><b>{{ loop.index }}. {{ q.question }}</b></p>
+<p>{% for o in q.options %}{{ letter(loop.index0) }}) {{ o }}{% if not loop.last %}<br/>{% endif %}{% endfor %}</p>
+<p class="muted">Влияет на: {% for rid in q.impacts %}<a href="#{{ rid }}"><code>{{ rid }}</code></a>{% if not loop.last %}, {% endif %}{% else %}—{% endfor %}</p>
+<p class="muted">Допущение без ответа: {{ q.default_assumption }}</p>
+</div>
+{% endfor %}
+{% else %}
+<p class="muted">Вопросов нет.</p>
+{% endif %}
+
+<h2 id="s7">7. Итог</h2>
+<p>Разработка: <b class="{{ 'no' if not r.verdict.can_start_development else '' }}">{{ dev }}</b></p>
+<p>Тестирование: <b class="{{ 'no' if not r.verdict.can_start_testing else '' }}">{{ test }}</b></p>
+{% if r.verdict.top_fixes %}
+<p><b>Исправить в первую очередь</b></p>
+<ol>
+{% for fid in r.verdict.top_fixes %}{% set f = by_id[fid] %}
+<li><a href="#{{ fid }}"><code>{{ fid }}</code></a> · <span class="{{ 'sev-blocker' if f.severity == 'blocker' else 'sev' }}">{{ f.severity.value }}</span> · {{ cat(f.category) }}: {{ inline(f.explanation) }}</li>
+{% endfor %}
+</ol>
+{% endif %}
+<p class="muted">Правило вердикта (решение принял код, а не модель): {{ r.verdict.rule }}</p>
+</body>
+</html>

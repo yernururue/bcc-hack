@@ -21,9 +21,9 @@ report = validate(
     filename="spec.pdf",
     options=Options(model="openai/gpt-6-luna", max_cost_usd=0.5),
 )
-print(report.verdict.can_start_development)   # bool
-print(report.summary.blockers)                 # int
-report.save("out/report.pdf")                  # формат по расширению
+print(report.verdict.can_start_development)  # bool
+print(report.summary.blockers)  # int
+report.save("out/report.pdf")  # формат по расширению
 report.save("out/report.json")
 ```
 
