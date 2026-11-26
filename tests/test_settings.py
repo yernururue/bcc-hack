@@ -71,3 +71,8 @@ def test_env_local_overrides_env(tmp_path: Path) -> None:
     s = Settings(_env_file=(tmp_path / ".env", tmp_path / ".env.local"))  # type: ignore[call-arg]
     assert s.llm_model == "b/local"
     assert s.llm_api_key.get_secret_value() == "k1"  # type: ignore[union-attr]
+
+
+def test_empty_secrets_from_env_example_mean_unset() -> None:
+    s = Settings(_env_file=None, LLM_API_KEY="", REQCHECK_API_TOKEN="  ")  # type: ignore[call-arg]
+    assert s.llm_api_key is None and s.api_token is None

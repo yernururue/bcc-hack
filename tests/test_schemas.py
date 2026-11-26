@@ -127,3 +127,12 @@ def test_top_fixes_limited_to_five() -> None:
             rule="",
             top_fixes=[f"F-00{i}" for i in range(6)],
         )
+
+
+def test_published_json_schema_is_up_to_date() -> None:
+    """docs/report.schema.json отдаётся интеграторам; обновлять: см. docs/04-integration.md §5."""
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parent.parent / "docs" / "report.schema.json"
+    assert json.loads(path.read_text(encoding="utf-8")) == Report.model_json_schema()

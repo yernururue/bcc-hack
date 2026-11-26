@@ -1,0 +1,747 @@
+{
+  "$defs": {
+    "Anchor": {
+      "additionalProperties": false,
+      "description": "Место в документе. page — 1-based для PDF, None для Markdown/TXT.",
+      "properties": {
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "section_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Section Path",
+          "type": "array"
+        },
+        "item": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Item"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "rects": {
+          "items": {
+            "$ref": "#/$defs/Rect"
+          },
+          "title": "Rects",
+          "type": "array"
+        }
+      },
+      "title": "Anchor",
+      "type": "object"
+    },
+    "Assessment": {
+      "enum": [
+        "ok",
+        "violation",
+        "unclear"
+      ],
+      "title": "Assessment",
+      "type": "string"
+    },
+    "Category": {
+      "description": "Категории находок (docs/06-report-spec.md, §3).",
+      "enum": [
+        "ambiguous",
+        "unverifiable",
+        "incomplete",
+        "composite",
+        "design_decision",
+        "infeasible",
+        "incorrect",
+        "unnecessary",
+        "nonconforming",
+        "contradiction",
+        "duplicate",
+        "terminology",
+        "missing_topic",
+        "traceability"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "Characteristic": {
+      "description": "Характеристики отдельного требования, ISO/IEC/IEEE 29148:2018 п. 5.2.5.",
+      "enum": [
+        "necessary",
+        "implementation_free",
+        "unambiguous",
+        "complete",
+        "singular",
+        "feasible",
+        "verifiable",
+        "correct",
+        "conforming"
+      ],
+      "title": "Characteristic",
+      "type": "string"
+    },
+    "Critical": {
+      "additionalProperties": false,
+      "properties": {
+        "unverifiable": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unverifiable",
+          "type": "array"
+        },
+        "contradictory": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contradictory",
+          "type": "array"
+        },
+        "incomplete": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Incomplete",
+          "type": "array"
+        }
+      },
+      "title": "Critical",
+      "type": "object"
+    },
+    "Debug": {
+      "additionalProperties": false,
+      "properties": {
+        "dropped_findings": {
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "title": "Dropped Findings",
+          "type": "array"
+        },
+        "suppressed_findings": {
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "title": "Suppressed Findings",
+          "type": "array"
+        },
+        "stage_errors": {
+          "items": {
+            "$ref": "#/$defs/StageError"
+          },
+          "title": "Stage Errors",
+          "type": "array"
+        },
+        "timings_ms": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Timings Ms",
+          "type": "object"
+        }
+      },
+      "title": "Debug",
+      "type": "object"
+    },
+    "DocumentInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "format": {
+          "enum": [
+            "pdf",
+            "md",
+            "txt"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "pages": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pages"
+        }
+      },
+      "required": [
+        "name",
+        "sha256",
+        "format"
+      ],
+      "title": "DocumentInfo",
+      "type": "object"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": {
+          "pattern": "^F-\\d{3,}$",
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "requirement",
+            "set"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "requirement_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Requirement Ids",
+          "type": "array"
+        },
+        "characteristic": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Characteristic"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "category": {
+          "$ref": "#/$defs/Category"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "verdict": {
+          "enum": [
+            "violation",
+            "unclear"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "anchor": {
+          "$ref": "#/$defs/Anchor"
+        },
+        "related_anchors": {
+          "items": {
+            "$ref": "#/$defs/Anchor"
+          },
+          "title": "Related Anchors",
+          "type": "array"
+        },
+        "related_quotes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Related Quotes",
+          "type": "array"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "suggestion": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suggestion"
+        },
+        "source": {
+          "enum": [
+            "rule",
+            "llm"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "standard_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Standard Ref"
+        },
+        "verified": {
+          "default": false,
+          "title": "Verified",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "finding_id",
+        "scope",
+        "category",
+        "severity",
+        "verdict",
+        "quote",
+        "anchor",
+        "explanation",
+        "source"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "LLMUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "default": 0,
+          "title": "Calls",
+          "type": "integer"
+        },
+        "cached_calls": {
+          "default": 0,
+          "title": "Cached Calls",
+          "type": "integer"
+        },
+        "prompt_tokens": {
+          "default": 0,
+          "title": "Prompt Tokens",
+          "type": "integer"
+        },
+        "completion_tokens": {
+          "default": 0,
+          "title": "Completion Tokens",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "default": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
+        }
+      },
+      "title": "LLMUsage",
+      "type": "object"
+    },
+    "Question": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^Q-\\d+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "options": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 4,
+          "minItems": 2,
+          "title": "Options",
+          "type": "array"
+        },
+        "impacts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Impacts",
+          "type": "array"
+        },
+        "default_assumption": {
+          "title": "Default Assumption",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "options",
+        "default_assumption"
+      ],
+      "title": "Question",
+      "type": "object"
+    },
+    "Rect": {
+      "additionalProperties": false,
+      "description": "Прямоугольник на странице PDF в пунктах; начало координат — левый верхний угол.\n\nНужен для подсветки цитаты в исходнике (P1, ADR-009).",
+      "properties": {
+        "page": {
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "x0": {
+          "title": "X0",
+          "type": "number"
+        },
+        "y0": {
+          "title": "Y0",
+          "type": "number"
+        },
+        "x1": {
+          "title": "X1",
+          "type": "number"
+        },
+        "y1": {
+          "title": "Y1",
+          "type": "number"
+        }
+      },
+      "required": [
+        "page",
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "Rect",
+      "type": "object"
+    },
+    "Requirement": {
+      "additionalProperties": false,
+      "properties": {
+        "report_id": {
+          "pattern": "^R-\\d{3,}$",
+          "title": "Report Id",
+          "type": "string"
+        },
+        "doc_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Doc Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/RequirementKind"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "anchor": {
+          "$ref": "#/$defs/Anchor"
+        },
+        "split_from": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Split From"
+        },
+        "assessment": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Assessment"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Characteristic"
+          },
+          "title": "Assessment",
+          "type": "object"
+        }
+      },
+      "required": [
+        "report_id",
+        "kind",
+        "summary",
+        "quote",
+        "anchor"
+      ],
+      "title": "Requirement",
+      "type": "object"
+    },
+    "RequirementKind": {
+      "enum": [
+        "functional",
+        "nfr",
+        "data",
+        "integration",
+        "acceptance",
+        "api",
+        "other"
+      ],
+      "title": "RequirementKind",
+      "type": "string"
+    },
+    "RunPassport": {
+      "additionalProperties": false,
+      "properties": {
+        "document": {
+          "$ref": "#/$defs/DocumentInfo"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "provider_base_url": {
+          "title": "Provider Base Url",
+          "type": "string"
+        },
+        "agent_version": {
+          "title": "Agent Version",
+          "type": "string"
+        },
+        "llm": {
+          "$ref": "#/$defs/LLMUsage"
+        },
+        "complete": {
+          "default": true,
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "incomplete_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Incomplete Reason"
+        }
+      },
+      "required": [
+        "document",
+        "started_at",
+        "model",
+        "provider_base_url",
+        "agent_version"
+      ],
+      "title": "RunPassport",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "blocker",
+        "major",
+        "minor"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "StageError": {
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "title": "Stage",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "message"
+      ],
+      "title": "StageError",
+      "type": "object"
+    },
+    "Summary": {
+      "additionalProperties": false,
+      "properties": {
+        "requirements_total": {
+          "default": 0,
+          "title": "Requirements Total",
+          "type": "integer"
+        },
+        "split_composites": {
+          "default": 0,
+          "title": "Split Composites",
+          "type": "integer"
+        },
+        "violations_total": {
+          "default": 0,
+          "title": "Violations Total",
+          "type": "integer"
+        },
+        "unclear_total": {
+          "default": 0,
+          "title": "Unclear Total",
+          "type": "integer"
+        },
+        "by_severity": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Severity"
+          },
+          "title": "By Severity",
+          "type": "object"
+        },
+        "critical": {
+          "$ref": "#/$defs/Critical"
+        }
+      },
+      "title": "Summary",
+      "type": "object"
+    },
+    "Verdict": {
+      "additionalProperties": false,
+      "properties": {
+        "can_start_development": {
+          "title": "Can Start Development",
+          "type": "boolean"
+        },
+        "can_start_testing": {
+          "title": "Can Start Testing",
+          "type": "boolean"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "development": {
+          "default": "",
+          "title": "Development",
+          "type": "string"
+        },
+        "testing": {
+          "default": "",
+          "title": "Testing",
+          "type": "string"
+        },
+        "rule": {
+          "title": "Rule",
+          "type": "string"
+        },
+        "top_fixes": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "title": "Top Fixes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "can_start_development",
+        "can_start_testing",
+        "reason",
+        "rule"
+      ],
+      "title": "Verdict",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "run": {
+      "$ref": "#/$defs/RunPassport"
+    },
+    "requirements": {
+      "items": {
+        "$ref": "#/$defs/Requirement"
+      },
+      "title": "Requirements",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "questions": {
+      "items": {
+        "$ref": "#/$defs/Question"
+      },
+      "maxItems": 10,
+      "title": "Questions",
+      "type": "array"
+    },
+    "summary": {
+      "$ref": "#/$defs/Summary"
+    },
+    "verdict": {
+      "$ref": "#/$defs/Verdict"
+    },
+    "debug": {
+      "$ref": "#/$defs/Debug"
+    }
+  },
+  "required": [
+    "run",
+    "verdict"
+  ],
+  "title": "Report",
+  "type": "object"
+}

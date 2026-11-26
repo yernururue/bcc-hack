@@ -3,7 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import AliasChoices, Field, SecretStr
+from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
@@ -27,6 +27,14 @@ class Settings(BaseSettings):
     cache_dir: str = Field(default=".cache/reqcheck", validation_alias="REQCHECK_CACHE_DIR")
     log_level: str = Field(default="INFO", validation_alias="REQCHECK_LOG_LEVEL")
     api_token: SecretStr | None = Field(default=None, validation_alias="REQCHECK_API_TOKEN")
+
+    @field_validator("llm_api_key", "api_token", mode="before")
+    @classmethod
+    def _empty_is_unset(cls, value: object) -> object:
+        """`LLM_API_KEY=` из .env.example (пустая строка) — это «не задано», а не пустой секрет."""
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
     @property
     def is_openrouter(self) -> bool:

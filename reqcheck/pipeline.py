@@ -37,6 +37,8 @@ from reqcheck.stages import (
 from reqcheck.version import agent_version
 
 Progress = Callable[[str], None]
+# (этап, состояние active|done|error, пояснение при ошибке)
+StageEvent = Callable[[str, str, str | None], None]
 
 
 @dataclass(frozen=True)
@@ -47,12 +49,13 @@ class Options:
     dry_run: bool = False
 
 
+# Этапы для индикатора прогресса (UI показывает ровно их, по порядку). Подтверждение
+# противоречий входит в check_set.
 STAGES = (
     "ingest",
     "extract",
     "check_each",
     "check_set",
-    "confirm",
     "verify",
     "questions",
     "verdict",
@@ -137,6 +140,7 @@ def run(
     settings: Settings,
     progress: Progress = _silent,
     llm: LLMClient | None = None,
+    on_stage: StageEvent | None = None,
 ) -> RunOutcome:
     started = datetime.now().astimezone()
     timings: dict[str, int] = {}
@@ -146,9 +150,23 @@ def run(
     def timed(stage: str, t0: float) -> None:
         timings[stage] = round((time.monotonic() - t0) * 1000)
 
+    def begin(stage: str) -> None:
+        if on_stage:
+            on_stage(stage, "active", None)
+
+    def end(*stage_names: str) -> None:
+        """Этап завершён; ошибка, если по нему (или входящему в него этапу) есть StageError."""
+        if on_stage is None:
+            return
+        stage = stage_names[0]
+        failed = next((e for e in errors if e.stage in stage_names), None)
+        on_stage(stage, "error" if failed else "done", failed.message if failed else None)
+
     t0 = time.monotonic()
+    begin("ingest")
     doc = ingest(source)
     timed("ingest", t0)
+    end("ingest")
     numbered = sum(1 for b in doc.blocks if b.anchor.item)
     pages = f", страниц: {doc.pages}" if doc.pages else ""
     progress(f"Разбор:   блоков {len(doc.blocks)}, с номером пункта {numbered}{pages}")
@@ -178,12 +196,14 @@ def run(
             timed(stage, t)
 
     progress("Этап:     выделение требований")
+    begin("extract")
     extracted = guarded(
         "extract",
         lambda: extract.run(doc, client, th.quote_min_similarity),
         extract.ExtractOutput([]),
     )
     reqs = extracted.requirements
+    end("extract")
     progress(f"          требований: {len(reqs)}")
 
     rule_findings = rules.run(reqs, lexicon(), th, crit)
@@ -191,6 +211,7 @@ def run(
     progress(
         f"Этап:     проверка каждого требования ({math.ceil(len(reqs) / th.batch_size)} батч.)"
     )
+    begin("check_each")
     judged = guarded(
         "check_each",
         lambda: check_each.run(reqs, client, crit, th.batch_size),
@@ -198,8 +219,10 @@ def run(
     )
     errors.extend(judged.errors)
     budget_hit = budget_hit or judged.budget_exceeded
+    end("check_each")
 
     progress("Этап:     проверка всего набора")
+    begin("check_set")
     raw_set = guarded("check_set", lambda: check_set.run(reqs, client, crit), [])
 
     t = time.monotonic()
@@ -213,6 +236,8 @@ def run(
         refuted_idx = guarded(
             "confirm", lambda: confirm.run(per_set.findings, reqs, client), set[int]()
         )
+    end("check_set", "confirm")
+    begin("verify")
     refuted = [f for i, f in enumerate(per_set.findings) if i in refuted_idx]
     set_kept = [f for i, f in enumerate(per_set.findings) if i not in refuted_idx]
 
@@ -228,14 +253,18 @@ def run(
         f"отфильтровано как шум {len(suppressed)}"
     )
 
+    end("verify")
     progress("Этап:     вопросы к автору")
+    begin("questions")
     known = {r.report_id for r in reqs}
     qs = guarded(
         "questions",
         lambda: questions.run(findings, known, client, th.report["max_questions"]),
         [],
     )
+    end("questions")
 
+    begin("verdict")
     summary = verdict.summarize(reqs, findings, extracted.split_composites)
     decision = verdict.decide(reqs, findings, th.verdict, th.report["max_top_fixes"])
 
@@ -247,6 +276,7 @@ def run(
         incomplete = "часть этапов не выполнена: " + "; ".join(
             f"{e.stage}: {e.message}" for e in errors[:3]
         )
+    end("verdict")
 
     report = Report(
         run=RunPassport(
@@ -277,9 +307,11 @@ def run(
     from reqcheck import render
 
     t = time.monotonic()
+    begin("render")
     try:
         written = render.write(report, target)
     except OSError as exc:
         raise ReqCheckError(f"не удалось записать отчёт: {exc}") from exc
     timed("render", t)
+    end("render")
     return RunOutcome(report=report, budget_exceeded=budget_hit, written=written)

@@ -55,11 +55,13 @@ requirements-review:
 | `POST` | `/checks` | multipart: `file`, `model?`, `max_cost_usd?` → `202 {"id": "...", "status": "queued"}` |
 | `GET` | `/checks/{id}` | Статус: `queued`, `running`, `done`, `failed`; текущий этап; доля выполнения |
 | `GET` | `/checks/{id}/events` | SSE-поток событий `stage`, `progress`, `done`, `error` |
-| `GET` | `/checks/{id}/report?format=json\|md\|pdf` | Отчёт; по умолчанию формат входа |
+| `GET` | `/checks/{id}/summary` | Готовые тексты и цифры для экрана результата: заголовок вердикта, три счётчика, топ-5 исправлений (считает код, интерфейс ничего не выводит сам) |
+| `GET` | `/checks/{id}/report?format=json\|md\|pdf` | Отчёт; по умолчанию формат входа. Другой формат рендерится по запросу из сохранённого отчёта |
 | `GET` | `/checks/{id}/annotated` | P1: исходный PDF с пометками (выделения + комментарии) |
 | `GET` | `/checks/{id}/findings/{finding_id}/snippet` | P1: PNG фрагмента страницы с подсвеченной цитатой (PDF) или JSON с абзацами (Markdown) |
 | `DELETE` | `/checks/{id}` | Удалить задание и файлы |
-| `GET` | `/models` | Список моделей из `config/models.yaml` с ценами |
+| `GET` | `/models` | Список моделей из `config/models.yaml` с ценами; `default` — модель из `LLM_MODEL` |
+| `GET` | `/schema/report` | JSON Schema отчёта |
 | `GET` | `/healthz` | Проверка живости |
 
 Пример:
@@ -70,11 +72,15 @@ curl -s http://localhost:8000/api/v1/checks/<id>
 curl -s -o review.pdf "http://localhost:8000/api/v1/checks/<id>/report?format=pdf"
 ```
 
-Авторизация: если задан `REQCHECK_API_TOKEN`, все запросы требуют `Authorization: Bearer <token>`. Для SSO банка сервер ставится за reverse-proxy, который делает аутентификацию.
+События SSE: `stage` (`stage`, `index`, `state` = `active`/`done`/`error`, `note`), затем `done` или `error` (`code`, `message`). Этапы по порядку: `ingest`, `extract`, `check_each`, `check_set`, `verify`, `questions`, `verdict`, `render` (подтверждение противоречий входит в `check_set`). Ошибка в одном из LLM-этапов не обрывает прогон: этап получает `state: error`, отчёт помечается неполным (`run.complete = false`). Прогон обрывается только на фатальных ошибках (нет текста в документе, ключ отклонён).
+
+Ограничения: загрузка до 20 МБ; `max_cost_usd` не может превышать `LLM_MAX_COST_USD` сервера; задания и отчёты живут в памяти процесса (1 час после завершения, раньше — по `DELETE`); загруженный файл удаляется сразу после прогона. Запуск: `uv run python -m reqcheck.server --host 127.0.0.1 --port 8000` (extra `server`); интерфейс открывается на `/`.
+
+Авторизация: если задан `REQCHECK_API_TOKEN`, все запросы требуют `Authorization: Bearer <token>`. Встроенный интерфейс токен не отправляет: для работы с ним оставьте `REQCHECK_API_TOKEN` пустым и закройте доступ на уровне сети или reverse-proxy (так же делается SSO банка).
 
 ## 5. JSON-контракт
 
-- Схема: `GET /api/v1/schema/report` и файл `docs/report.schema.json` (генерируется из Pydantic).
+- Схема: `GET /api/v1/schema/report` и файл `docs/report.schema.json` (генерируется из Pydantic, актуальность проверяет `tests/test_schemas.py`; обновить: `uv run python -c "import json; from reqcheck.schemas import Report; open('docs/report.schema.json','w',encoding='utf-8').write(json.dumps(Report.model_json_schema(), ensure_ascii=False, indent=2) + '\\n')"`).
 - Поле `schema_version` (semver). Новые поля — минорная версия, удаление или переименование — мажорная.
 - Ключевые поля для автоматизации:
   - `verdict.can_start_development`, `verdict.can_start_testing` — bool;
