@@ -57,6 +57,9 @@ class ModelInfo(BaseModel):
     price_out: float = Field(ge=0)
     temperature: bool = False
     reasoning: Literal["on", "off"] | None = None
+    # Уровень рассуждений OpenRouter (reasoning.effort); "none" отключает их у моделей, где
+    # рассуждения включены по умолчанию (поле reasoning.default_effort в /api/v1/models)
+    reasoning_effort: Literal["none", "minimal", "low", "medium", "high"] | None = None
 
 
 class ModelsConfig(BaseModel):

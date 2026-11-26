@@ -2,6 +2,9 @@
 # tier: dev — разработка и тесты; cheap — кандидаты по умолчанию; strong — только финальный прогон (дорого).
 # temperature: принимает ли модель параметр temperature на OpenRouter.
 # reasoning: off — отключать рассуждения (иначе они съедают max_tokens и content пустой); on — оставить.
+# reasoning_effort: уровень рассуждений OpenRouter (none|minimal|low|medium|high); none отключает их.
+#   По /api/v1/models (2026-11-26): у haiku-5.5 рассуждения по умолчанию medium (≈50 % max_tokens),
+#   из-за этого check_each обрывался по max_tokens; mandatory: false, поэтому effort none допустим.
 
 models:
   - id: deepseek/deepseek-v4.1-flash
@@ -20,6 +23,7 @@ models:
     price_in: 0.10
     price_out: 0.50
     temperature: false
+    reasoning_effort: none
   - id: qwen/qwen3.8-flash
     tier: cheap
     price_in: 0.15

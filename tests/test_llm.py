@@ -174,3 +174,11 @@ def test_cache_salt_separates_eval_repeats(tmp_path: Path) -> None:
     assert ask(again).value.verdict == "second" and not calls2
     plain, calls3 = client(tmp_path, [])
     assert ask(plain).value.verdict == "first" and not calls3  # обычный кэш не тронут
+
+
+def test_reasoning_effort_from_config(tmp_path: Path) -> None:
+    c, calls = client(
+        tmp_path, [response('{"verdict": "ok", "note": null}')], "anthropic/claude-haiku-5.5"
+    )
+    ask(c)
+    assert calls[0]["extra_body"]["reasoning"] == {"effort": "none"}

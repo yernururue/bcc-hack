@@ -155,6 +155,8 @@ class OpenAICompatClient:
             extra["provider"] = {"require_parameters": True, "sort": "price"}
         if self.info is not None and self.info.reasoning == "off":
             extra["reasoning"] = {"enabled": False}
+        elif self.info is not None and self.info.reasoning_effort is not None:
+            extra["reasoning"] = {"effort": self.info.reasoning_effort}
         if extra:
             kwargs["extra_body"] = extra
         for attempt in range(2):
