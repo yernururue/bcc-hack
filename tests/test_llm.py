@@ -122,3 +122,41 @@ def test_budget_stops_next_call(tmp_path: Path) -> None:
     with pytest.raises(BudgetExceededError):
         c.complete(system="s", user="другой", schema=Answer, stage="test")
     assert len(calls) == 1
+
+
+def _status_error(code: int):
+    import httpx2 as httpx
+    from openai import APIStatusError
+
+    req = httpx.Request("POST", "https://openrouter.ai/api/v1/chat/completions")
+    return APIStatusError(
+        "Insufficient credits", response=httpx.Response(code, request=req), body=None
+    )
+
+
+def test_payment_required_retried_once_then_succeeds(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr("reqcheck.llm.openai_compat.PAYMENT_RETRY_DELAY", 0)
+    c, calls = client(tmp_path, [])
+    answers = [_status_error(402), response('{"verdict": "ok", "note": null}')]
+
+    def create(**kwargs):
+        calls.append(kwargs)
+        item = answers.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    c._client.chat.completions.create = create
+    assert ask(c).value.verdict == "ok" and len(calls) == 2
+
+
+def test_payment_required_twice_reports_provider_reason(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr("reqcheck.llm.openai_compat.PAYMENT_RETRY_DELAY", 0)
+    c, _ = client(tmp_path, [])
+
+    def create(**kwargs):
+        raise _status_error(402)
+
+    c._client.chat.completions.create = create
+    with pytest.raises(BudgetExceededError, match="недостаточно средств.*Insufficient credits"):
+        ask(c)

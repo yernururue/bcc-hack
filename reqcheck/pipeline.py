@@ -271,7 +271,11 @@ def run(
     usage = getattr(client, "usage", None) or LLMUsage()
     incomplete = None
     if budget_hit:
-        incomplete = f"исчерпан лимит стоимости ${options.max_cost_usd:.2f}"
+        # причина в сообщении этапа: наш лимит или отказ провайдера (402)
+        incomplete = next(
+            (e.message for e in errors if not e.message.startswith("пропущен")),
+            f"исчерпан лимит стоимости ${options.max_cost_usd:.2f}",
+        )
     elif errors:
         incomplete = "часть этапов не выполнена: " + "; ".join(
             f"{e.stage}: {e.message}" for e in errors[:3]

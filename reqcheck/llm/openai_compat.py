@@ -7,6 +7,7 @@ import hashlib
 import json
 import logging
 import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,9 @@ from reqcheck.llm.base import LLMResult, Usage
 from reqcheck.schemas import LLMUsage
 
 log = logging.getLogger(__name__)
+
+# 402 от OpenRouter бывает разовым (проверка баланса под параллельной нагрузкой): один повтор.
+PAYMENT_RETRY_DELAY = 3.0
 
 
 class LLMCallError(ReqCheckError):
@@ -149,20 +153,26 @@ class OpenAICompatClient:
             extra["reasoning"] = {"enabled": False}
         if extra:
             kwargs["extra_body"] = extra
-        try:
-            return self._client.chat.completions.create(**kwargs)
-        except (AuthenticationError, PermissionDeniedError) as exc:
-            raise AuthError(
-                f"LLM отклонил ключ ({exc.status_code}): проверьте LLM_API_KEY"
-            ) from exc
-        except APIStatusError as exc:
-            if exc.status_code == 402:
-                raise BudgetExceededError(
-                    "у провайдера LLM недостаточно средств (402): пополните баланс"
+        for attempt in range(2):
+            try:
+                return self._client.chat.completions.create(**kwargs)
+            except (AuthenticationError, PermissionDeniedError) as exc:
+                raise AuthError(
+                    f"LLM отклонил ключ ({exc.status_code}): проверьте LLM_API_KEY"
                 ) from exc
-            raise LLMCallError(f"ошибка LLM {exc.status_code}: {exc.message}") from exc
-        except APIConnectionError as exc:
-            raise LLMCallError(f"нет связи с LLM: {exc}") from exc
+            except APIStatusError as exc:
+                if exc.status_code == 402:
+                    if attempt == 0:
+                        log.warning("LLM ответил 402 (%s), повторяю один раз", exc.message)
+                        time.sleep(PAYMENT_RETRY_DELAY)
+                        continue
+                    raise BudgetExceededError(
+                        f"у провайдера LLM недостаточно средств (402): {exc.message}"
+                    ) from exc
+                raise LLMCallError(f"ошибка LLM {exc.status_code}: {exc.message}") from exc
+            except APIConnectionError as exc:
+                raise LLMCallError(f"нет связи с LLM: {exc}") from exc
+        raise AssertionError("unreachable")
 
     def complete[M: BaseModel](
         self, *, system: str, user: str, schema: type[M], stage: str
