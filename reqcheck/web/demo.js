@@ -137,10 +137,47 @@ export function toMarkdown(r) {
   return lines.join('\n') + '\n';
 }
 
+const SEV_NAMES = { blocker: 'блокирующий', major: 'существенный', minor: 'незначительный' };
+
+// Тот же вид, что отдаёт сервер в GET /checks/{id}/summary (reqcheck/server/view.py).
+function toView(r) {
+  const blockers = r.summary.by_severity.blocker;
+  return {
+    can_start_development: r.verdict.can_start_development,
+    can_start_testing: r.verdict.can_start_testing,
+    headline: `Нельзя начинать: ${blockers} блокирующих дефекта`,
+    sub: 'Тест-дизайн тоже рано: 2 требования непроверяемы.',
+    stats: {
+      requirements: r.summary.requirements_total,
+      violations: r.summary.violations_total,
+      blockers,
+    },
+    fixes: r.findings.map((f) => ({ ...f, severity_name: SEV_NAMES[f.severity] })),
+    complete: true,
+    incomplete_reason: null,
+  };
+}
+
 export class DemoApi {
+  demo = true;
+
   constructor({ failAtStage = null } = {}) {
     this.failAtStage = failAtStage;
   }
+
+  async loadExample() {
+    return { name: 'requirements.md', size: 7_912, blob: null };
+  }
+
+  async download(kind) {
+    const base = this.file.name.replace(/\.[^.]+$/, '');
+    if (kind === 'json') {
+      return { filename: `${base}-review.json`, blob: new Blob([JSON.stringify(this.report, null, 2)], { type: 'application/json' }) };
+    }
+    return { filename: `${base}-review.md`, blob: new Blob([toMarkdown(this.report)], { type: 'text/markdown;charset=utf-8' }) };
+  }
+
+  async dispose() {}
 
   async listModels() {
     return MODELS;
@@ -157,6 +194,8 @@ export class DemoApi {
       }
       onEvent({ type: 'stage', index: i, state: 'done' });
     }
-    return buildReport(file, model);
+    this.file = file;
+    this.report = buildReport(file, model);
+    return toView(this.report);
   }
 }

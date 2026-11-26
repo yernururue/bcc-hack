@@ -165,8 +165,10 @@ ReqCheck
 ## 9. Реализация
 
 - Без сборщика: `web/index.html`, `app.css` (все токены в `:root`), `app.js` (ванильный JS), `demo.js`. Отдаётся FastAPI как статика.
-- Сейчас UI работает на демо-адаптере `demo.js` (фиктивные данные, тот же интерфейс `listModels()` / `run(file, model, onEvent)`). На этапе 10 плана добавляется HTTP-адаптер: прогресс через `EventSource` на `/api/v1/checks/{id}/events`.
-- Локальный просмотр: `python3 -m http.server 5173 --directory reqcheck/web`. Сценарий ошибки: `?fail=1`.
+- UI работает через один из двух адаптеров с общим интерфейсом `listModels()`, `loadExample()`, `run(file, model, onEvent)` → вид результата, `download(kind)`, `dispose()`: `http.js` (по умолчанию, `/api/v1`, прогресс через `EventSource` на `/checks/{id}/events`, результат из `/checks/{id}/summary`) и `demo.js` (`?demo`, фиктивные данные без сервера; `?demo&fail` — сценарий ошибки).
+- Запуск: `uv run python -m reqcheck.server`, затем http://127.0.0.1:8000. Без сервера: `python3 -m http.server 5173 --directory reqcheck/web` и `?demo`.
+- «Попробовать на примере» загружает `reqcheck/web/example.pdf` (копия фикстуры `tests/fixtures/defects.pdf`).
+- Если проверка идёт с ошибкой на этапе LLM, но отчёт собран, под кнопкой скачивания пишется «Отчёт неполный: …».
 - Прогон не должен зависеть от `requestAnimationFrame`: во фоновой вкладке кадры не рисуются. Анимации — да, логика — нет.
 - Никаких внешних запросов: шрифты и иконки (3 SVG: файл, галочка, крестик) лежат локально.
 

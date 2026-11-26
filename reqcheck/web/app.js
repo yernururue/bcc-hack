@@ -1,14 +1,15 @@
 // ReqCheck UI: один экран, состояния S0–S4 из docs/05-design.md.
-import { DemoApi, STAGE_NAMES, estimateRun, toMarkdown } from './demo.js';
+import { DemoApi, STAGE_NAMES, estimateRun } from './demo.js';
+import { HttpApi } from './http.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
-const api = new DemoApi({ failAtStage: params.has('fail') ? 3 : null });
+// По умолчанию — сервер /api/v1. `?demo` — фиктивные данные без сервера (`?demo&fail` — сценарий ошибки).
+const api = params.has('demo') ? new DemoApi({ failAtStage: params.has('fail') ? 3 : null }) : new HttpApi();
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
 const ACCEPT = { pdf: 'PDF', md: 'Markdown', markdown: 'Markdown', txt: 'Текст' };
 const OUT_FORMAT = { pdf: 'PDF', md: 'MD', markdown: 'MD', txt: 'MD' };
-const SEV = { blocker: 'блокирующий', major: 'существенный', minor: 'незначительный' };
 
 const el = {
   drop: $('drop'), file: $('file'), chip: $('chip'), chipName: $('chip-name'), chipMeta: $('chip-meta'),
@@ -21,7 +22,7 @@ const el = {
   failure: $('failure'), failureText: $('failure-text'), retry: $('retry'),
 };
 
-const state = { file: null, models: [], report: null, running: false };
+const state = { file: null, models: [], running: false };
 
 // ---------- утилиты ----------
 
@@ -49,7 +50,12 @@ function restartAnimation(node, cls) {
 // ---------- модели ----------
 
 async function loadModels() {
-  state.models = await api.listModels();
+  try {
+    state.models = await api.listModels();
+  } catch (err) {
+    setError('Не удалось получить список моделей: ' + err.message);
+    return;
+  }
   for (const m of state.models) {
     const opt = document.createElement('option');
     opt.value = m.id;
@@ -76,6 +82,7 @@ function setError(msg) {
 }
 
 function acceptFile(f) {
+  // f — File из выбора/перетаскивания или {name, size, blob} из примера
   const ext = extOf(f.name);
   if (!ACCEPT[ext]) {
     setError('Нужен PDF, Markdown или TXT');
@@ -86,7 +93,7 @@ function acceptFile(f) {
     return;
   }
   setError('');
-  state.file = { name: f.name, size: f.size, ext };
+  state.file = { name: f.name, size: f.size, ext, blob: f.blob === undefined ? f : f.blob };
   withTransition(() => {
     el.chipName.textContent = f.name;
     el.chipMeta.textContent = `${ACCEPT[ext]} · ${fmtSize(f.size)}`;
@@ -113,7 +120,13 @@ el.chipRemove.addEventListener('click', () => {
   clearFile();
   el.file.focus();
 });
-el.example.addEventListener('click', () => acceptFile({ name: 'requirements.md', size: 7_912 }));
+el.example.addEventListener('click', async () => {
+  try {
+    acceptFile(await api.loadExample());
+  } catch (err) {
+    setError('Не удалось загрузить пример: ' + err.message);
+  }
+});
 
 let dragDepth = 0;
 window.addEventListener('dragenter', (e) => {
@@ -157,7 +170,7 @@ function onEvent(ev) {
     el.stage.textContent = STAGE_NAMES[ev.index];
     el.count.textContent = `${ev.index + 1} / ${STAGE_NAMES.length}`;
   }
-  if (ev.state === 'done') setProgress((ev.index + 1) / STAGE_NAMES.length);
+  if (ev.state === 'done' || ev.state === 'error') setProgress((ev.index + 1) / STAGE_NAMES.length);
 }
 
 function setProgress(p) {
@@ -209,9 +222,8 @@ async function start() {
   morphToProgress();
 
   try {
-    const report = await api.run(state.file, currentModel(), onEvent);
-    state.report = report;
-    await finish(report);
+    const view = await api.run(state.file, currentModel(), onEvent);
+    await finish(view);
   } catch (err) {
     fail(err);
   } finally {
@@ -219,7 +231,7 @@ async function start() {
   }
 }
 
-async function finish(report) {
+async function finish(view) {
   setProgress(1);
   el.stage.textContent = 'Готово';
   await wait(400);
@@ -228,26 +240,24 @@ async function finish(report) {
   await Promise.all([wait(200), dismissStages()]);
   el.run.classList.add('is-gone');
 
-  const s = report.summary;
-  const blockers = s.by_severity.blocker;
-  const can = report.verdict.can_start_development;
-  el.verdict.textContent = can ? 'Можно начинать разработку' : 'Нельзя начинать разработку';
-  el.verdict.classList.toggle('is-blocked', !can);
-  el.verdictSub.textContent = can
-    ? 'Блокирующих дефектов нет.'
-    : `${blockers} ${plural(blockers, 'блокирующий дефект', 'блокирующих дефекта', 'блокирующих дефектов')}. ` +
-      (report.verdict.can_start_testing ? '' : 'Тест-дизайн тоже рано: 2 требования непроверяемы.');
+  const { stats } = view;
+  el.verdict.textContent = view.headline;
+  el.verdict.classList.toggle('is-blocked', !view.can_start_development);
+  el.verdictSub.textContent = view.sub;
 
   renderStats([
-    { label: 'требований', value: s.requirements_total },
-    { label: plural(s.violations_total, 'нарушение', 'нарушения', 'нарушений'), value: s.violations_total },
-    { label: plural(blockers, 'блокирующий', 'блокирующих', 'блокирующих'), value: blockers, danger: blockers > 0 },
+    { label: 'требований', value: stats.requirements },
+    { label: plural(stats.violations, 'нарушение', 'нарушения', 'нарушений'), value: stats.violations },
+    { label: plural(stats.blockers, 'блокирующий', 'блокирующих', 'блокирующих'), value: stats.blockers, danger: stats.blockers > 0 },
   ]);
-  renderFixes(report.findings);
+  renderFixes(view.fixes);
 
   const fmt = OUT_FORMAT[state.file.ext];
   el.downloadMain.textContent = `Скачать отчёт ${fmt}`;
-  el.downloadHint.textContent = fmt === 'PDF' ? 'В демо отчёт выгружается в Markdown. PDF появится вместе с сервером.' : '';
+  const notes = [];
+  if (!view.complete) notes.push(`Отчёт неполный: ${view.incomplete_reason}.`);
+  if (api.demo && fmt === 'PDF') notes.push('В демо отчёт выгружается в Markdown. PDF отдаёт сервер.');
+  el.downloadHint.textContent = notes.join(' ');
 
   lockInputs(false);
   el.result.hidden = false;
@@ -305,18 +315,21 @@ function renderFixes(findings) {
     const li = $('tpl-fix').content.firstElementChild.cloneNode(true);
     li.querySelector('.fix-id').textContent = f.id;
     const sev = li.querySelector('.fix-sev');
-    sev.textContent = SEV[f.severity];
+    sev.textContent = f.severity_name;
     sev.dataset.sev = f.severity;
     li.querySelector('.fix-title').textContent = f.title;
     li.querySelector('.fix-anchor').textContent = f.anchor;
     const quoteTpl = li.querySelector('.fix-quote');
+    let lastQuote = quoteTpl;
     f.quotes.forEach((q, i) => {
       const node = i === 0 ? quoteTpl : quoteTpl.cloneNode();
       node.textContent = q;
-      if (i > 0) li.querySelector('.fix-quote:last-of-type').after(node);
+      if (i > 0) lastQuote.after(node);
+      lastQuote = node;
     });
     li.querySelector('.fix-text').textContent = f.explanation;
-    li.querySelector('.fix-suggestion-text').textContent = f.suggestion;
+    if (f.suggestion) li.querySelector('.fix-suggestion-text').textContent = f.suggestion;
+    else li.querySelector('.fix-suggestion').hidden = true;
 
     const head = li.querySelector('.fix-head');
     const body = li.querySelector('.collapse');
@@ -331,21 +344,22 @@ function renderFixes(findings) {
   }
 }
 
-function download(name, text, type) {
-  const url = URL.createObjectURL(new Blob([text], { type }));
-  const a = Object.assign(document.createElement('a'), { href: url, download: name });
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+async function download(kind) {
+  try {
+    const { filename, blob } = await api.download(kind);
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: filename });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (err) {
+    el.downloadHint.textContent = 'Не удалось скачать отчёт: ' + err.message;
+  }
 }
 
-const baseName = () => state.file.name.replace(/\.[^.]+$/, '');
-
-el.downloadMain.addEventListener('click', () =>
-  download(`${baseName()}-review.md`, toMarkdown(state.report), 'text/markdown;charset=utf-8'));
-el.downloadJson.addEventListener('click', () =>
-  download(`${baseName()}-review.json`, JSON.stringify(state.report, null, 2), 'application/json'));
+el.downloadMain.addEventListener('click', () => download('main'));
+el.downloadJson.addEventListener('click', () => download('json'));
 
 function resetRun() {
   el.result.hidden = true;
@@ -358,13 +372,14 @@ function resetRun() {
 }
 
 el.reset.addEventListener('click', () => {
+  api.dispose();
   resetRun();
   clearFile();
   window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
 });
 
 el.retry.addEventListener('click', () => {
-  api.failAtStage = null; // в демо повтор проходит успешно
+  if (api.demo) api.failAtStage = null; // в демо повтор проходит успешно
   resetRun();
   start();
 });
