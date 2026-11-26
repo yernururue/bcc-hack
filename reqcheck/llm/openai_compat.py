@@ -98,6 +98,7 @@ class OpenAICompatClient:
         use_cache: bool = True,
         openrouter: bool = True,
         max_tokens: int = 12000,
+        cache_salt: str = "",
     ) -> None:
         self.model = model
         self.info: ModelInfo | None = models_config().get(model)
@@ -107,6 +108,9 @@ class OpenAICompatClient:
         self._read_cache = use_cache
         self._openrouter = openrouter
         self._max_tokens = max_tokens
+        # Соль ключа кэша: только для повторов eval (`--repeat`), чтобы повтор не брал ответ
+        # первого прогона. Пустая соль — обычный ключ, кэш как прежде.
+        self._cache_salt = cache_salt
         self._lock = threading.Lock()
         # SDK сам повторяет 408/409/429/5xx и сетевые ошибки с учётом Retry-After.
         self._client = OpenAI(api_key=api_key, base_url=base_url, max_retries=5, timeout=300)
@@ -178,10 +182,11 @@ class OpenAICompatClient:
         self, *, system: str, user: str, schema: type[M], stage: str
     ) -> LLMResult[M]:
         schema_json = strict_schema(schema)
+        parts: list[Any] = [self.model, system, user, schema_json]
+        if self._cache_salt:
+            parts.append(self._cache_salt)
         key = hashlib.sha256(
-            json.dumps(
-                [self.model, system, user, schema_json], ensure_ascii=False, sort_keys=True
-            ).encode()
+            json.dumps(parts, ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()
 
         if self._read_cache and (hit := self._cache.get(key)):

@@ -169,3 +169,38 @@ def test_model_cannot_raise_severity_above_cap() -> None:
     # без потолка действует прежнее правило: не ниже умолчания, модель может повысить
     assert final_severity(Category.INCOMPLETE, Severity.BLOCKER, [fn], th) == Severity.BLOCKER
     assert final_severity(Category.CONTRADICTION, Severity.MINOR, [fn], th) == Severity.BLOCKER
+
+
+def test_gap_findings_may_anchor_on_section_title() -> None:
+    """missing_topic/traceability без места в тексте: якорь — проверенный заголовок раздела.
+    Другим категориям заголовок как цитата не годится."""
+    from pathlib import Path
+
+    from reqcheck.config import criteria, thresholds
+    from reqcheck.formats import detect_input
+    from reqcheck.ingest import ingest
+    from reqcheck.stages import verify
+    from reqcheck.stages.check_set import SetFinding
+
+    doc = ingest(detect_input(Path(__file__).parent / "fixtures" / "clinic.md"))
+
+    def sf(category: str, quote: str) -> SetFinding:
+        return SetFinding(
+            category=category,
+            severity="major",
+            requirement_ids=[],
+            quotes=[quote],
+            explanation="x",
+            suggestion=None,
+        )
+
+    out = verify.set_findings(
+        [sf("missing_topic", "2.5. Оплата"), sf("terminology", "2.5. Оплата")],
+        [],
+        doc,
+        thresholds(),
+        criteria(),
+    )
+    assert [f.category.value for f in out.findings] == ["missing_topic"]
+    assert out.findings[0].anchor.section_path[-1] == "2.5. Оплата"
+    assert [f.category.value for f in out.dropped] == ["terminology"]

@@ -7,9 +7,13 @@
 #   quotes    — цитаты-якоря: короткие дословные фрагменты текста документа (проверяются при
 #               генерации). Якорь — только суть дефекта: находка может цитировать больше (контекст),
 #               и пересечение считается, когда короткая цитата целиком лежит в длинной
+#   sections  — вместо quotes, для missing_topic и traceability (нет места в тексте): находка
+#               должна лежать в одном из названных разделов; "*" — подходит любое место документа
 #   min_quotes — сколько цитат находка должна покрыть (по умолчанию 1)
-# Сопоставление: категория и partial_ratio цитат >= 80 (reqcheck/eval/matching.py).
-# Не покрыты: missing_topic и traceability — у них нет места в тексте, цитату-якорь не задать.
+# Уровень фикстуры: split — dev (на нём настраиваем) или holdout (только отчёт), path — путь к
+# документу, если он не лежит рядом под именем фикстуры.
+# Сопоставление: категория и partial_ratio цитат >= 80 либо раздел (reqcheck/eval/matching.py).
+# Разметка корпуса — чтение автором фикстур; документы общие, ничего от документа организаторов.
 version: 1
 fixtures:
   defects.pdf:
@@ -96,4 +100,365 @@ fixtures:
           - "удаляются из хранилища через 12 месяцев после выполнения заказа"
 
   clean.pdf:
+    defects: []
+
+  # --- корпус 2026-11-26: dev ---------------------------------------------------------------
+
+  hr-leave.md:
+    split: dev
+    defects:
+      - id: H-ambiguous
+        category: ambiguous
+        accept: [unverifiable, incomplete]
+        quotes: ["в разумные сроки уведомлять руководителя"]
+      - id: H-incomplete
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["Если руководитель отсутствует, заявление передаётся заместителю"]
+      - id: H-days
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "ежегодно начисляется 28 календарных дней"
+          - "Годовая норма оплачиваемого отпуска сотрудника — 24 календарных дня"
+      - id: H-withdraw
+        category: contradiction
+        accept: [incomplete, incorrect]
+        quotes:
+          - "отозвать заявление в статусе «На согласовании»"
+          - "После отзыва согласованного заявления"
+      - id: H-duplicate
+        category: duplicate
+        min_quotes: 2
+        quotes:
+          - "После согласования заявления система уменьшает остаток дней отпуска сотрудника"
+          - "после согласования заявления уменьшать остаток отпускных дней работника"
+      - id: H-unverifiable
+        category: unverifiable
+        accept: [ambiguous]
+        quotes: ["Календарь отпусков должен быть удобным для руководителя"]
+      - id: H-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Согласование"]
+      - id: H-traceability
+        category: traceability
+        sections: ["*"]
+
+  parking.pdf:
+    split: dev
+    defects:
+      - id: P-composite
+        category: composite
+        quotes: ["завершать сессию, начислять штраф за превышение времени, отправлять отчёт в управление парковок"]
+      - id: P-unnecessary
+        category: unnecessary
+        accept: [design_decision]
+        quotes: ["воспроизводить мелодию гимна города"]
+      - id: P-incorrect
+        category: incorrect
+        accept: [contradiction]
+        quotes: ["сессия на 2 часа 30 минут стоит 600 ₸"]
+      - id: P-design
+        category: design_decision
+        quotes: ["через очередь RabbitMQ 3.13 в формате Protobuf"]
+      - id: P-nonconforming
+        category: nonconforming
+        accept: [ambiguous, unverifiable, incomplete]
+        quotes: ["хорошо бы ещё сделать, чтобы клиент мог посмотреть где поблизости есть свободные места"]
+      - id: P-terminology
+        category: terminology
+        quotes: ["Пополнение баланса автовладельца"]
+      - id: P-infeasible
+        category: infeasible
+        accept: [unverifiable]
+        quotes: ["без единой секунды простоя в течение всего срока эксплуатации"]
+      - id: P-duration
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "продолжительность от 15 минут до 12 часов"
+          - "Максимальная продолжительность одной парковочной сессии — 24 часа"
+      - id: P-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Контроль"]
+
+  clinic.md:
+    split: dev
+    defects:
+      - id: K-ambiguous
+        category: ambiguous
+        accept: [incomplete, unverifiable]
+        quotes: ["напоминать пациенту о приёме заблаговременно"]
+      - id: K-unverifiable
+        category: unverifiable
+        accept: [ambiguous, unnecessary]
+        quotes: ["обеспечивать высокое качество обслуживания пациентов"]
+      - id: K-incomplete
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["закрыть слот для онлайн-записи с указанием причины"]
+      - id: K-cancel
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "отменить запись не позднее чем за 2 часа до начала приёма"
+          - "До приёма 1 час 30 минут, пациент отменяет запись"
+      - id: K-duplicate
+        category: duplicate
+        min_quotes: 2
+        quotes:
+          - "После подтверждения записи пациент получает SMS с датой, временем, адресом клиники и фамилией врача"
+          - "После записи на приём пациенту отправляется SMS с датой и временем приёма"
+      - id: K-design
+        category: design_decision
+        quotes: ["в таблице schedule базы данных Oracle 19c"]
+      - id: K-traceability
+        category: traceability
+        accept: [incomplete]
+        quotes: ["из документа «Стандарт доступности клиник v4», раздел 7"]
+      - id: K-incorrect
+        category: incorrect
+        accept: [contradiction]
+        quotes: ["со скидкой 15 % при цене 10 000 ₸ составляет 8 000 ₸"]
+      - id: K-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Оплата", "Расписание"]
+
+  lms.md:
+    split: dev
+    defects:
+      - id: L-ambiguous
+        category: ambiguous
+        accept: [unverifiable]
+        quotes: ["обеспечивать хороший пользовательский опыт"]
+      - id: L-attempts
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "пройти тест модуля не более 3 раз"
+          - "проходить тест модуля неограниченное число раз"
+      - id: L-incorrect
+        category: incorrect
+        accept: [contradiction]
+        quotes: ["Тест с проходным баллом 80 % при 20 вопросах сдан, если слушатель ответил правильно на 15 вопросов"]
+      - id: L-unnecessary
+        category: unnecessary
+        accept: [design_decision]
+        quotes: ["воспроизводить автору звуковое поздравление"]
+      - id: L-composite
+        category: composite
+        quotes: ["формировать отчёт, отправлять его руководителям подразделений, архивировать предыдущие отчёты"]
+      - id: L-terminology
+        category: terminology
+        quotes: ["Обучающийся может посмотреть историю"]
+      - id: L-nonconforming
+        category: nonconforming
+        accept: [ambiguous, unverifiable, incomplete]
+        quotes: ["Нужно ещё как-то сделать напоминалки в мессенджер"]
+      - id: L-infeasible
+        category: infeasible
+        accept: [unverifiable, ambiguous]
+        quotes: ["гарантировать абсолютную защиту от любых кибератак"]
+      - id: L-incomplete
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["Урок считается завершённым, когда слушатель досмотрел видео до конца"]
+      - id: L-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Тесты"]
+
+  fitness-clean.md:
+    split: dev
+    defects: []
+
+  # --- корпус 2026-11-26: holdout (только отчёт, на нём не настраиваем) --------------------
+
+  library.pdf:
+    split: holdout
+    defects:
+      - id: B-ambiguous
+        category: ambiguous
+        accept: [unverifiable]
+        quotes: ["находить нужные издания максимально релевантно"]
+      - id: B-unverifiable
+        category: unverifiable
+        accept: [ambiguous]
+        quotes: ["обеспечивать комфортную работу читателей"]
+      - id: B-composite
+        category: composite
+        quotes: ["регистрировать возврат издания, рассчитывать пеню за просрочку, обновлять число свободных экземпляров"]
+      - id: B-limit
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "держать на руках не больше 5 изданий"
+          - "держать на руках не больше 10 изданий"
+      - id: B-design
+        category: design_decision
+        quotes: ["в хранилище MinIO, а метаданные — в Elasticsearch 8"]
+      - id: B-terminology
+        category: terminology
+        quotes: ["Абонент может читать электронное издание"]
+      - id: B-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Выдача"]
+
+  insurance.md:
+    split: holdout
+    defects:
+      - id: I-incorrect
+        category: incorrect
+        accept: [contradiction]
+        quotes: ["одном путешественнике 70 лет стоимость полиса равна 15 000 ₸"]
+      - id: I-deadline
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "Полис оформляется не позднее чем за 1 день до даты начала поездки"
+          - "Полис можно оформить в день начала поездки"
+      - id: I-duplicate
+        category: duplicate
+        min_quotes: 2
+        quotes:
+          - "расторгнуть полис до даты начала поездки; деньги возвращаются в полном объёме"
+          - "отказаться от полиса до даты начала поездки и получить полный возврат стоимости"
+      - id: I-traceability
+        category: traceability
+        accept: [incomplete]
+        quotes: ["в документе «Методика возвратов ТП-2024»"]
+      - id: I-unnecessary
+        category: unnecessary
+        quotes: ["раз в неделю письмо с советами путешественнику и прогнозом погоды"]
+      - id: I-infeasible
+        category: infeasible
+        accept: [unverifiable, ambiguous]
+        quotes: ["рассматривать любое обращение о страховом случае мгновенно и без единой ошибки"]
+      - id: I-nonconforming
+        category: nonconforming
+        accept: [ambiguous, unverifiable, incomplete]
+        quotes: ["а еще надо чтобы менеджеры видели статистику продаж"]
+      - id: I-incomplete
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["Возрастной коэффициент: до 64 лет включительно"]
+      - id: I-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Страховой случай"]
+
+  utilities.pdf:
+    split: holdout
+    defects:
+      - id: U-period
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "с 15 по 25 число каждого месяца включительно"
+          - "принимать показания с 20 по 28 число месяца"
+      - id: U-incorrect
+        category: incorrect
+        accept: [contradiction]
+        quotes: ["тарифе 150 ₸ за кубометр начисление равно 1 650 ₸"]
+      - id: U-composite
+        category: composite
+        quotes: ["принимать показание, проверять его на аномалии, пересчитывать начисление и отправлять квитанцию"]
+      - id: U-design
+        category: design_decision
+        quotes: ["PostgreSQL 15 в таблице readings, секционированной по месяцам"]
+      - id: U-terminology
+        category: terminology
+        quotes: ["Пользователь может отключить напоминания"]
+      - id: U-retry
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["Если расчётный центр не принял пакет, передача повторяется"]
+      - id: U-unverifiable
+        category: unverifiable
+        accept: [ambiguous, unnecessary]
+        quotes: ["Приложение должно иметь привлекательный внешний вид"]
+      - id: U-ambiguous
+        category: ambiguous
+        accept: [incomplete]
+        quotes: ["Если показания не переданы до конца периода"]
+      - id: U-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Начисления и оплата"]
+
+  warehouse.md:
+    split: holdout
+    defects:
+      - id: W-traceability
+        category: traceability
+        sections: ["*"]
+      - id: W-ambiguous
+        category: ambiguous
+        accept: [unverifiable]
+        quotes: ["быстро обрабатывать приёмку крупных поставок"]
+      - id: W-design
+        category: design_decision
+        quotes: ["хранимой процедурой на PL/SQL в схеме WMS_CORE базы данных Oracle"]
+      - id: W-infeasible
+        category: infeasible
+        accept: [unverifiable]
+        quotes: ["ни один товар никогда не будет потерян или повреждён на складе"]
+      - id: W-fefo
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "Товар отбирается по принципу FEFO"
+          - "Товар отбирается по принципу FIFO"
+      - id: W-incorrect
+        category: incorrect
+        accept: [contradiction]
+        quotes: ["Расчётный вес заказа из 3 товаров по 400 г и 2 товаров по 250 г равен 1 600 г"]
+      - id: W-unnecessary
+        category: unnecessary
+        accept: [design_decision]
+        quotes: ["анимацией в виде фейерверка"]
+      - id: W-composite
+        category: composite
+        accept: [duplicate]
+        quotes: ["закрывать отгрузку, формировать накладную, отправлять клиенту SMS с номером отслеживания и списывать остатки"]
+      - id: W-nonconforming
+        category: nonconforming
+        accept: [ambiguous, incomplete, unverifiable]
+        quotes: ["ещё бы неплохо дашборд для директора с основными цифрами"]
+      - id: W-terminology
+        category: terminology
+        quotes: ["Комплектовщик может приостановить задание на отбор"]
+      - id: W-unverifiable
+        category: unverifiable
+        accept: [ambiguous]
+        quotes: ["Интерфейс рабочего места руководителя должен быть интуитивным"]
+      - id: W-duplicate
+        category: duplicate
+        min_quotes: 2
+        quotes:
+          - "Отгрузка закрывается после сканирования всех коробов волны"
+          - "Если короб не отсканирован при загрузке, отгрузку закрыть нельзя"
+      - id: W-incomplete
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["после начала отмена выполняется только через возврат товара в ячейки"]
+      - id: W-missing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Возвраты"]
+
+  tickets-clean.pdf:
+    split: holdout
     defects: []

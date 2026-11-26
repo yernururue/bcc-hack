@@ -20,7 +20,10 @@ from reqcheck.schemas.document import Block, Document
 from reqcheck.stages.check_each import CheckEachOutput
 from reqcheck.stages.check_set import SetFinding
 from reqcheck.stages.extract import candidate_blocks
-from reqcheck.stages.quotes import locate, similarity
+from reqcheck.stages.quotes import locate, locate_heading, similarity
+
+# Пробелы набора: якорем может быть заголовок раздела, а не фраза требования
+SECTION_ANCHORED = {Category.MISSING_TOPIC, Category.TRACEABILITY}
 
 SEVERITY_RANK = {Severity.BLOCKER: 0, Severity.MAJOR: 1, Severity.MINOR: 2}
 
@@ -155,11 +158,13 @@ def set_findings(
         for rid in req_ids:
             prefer.extend(_block_of(by_id[rid], blocks))
         placed: list[tuple[str, Block]] = []
+        category = Category(sf.category)
         for quote in sf.quotes:
             block = locate(quote, blocks, threshold, prefer=prefer)
+            if block is None and category in SECTION_ANCHORED:
+                block = locate_heading(quote, doc.blocks, threshold)
             if block is not None and all(b.block_id != block.block_id for _, b in placed):
                 placed.append((quote.strip(), block))
-        category = Category(sf.category)
         kinds = [by_id[rid].kind for rid in req_ids]
         finding = Finding(
             finding_id="F-000",

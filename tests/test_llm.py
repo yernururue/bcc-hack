@@ -160,3 +160,17 @@ def test_payment_required_twice_reports_provider_reason(tmp_path: Path, monkeypa
     c._client.chat.completions.create = create
     with pytest.raises(BudgetExceededError, match="недостаточно средств.*Insufficient credits"):
         ask(c)
+
+
+def test_cache_salt_separates_eval_repeats(tmp_path: Path) -> None:
+    """Повтор eval с солью вызывает модель заново, а сам повтор потом берётся из кэша."""
+    c, _ = client(tmp_path, [response('{"verdict": "first", "note": null}')])
+    ask(c)
+    salted, calls = client(
+        tmp_path, [response('{"verdict": "second", "note": null}')], cache_salt="eval-repeat-2"
+    )
+    assert ask(salted).value.verdict == "second" and len(calls) == 1
+    again, calls2 = client(tmp_path, [], cache_salt="eval-repeat-2")
+    assert ask(again).value.verdict == "second" and not calls2
+    plain, calls3 = client(tmp_path, [])
+    assert ask(plain).value.verdict == "first" and not calls3  # обычный кэш не тронут

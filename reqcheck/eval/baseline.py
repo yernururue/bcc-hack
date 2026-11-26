@@ -15,10 +15,11 @@ from reqcheck.schemas import Category, Severity
 from reqcheck.schemas.document import Document
 from reqcheck.stages.check_each import format_criteria
 from reqcheck.stages.extract import candidate_blocks, format_block
-from reqcheck.stages.quotes import locate
+from reqcheck.stages.quotes import locate, locate_heading
 
 # Категории, для которых нужны минимум два места (как в stages/verify.py).
 NEEDS_TWO = {Category.CONTRADICTION.value, Category.DUPLICATE.value}
+SECTION_ANCHORED = {Category.MISSING_TOPIC, Category.TRACEABILITY}
 
 
 class BaselineFinding(BaseModel):
@@ -58,12 +59,18 @@ def run(doc: Document, llm: LLMClient, criteria: Criteria, threshold: float) -> 
     kept: list[EvalFinding] = []
     for f in result.findings:
         placed: list[str] = []
+        sections: list[str] = []
         seen: set[str] = set()
         for quote in f.quotes:
             block = locate(quote, blocks, threshold)
+            if block is None and f.category in SECTION_ANCHORED:
+                block = locate_heading(quote, doc.blocks, threshold)
             if block is not None and block.block_id not in seen:
                 seen.add(block.block_id)
                 placed.append(quote.strip())
+                sections.extend(block.anchor.section_path)
+                if block.anchor.item:
+                    sections.append(block.anchor.item)
         need = 2 if f.category.value in NEEDS_TWO else 1
         if len(placed) >= need:
             kept.append(
@@ -71,6 +78,7 @@ def run(doc: Document, llm: LLMClient, criteria: Criteria, threshold: float) -> 
                     category=f.category.value,
                     severity=f.severity.value,
                     quotes=placed,
+                    sections=list(dict.fromkeys(sections)),
                     explanation=f.explanation.strip(),
                 )
             )

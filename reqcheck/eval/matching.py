@@ -1,7 +1,11 @@
 """Сопоставление находок с ожидаемыми дефектами и метрики (docs/02-trd.md, §10).
 
 Находка попадает в ожидаемый дефект, если её категория совпадает с ожидаемой или с одним из
-синонимов (`accept`) и цитаты пересекаются: partial_ratio не ниже порога из thresholds.yaml.
+синонимов (`accept`) и место совпадает:
+- режим цитат (`quotes`): partial_ratio цитат не ниже порога из thresholds.yaml;
+- режим раздела (`sections`, для missing_topic и traceability, у которых нет места в тексте):
+  хотя бы одно из мест находки (путь разделов её якорей) лежит в одном из названных разделов;
+  `sections: ["*"]` — подходит любое место документа (например, «нет приоритетов вообще»).
 Дефект и находка сопоставляются один к одному. Сети здесь нет.
 """
 
@@ -9,7 +13,7 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import Field
+from pydantic import Field, model_validator
 from rapidfuzz import fuzz
 
 from reqcheck.config import EvalRules
@@ -18,27 +22,44 @@ from reqcheck.schemas.common import Strict
 from reqcheck.stages.quotes import match_key
 
 Status = Literal["found", "wrong_category", "missed"]
+Split = Literal["dev", "holdout"]
+ANYWHERE = "*"
 
 
 class ExpectedDefect(Strict):
     id: str
     category: Category
     accept: list[Category] = Field(default_factory=list)
-    quotes: list[str] = Field(min_length=1)
+    quotes: list[str] = Field(default_factory=list)
+    sections: list[str] = Field(default_factory=list)  # режим раздела (см. описание модуля)
     min_quotes: int = Field(default=1, ge=1)
+
+    @model_validator(mode="after")
+    def _one_mode(self) -> "ExpectedDefect":
+        if bool(self.quotes) == bool(self.sections):
+            raise ValueError(f"{self.id}: нужен ровно один режим — quotes или sections")
+        return self
 
 
 class FixtureSpec(Strict):
+    # Путь к документу относительно файла разметки; по умолчанию — имя фикстуры рядом с ним
+    path: str | None = None
+    split: Split = "dev"
     defects: list[ExpectedDefect] = Field(default_factory=list)
 
 
 class ExpectedFile(Strict):
     version: Literal[1]
+    note: str | None = None
     fixtures: dict[str, FixtureSpec]
 
 
 def load_expected(path: Path) -> ExpectedFile:
     return ExpectedFile.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
+
+
+def fixture_path(labels_file: Path, name: str, spec: FixtureSpec) -> Path:
+    return (labels_file.parent / (spec.path or name)).resolve()
 
 
 class EvalFinding(Strict):
@@ -47,6 +68,7 @@ class EvalFinding(Strict):
     category: str
     severity: str
     quotes: list[str]
+    sections: list[str] = Field(default_factory=list)  # пути разделов якорей находки
     explanation: str = ""
     # Для разбора шума: откуда находка (rule/llm), область (requirement/set), вердикт модели.
     source: str = ""
@@ -63,6 +85,7 @@ class DefectResult(Strict):
 
 class FixtureScore(Strict):
     fixture: str
+    split: Split = "dev"
     defects: list[DefectResult] = Field(default_factory=list)
     findings_total: int = 0
     findings_matched: int = 0
@@ -94,6 +117,13 @@ def quote_overlap(expected: str, actual: str, min_chars: int) -> float:
     return float(fuzz.partial_ratio(short, long_))
 
 
+def _in_sections(defect: ExpectedDefect, finding: EvalFinding) -> bool:
+    if ANYWHERE in defect.sections:
+        return True
+    places = [match_key(s) for s in finding.sections]
+    return any(match_key(want) in place for want in defect.sections for place in places)
+
+
 def _coverage(defect: ExpectedDefect, finding: EvalFinding, rules: EvalRules) -> tuple[int, float]:
     """(сколько цитат дефекта покрыто находкой, сумма пересечений).
 
@@ -108,6 +138,8 @@ def _coverage(defect: ExpectedDefect, finding: EvalFinding, rules: EvalRules) ->
         ),
         reverse=True,
     )
+    if defect.sections:
+        return (1, 100.0) if _in_sections(defect, finding) else (0, 0.0)
     used_e: set[int] = set()
     used_f: set[int] = set()
     covered, total = 0, 0.0
@@ -126,6 +158,7 @@ def _coverage(defect: ExpectedDefect, finding: EvalFinding, rules: EvalRules) ->
 def score_fixture(
     name: str, spec: FixtureSpec, findings: list[EvalFinding], rules: EvalRules
 ) -> FixtureScore:
+    """Сопоставление находок с разметкой одной фикстуры."""
     # Все пары «дефект — находка на нужном месте»; затем жадно по убыванию качества.
     pairs: list[tuple[int, float, int, int, bool]] = []
     for di, defect in enumerate(spec.defects):
@@ -166,6 +199,7 @@ def score_fixture(
         by_severity[f.severity] = by_severity.get(f.severity, 0) + 1
     return FixtureScore(
         fixture=name,
+        split=spec.split,
         defects=ordered,
         findings_total=len(findings),
         findings_matched=len(used_f),

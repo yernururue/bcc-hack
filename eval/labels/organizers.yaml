@@ -1,0 +1,103 @@
+# Разметка документа организаторов — ТОЛЬКО для eval (python -m reqcheck.eval --labels ...).
+#
+# СТАТУС: НЕ ПРОВЕРЕНА ВЛАДЕЛЬЦЕМ. Разметка сделана 2026-11-26 агентом по внимательному чтению
+# документа, без опоры на отчёты модели. Часть меток спорна (помечены «спорно»): считать их
+# ориентиром, а не эталоном.
+#
+# Правила (docs/08-decisions.md, ADR-012):
+# - документ только в выборке holdout: на нём ничего не настраиваем, числа публикуем отдельно;
+# - ничего отсюда не переносится в config/*.yaml, промпты, правила и словари;
+# - формат записей тот же, что в tests/fixtures/expected.yaml.
+version: 1
+note: "unreviewed by owner"
+fixtures:
+  organizers-requirements.md:
+    path: ../../../ai-requirements-validator-task/docs/requirements.md
+    split: holdout
+    defects:
+      # --- часть B против самой себя и против части A ---
+      - id: O-get-save
+        category: incorrect
+        accept: [contradiction, nonconforming, design_decision]
+        quotes: ["REST type", "curl -G"]
+      - id: O-description
+        category: contradiction
+        accept: [incorrect, ambiguous]
+        quotes: ["Сохранение порога. Функциональные требования: чтение порога"]
+      - id: O-200-error
+        category: contradiction
+        accept: [incorrect, ambiguous]
+        quotes: ["Проверьте сумму", "результат ERROR"]
+      - id: O-created
+        category: incorrect
+        accept: [contradiction, ambiguous, nonconforming]
+        quotes: ["200 или 201", "Ответ в случае успешного выполнения метода"]
+      - id: O-403-404
+        category: contradiction
+        accept: [incorrect, ambiguous]
+        quotes:
+          - "Для чужой карты возвращается 404, как и для отсутствующей карты"
+          - "если на указанный ресурс доступ запрещен"
+      - id: O-body
+        category: contradiction
+        accept: [incorrect, ambiguous, nonconforming]
+        quotes: ["Тело не используется", "Content-Type"]
+      - id: O-types  # спорно: строка в ответе против целого в запросе
+        category: incorrect
+        accept: [contradiction, terminology, ambiguous]
+        quotes: ["amount | string", "enabled | string"]
+      - id: O-prod-url
+        category: incomplete
+        accept: [missing_topic, nonconforming]
+        quotes: ["Dev: /alerts/saveLimit . Prod: —"]
+      - id: O-read-method
+        category: missing_topic
+        accept: [incomplete, contradiction]
+        quotes: ["Приложение читает и сохраняет настройки"]
+      - id: O-terminology  # спорно: «порог» в тексте, «limit» в API и БД
+        category: terminology
+        quotes: ["saveLimit", "limit_kzt"]
+
+      # --- часть A ---
+      - id: O-month
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "Месяц определяется по дате совершения покупки"
+          - "Покупка 31 января в 23:58"
+          - "Февральский счётчик вырос"
+      - id: O-push-limit
+        category: contradiction
+        accept: [incorrect, ambiguous, incomplete]
+        quotes:
+          - "максимум один такой push за календарный месяц"
+          - "следующее достижение вызывает push независимо от истории предыдущей настройки"
+      - id: O-units  # спорно: тиыны и тенге без правила пересчёта
+        category: incorrect
+        accept: [ambiguous, terminology, contradiction, incomplete]
+        quotes: ["сумму покупки в тиынах, признак отправки и порог в тенге"]
+      - id: O-refund
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["Возврат уменьшает расходы месяца исходной покупки"]
+      - id: O-nfr
+        category: incomplete
+        accept: [unverifiable, ambiguous]
+        quotes: ["в течение минуты после получения события"]
+      - id: O-idempotency
+        category: ambiguous
+        accept: [incomplete, unverifiable]
+        quotes: ["Повторная доставка одного события процессинга сохраняет исходный итог"]
+      - id: O-ui-error
+        category: incomplete
+        accept: [ambiguous]
+        quotes: ["При ошибке ввода сообщение появляется под полем"]
+      - id: O-testing
+        category: missing_topic
+        accept: [incomplete]
+        sections: ["Требования к тестированию"]
+      - id: O-traceability
+        category: traceability
+        accept: [nonconforming]
+        sections: ["*"]

@@ -49,6 +49,7 @@ class Options:
     max_cost_usd: float
     use_cache: bool = True
     dry_run: bool = False
+    cache_salt: str = ""  # только для повторов eval: отдельные ответы в кэше на каждый повтор
 
 
 # Этапы для индикатора прогресса (UI показывает ровно их, по порядку). Подтверждение
@@ -132,6 +133,7 @@ def build_client(settings: Settings, options: Options) -> OpenAICompatClient:
         cache_dir=settings.cache_path,
         use_cache=options.use_cache,
         openrouter=settings.is_openrouter,
+        cache_salt=options.cache_salt,
     )
 
 

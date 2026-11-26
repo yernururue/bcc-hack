@@ -47,3 +47,25 @@ def locate(
         if best is not None:
             return best[1]
     return None
+
+
+def locate_heading(quote: str, blocks: Iterable[Block], threshold: float) -> Block | None:
+    """Заголовок раздела, совпадающий с цитатой: якорь для пробелов набора (missing_topic,
+    traceability), у которых нет своего места в тексте. Цитата должна совпасть с названием
+    раздела целиком (без номера), а не быть его кусочком."""
+    q = match_key(quote)
+    if len(q) < MIN_QUOTE_CHARS:
+        return None
+    for block in blocks:
+        if block.kind != "heading":
+            continue
+        title = match_key(block.text)
+        bare = _NUM.sub("", title)
+        if q in (title, bare) or (
+            len(q) >= len(bare) * 0.8 and similarity(quote, title) >= threshold
+        ):
+            return block
+    return None
+
+
+_NUM = re.compile(r"^[\dа-яa-z]{0,3}[\d.)]+\s*")

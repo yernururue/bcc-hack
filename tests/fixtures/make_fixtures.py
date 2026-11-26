@@ -4,12 +4,15 @@
 
 Текстовый слой чинится так же, как у PDF-отчёта: альтернативы глифов GSUB дописываются в
 ToUnicode (reqcheck/render/tounicode.py, ADR-010), поэтому латинская «A» извлекается как «A».
-Пишет defects.pdf, contradictions.pdf, clean.pdf рядом со скриптом (готовые PDF коммитятся).
+Пишет defects.pdf, contradictions.pdf, clean.pdf рядом со скриптом (готовые PDF коммитятся), а
+также PDF-версии документов корпуса из src/*.md (подмножество Markdown: заголовки, абзацы, списки с
+номером пункта, таблицы). Markdown-документы корпуса лежат рядом как есть.
 Тексты общие, про вымышленный интернет-магазин: ничего от документа организаторов.
 Шрифты те же, что у PDF-отчёта (reqcheck/render/fonts, OFL). Ожидаемые находки — в expected.yaml;
 при генерации проверяем, что каждая цитата-якорь есть в тексте документа дословно.
 """
 
+import re
 import sys
 from dataclasses import dataclass, field
 from html import escape
@@ -23,6 +26,7 @@ from reqcheck.render.tounicode import fix_tounicode
 from reqcheck.stages.quotes import match_key
 
 HERE = Path(__file__).parent
+SRC = HERE / "src"
 
 CSS = """
 @font-face { font-family: Golos; src: url(GolosText-Regular.ttf); }
@@ -30,6 +34,7 @@ CSS = """
 body { font-family: Golos; font-size: 11pt; line-height: 1.4; color: #0A0A0A; }
 h1 { font-size: 20pt; font-weight: bold; margin: 0 0 8pt 0; }
 h2 { font-size: 14pt; font-weight: bold; margin: 16pt 0 6pt 0; }
+h3 { font-size: 12pt; font-weight: bold; margin: 12pt 0 4pt 0; }
 p { margin: 0 0 6pt 0; }
 li { margin: 0 0 5pt 0; }
 table { border-collapse: collapse; margin: 4pt 0 8pt 0; }
@@ -348,9 +353,64 @@ CLEAN = Doc(
 DOCS = [DEFECTS, CONTRADICTIONS, CLEAN]
 
 
-def render(doc: Doc, path: Path) -> None:
+_BOLD = re.compile(r"\*\*(.+?)\*\*")
+
+
+def _inline(text: str) -> str:
+    return _BOLD.sub(r"<b>\1</b>", escape(text))
+
+
+def md_to_html(md: str) -> str:
+    """Подмножество Markdown корпуса → HTML для pymupdf.Story."""
+    out: list[str] = []
+    in_list = False
+    table: list[list[str]] = []
+
+    def flush() -> None:
+        nonlocal in_list, table
+        if in_list:
+            out.append("</ul>")
+            in_list = False
+        if table:
+            head, *rows = table
+            out.append("<table><tr>" + "".join(f"<th>{_inline(c)}</th>" for c in head) + "</tr>")
+            for row in rows:
+                out.append("<tr>" + "".join(f"<td>{_inline(c)}</td>" for c in row) + "</tr>")
+            out.append("</table>")
+            table = []
+
+    for line in md.splitlines():
+        line = line.rstrip()
+        if line.startswith("|"):
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if not all(set(c) <= set(":- ") for c in cells):
+                table.append(cells)
+            continue
+        if line.startswith("* "):
+            if table:
+                flush()
+            if not in_list:
+                out.append("<ul>")
+                in_list = True
+            out.append(f"<li>{_inline(line[2:])}</li>")
+            continue
+        flush()
+        if not line:
+            continue
+        level = len(line) - len(line.lstrip("#"))
+        if level:
+            out.append(f"<h{level}>{_inline(line[level:].strip())}</h{level}>")
+        else:
+            out.append(f"<p>{_inline(line)}</p>")
+    flush()
+    return "\n".join(out)
+
+
+def render(doc: "Doc | str", path: Path, title: str = "") -> None:
     archive = pymupdf.Archive(str(FONTS_DIR))
-    story = pymupdf.Story(html=doc.html(), user_css=CSS, archive=archive)
+    html = doc if isinstance(doc, str) else doc.html()
+    title = title or (doc.title if not isinstance(doc, str) else path.stem)
+    story = pymupdf.Story(html=html, user_css=CSS, archive=archive)
     writer = pymupdf.DocumentWriter(str(path))
     page = pymupdf.Rect(0, 0, *A4)
     body = pymupdf.Rect(MARGIN, MARGIN, A4[0] - MARGIN, A4[1] - MARGIN)
@@ -362,7 +422,7 @@ def render(doc: Doc, path: Path) -> None:
     writer.close()
     # Метаданные и встроенные подмножества шрифтов: файлы маленькие и воспроизводимые.
     with pymupdf.open(path) as pdf:
-        pdf.set_metadata({"title": doc.title, "author": "ReqCheck fixtures"})
+        pdf.set_metadata({"title": title, "author": "ReqCheck fixtures"})
         pdf.subset_fonts()
         fix_tounicode(pdf)
         data = pdf.tobytes(garbage=4, deflate=True)
@@ -370,15 +430,25 @@ def render(doc: Doc, path: Path) -> None:
 
 
 def check_expected() -> None:
-    """Каждая цитата-якорь из expected.yaml должна дословно (по ключу сравнения) быть в тексте."""
+    """Каждая цитата-якорь из expected.yaml должна дословно (по ключу сравнения) быть в тексте,
+    а раздел режима sections — среди заголовков документа."""
     expected = yaml.safe_load((HERE / "expected.yaml").read_text(encoding="utf-8"))
-    for doc in DOCS:
-        text = match_key(doc.text())
-        entry = expected["fixtures"][doc.file]
-        for defect in entry["defects"]:
-            for quote in defect["quotes"]:
+    texts = {doc.file: doc.text() for doc in DOCS}
+    for src in sorted(SRC.glob("*.md")):
+        texts[src.stem + ".pdf"] = src.read_text(encoding="utf-8")
+    for md in sorted(HERE.glob("*.md")):
+        texts[md.name] = md.read_text(encoding="utf-8")
+    for name, entry in expected["fixtures"].items():
+        if name not in texts:
+            raise SystemExit(f"{name}: нет документа")
+        text = match_key(texts[name])
+        for defect in entry.get("defects") or []:
+            for quote in defect.get("quotes", []):
                 if match_key(quote) not in text:
-                    raise SystemExit(f"{doc.file} {defect['id']}: цитаты нет в тексте: {quote!r}")
+                    raise SystemExit(f"{name} {defect['id']}: цитаты нет в тексте: {quote!r}")
+            for section in defect.get("sections", []):
+                if section != "*" and match_key(section) not in text:
+                    raise SystemExit(f"{name} {defect['id']}: нет раздела: {section!r}")
 
 
 def main() -> None:
@@ -386,6 +456,11 @@ def main() -> None:
     for doc in DOCS:
         render(doc, HERE / doc.file)
         print(f"{doc.file}: записан")
+    for src in sorted(SRC.glob("*.md")):
+        md = src.read_text(encoding="utf-8")
+        title = md.splitlines()[0].lstrip("# ").strip()
+        render(md_to_html(md), HERE / f"{src.stem}.pdf", title)
+        print(f"{src.stem}.pdf: записан")
 
 
 if __name__ == "__main__":
