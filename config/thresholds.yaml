@@ -26,6 +26,13 @@ findings_filter:
   # «Неясно» с серьёзностью minor в отчёт не выводим
   drop_unclear_minor: true
 
+# Оценка качества (python -m reqcheck.eval, docs/02-trd.md §10)
+eval:
+  # Находка попадает на ожидаемое место, если partial_ratio цитат (0–100) не ниже порога
+  quote_overlap: 80
+  # Цитату короче этого числа символов (после нормализации) на сопоставление не берём
+  min_quote_chars: 6
+
 report:
   max_questions: 10
   max_top_fixes: 5

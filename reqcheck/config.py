@@ -85,11 +85,19 @@ class FindingsFilter(BaseModel):
     drop_unclear_minor: bool
 
 
+class EvalRules(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    quote_overlap: float = Field(ge=0, le=100)
+    min_quote_chars: int = Field(ge=1)
+
+
 class Thresholds(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     verdict: VerdictRules
     findings_filter: FindingsFilter
+    eval: EvalRules
     verify: dict[str, float]
     check_each: dict[str, int]
     check_set: dict[str, int]

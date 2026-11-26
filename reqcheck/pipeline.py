@@ -65,7 +65,22 @@ def _silent(_: str) -> None:
     pass
 
 
-def estimate(doc: Document, model: str, batch_size: int) -> str:
+@dataclass(frozen=True)
+class Estimate:
+    calls: int
+    tokens_in: float
+    tokens_out: float
+    usd: float | None  # None, если цена модели неизвестна
+
+
+def _price(model: str, tokens_in: float, tokens_out: float) -> float | None:
+    info = models_config().get(model)
+    if info is None:
+        return None
+    return (tokens_in * info.price_in + tokens_out * info.price_out) / 1e6
+
+
+def estimate_numbers(doc: Document, model: str, batch_size: int) -> Estimate:
     """Грубая оценка до прогона: ~3 символа на токен для русского текста."""
     blocks = extract.candidate_blocks(doc)
     doc_tokens = sum(len(b.text) + 40 for b in blocks) / 3
@@ -73,14 +88,23 @@ def estimate(doc: Document, model: str, batch_size: int) -> str:
     calls = math.ceil(len(blocks) / extract.BLOCKS_PER_CALL) + math.ceil(reqs / batch_size) + 2
     tokens_in = doc_tokens * 2.5 + calls * 1500
     tokens_out = reqs * 250 + doc_tokens * 0.6
-    info = models_config().get(model)
-    price = (
-        f"≈ ${(tokens_in * info.price_in + tokens_out * info.price_out) / 1e6:.3f}"
-        if info
-        else "цена модели неизвестна"
-    )
-    volume = f"~{tokens_in / 1000:.0f}k вход / ~{tokens_out / 1000:.0f}k выход"
-    return f"Оценка:   ~{calls} вызовов, {volume}, {price}"
+    return Estimate(calls, tokens_in, tokens_out, _price(model, tokens_in, tokens_out))
+
+
+def estimate_baseline(doc: Document, model: str) -> Estimate:
+    """Один вызов: весь документ плюс критерии на входе, список находок на выходе."""
+    blocks = extract.candidate_blocks(doc)
+    doc_tokens = sum(len(b.text) + 40 for b in blocks) / 3
+    tokens_in = doc_tokens + 2500
+    tokens_out = 1500 + len(blocks) * 40
+    return Estimate(1, tokens_in, tokens_out, _price(model, tokens_in, tokens_out))
+
+
+def estimate(doc: Document, model: str, batch_size: int) -> str:
+    e = estimate_numbers(doc, model, batch_size)
+    price = f"≈ ${e.usd:.3f}" if e.usd is not None else "цена модели неизвестна"
+    volume = f"~{e.tokens_in / 1000:.0f}k вход / ~{e.tokens_out / 1000:.0f}k выход"
+    return f"Оценка:   ~{e.calls} вызовов, {volume}, {price}"
 
 
 def build_client(settings: Settings, options: Options) -> OpenAICompatClient:
