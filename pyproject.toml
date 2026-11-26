@@ -30,7 +30,6 @@ reqcheck = "reqcheck.cli:main"
 [dependency-groups]
 dev = [
     "pytest>=9.2,<10",
-    "reportlab>=5.1,<6",
     "ruff>=0.17,<1",
 ]
 

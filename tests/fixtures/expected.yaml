@@ -1,0 +1,99 @@
+# Ожидаемые находки для eval (docs/02-trd.md, §10). Формат записи:
+#   id        — метка дефекта в таблицах eval
+#   category  — основная категория находки (Category из reqcheck/schemas/common.py)
+#   accept    — допустимые синонимы категории: находка с другой категорией, но на том же месте
+#               считается верной (граница между категориями размыта: «быстро» — это и
+#               неоднозначность, и непроверяемость)
+#   quotes    — цитаты-якоря: короткие дословные фрагменты текста документа (проверяются при
+#               генерации). Якорь — только суть дефекта: находка может цитировать больше (контекст),
+#               и пересечение считается, когда короткая цитата целиком лежит в длинной
+#   min_quotes — сколько цитат находка должна покрыть (по умолчанию 1)
+# Сопоставление: категория и partial_ratio цитат >= 80 (reqcheck/eval/matching.py).
+# Не покрыты: missing_topic и traceability — у них нет места в тексте, цитату-якорь не задать.
+version: 1
+fixtures:
+  defects.pdf:
+    defects:
+      - id: D-ambiguous
+        category: ambiguous
+        accept: [unverifiable]
+        quotes: ["быстро формировать выписку"]
+      - id: D-unverifiable
+        category: unverifiable
+        accept: [ambiguous, incomplete]
+        quotes: ["высокий уровень безопасности персональных данных"]
+      - id: D-incomplete
+        category: incomplete
+        accept: [unverifiable, ambiguous]
+        quotes: ["применять к заказу скидку в зависимости от уровня покупателя"]
+      - id: D-composite
+        category: composite
+        accept: []
+        quotes: ["регистрировать возврат товара, пересчитывать бонусные баллы, отправлять покупателю чек возврата"]
+      - id: D-design-decision
+        category: design_decision
+        accept: []
+        quotes: ["в базе данных PostgreSQL 16 в таблице orders"]
+      - id: D-infeasible
+        category: infeasible
+        accept: [unverifiable]
+        quotes: ["не допускать потери ни одного заказа ни при каких сбоях"]
+      - id: D-incorrect
+        category: incorrect
+        accept: [contradiction]
+        quotes: ["за заказ на 2 000 ₸ покупатель получает 200 баллов"]
+      - id: D-unnecessary
+        category: unnecessary
+        accept: [design_decision, incorrect]
+        quotes: ["звуковой сигнал фанфар при каждом успешном входе"]
+      - id: D-nonconforming
+        category: nonconforming
+        accept: [ambiguous, unverifiable]
+        quotes: ["Ещё хорошо бы, чтобы можно было как-нибудь смотреть историю своих покупок"]
+      - id: D-duplicate
+        category: duplicate
+        accept: []
+        min_quotes: 2
+        quotes:
+          - "SMS с кодом подтверждения на указанный номер телефона"
+          - "отправлять на введённый при регистрации номер телефона SMS с кодом подтверждения"
+      - id: D-terminology
+        category: terminology
+        accept: []
+        quotes:
+          - "входе клиента в личный кабинет"
+          - "Покупатель может отменить заказ"
+
+  contradictions.pdf:
+    defects:
+      - id: C-addresses
+        category: contradiction
+        accept: []
+        min_quotes: 2
+        quotes:
+          - "не более 5 адресов доставки"
+          - "хранится до 10 адресов доставки"
+      - id: C-cancel-window
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "если с момента оформления прошло не более 30 минут"
+          - "Отмена заказа через 45 минут после оформления"
+      - id: C-response-code
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "возвращает ответ с кодом 200"
+          - "возвращает код 201 и идентификатор заказа"
+      - id: C-retention
+        category: contradiction
+        accept: [incorrect]
+        min_quotes: 2
+        quotes:
+          - "хранить данные выполненных заказов 3 года"
+          - "удаляются из хранилища через 12 месяцев после выполнения заказа"
+
+  clean.pdf:
+    defects: []
