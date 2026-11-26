@@ -83,3 +83,24 @@ def test_write_pdf_with_json(report: Report, tmp_path: Path) -> None:
     assert target.path in written and target.json_path in written
     assert target.path.read_bytes().startswith(b"%PDF")
     assert Report.model_validate_json(target.json_path.read_text(encoding="utf-8")) == report
+
+
+def test_pdf_text_layer_keeps_latin_a(report: Report, tmp_path: Path) -> None:
+    """ADR-010: альтернативы глифов (Golos `locl`: A → A.1) есть в ToUnicode, «A» не станет «Ă»."""
+    doc = report.run.document.model_copy(update={"name": "API Alerts ABC.md"})
+    r = report.model_copy(update={"run": report.run.model_copy(update={"document": doc})})
+    path = tmp_path / "a.pdf"
+    render_pdf(r, path)
+    t = text(pymupdf.open(path))
+    assert "API Alerts ABC" in t
+    assert "Ă" not in t
+
+
+def test_patch_cmap_adds_only_missing_codes() -> None:
+    from reqcheck.render.tounicode import patch_cmap
+
+    cmap = b"begincmap\n1 beginbfrange\n<0001> <0003> <0041>\nendbfrange\nendcmap\nend"
+    out = patch_cmap(cmap, {2: "Z", 258: "A"})
+    assert b"<0102> <0041>" in out and b"<0002> <005A>" not in out
+    assert out.endswith(b"endcmap\nend")
+    assert patch_cmap(out, {258: "A"}) == out

@@ -29,6 +29,7 @@ reqcheck = "reqcheck.cli:main"
 
 [dependency-groups]
 dev = [
+    "fonttools>=4.60",
     "pytest>=9.2,<10",
     "ruff>=0.17,<1",
 ]

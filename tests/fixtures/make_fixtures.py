@@ -2,9 +2,8 @@
 
 Запуск:  uv run python tests/fixtures/make_fixtures.py
 
-Латинскую «A» в текст не ставим: MuPDF при извлечении текста из встроенных подмножеств шрифтов
-Golos/JetBrains Mono возвращает «Ă» (глиф общий с U+0102). На вид PDF верный, ломается только
-текстовый слой; это же касается PDF-отчёта (см. docs/08-decisions.md).
+Текстовый слой чинится так же, как у PDF-отчёта: альтернативы глифов GSUB дописываются в
+ToUnicode (reqcheck/render/tounicode.py, ADR-010), поэтому латинская «A» извлекается как «A».
 Пишет defects.pdf, contradictions.pdf, clean.pdf рядом со скриптом (готовые PDF коммитятся).
 Тексты общие, про вымышленный интернет-магазин: ничего от документа организаторов.
 Шрифты те же, что у PDF-отчёта (reqcheck/render/fonts, OFL). Ожидаемые находки — в expected.yaml;
@@ -20,6 +19,7 @@ import pymupdf
 import yaml
 
 from reqcheck.render.pdf import A4, FONTS_DIR, MARGIN
+from reqcheck.render.tounicode import fix_tounicode
 from reqcheck.stages.quotes import match_key
 
 HERE = Path(__file__).parent
@@ -364,6 +364,7 @@ def render(doc: Doc, path: Path) -> None:
     with pymupdf.open(path) as pdf:
         pdf.set_metadata({"title": doc.title, "author": "ReqCheck fixtures"})
         pdf.subset_fonts()
+        fix_tounicode(pdf)
         data = pdf.tobytes(garbage=4, deflate=True)
     path.write_bytes(data)
 

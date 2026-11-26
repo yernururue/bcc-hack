@@ -113,6 +113,9 @@ def render_pdf(report: Report, path: Path, crit: Criteria | None = None) -> None
     # Колонтитул встраивает шрифт на каждой странице: подмножества + garbage=4 (дедуп потоков)
     # дают ~240 КБ вместо ~1,7 МБ. Подмножество строит сам MuPDF, fontTools не нужен.
     doc.subset_fonts()
+    from reqcheck.render.tounicode import fix_tounicode
+
+    fix_tounicode(doc)  # текстовый слой: «A» не превращается в «Ă» (ADR-010)
     path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(str(path), garbage=4, deflate=True)
     doc.close()
