@@ -73,3 +73,14 @@ def test_requirement_finding_repeating_set_finding_is_suppressed() -> None:
     kept, suppressed = suppress_noise([set_f, same, other], rules)
     assert [f.finding_id for f in suppressed] == ["F-002"]
     assert {f.finding_id for f in kept} == {"F-001", "F-003"}
+
+
+def test_incorrect_on_contradiction_participant_is_suppressed() -> None:
+    from reqcheck.stages.verify import suppress_noise
+
+    set_f = finding("F-001", ["R-001", "R-002"], Category.CONTRADICTION, Severity.BLOCKER)
+    side = finding("F-002", ["R-002"], Category.INCORRECT, Severity.MAJOR).model_copy(
+        update={"quote": "другая ячейка той же строки"}
+    )
+    _, suppressed = suppress_noise([set_f, side], thresholds().findings_filter)
+    assert [f.finding_id for f in suppressed] == ["F-002"]

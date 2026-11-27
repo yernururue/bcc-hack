@@ -208,6 +208,9 @@ def _repeats_set(f: Finding, set_level: list[Finding], threshold: float) -> bool
     for s in set_level:
         if rid not in s.requirement_ids:
             continue
+        # «некорректно» у участника противоречия — та же проблема, увиденная с одной стороны
+        if s.category == Category.CONTRADICTION and f.category == Category.INCORRECT:
+            return True
         for q in (s.quote, *s.related_quotes):
             if q and f.quote and max(similarity(f.quote, q), similarity(q, f.quote)) >= threshold:
                 return True
