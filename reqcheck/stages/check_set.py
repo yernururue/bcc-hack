@@ -9,6 +9,7 @@ from reqcheck.config import Criteria
 from reqcheck.llm.base import LLMClient
 from reqcheck.schemas import Requirement, Severity
 from reqcheck.stages.check_each import format_requirement
+from reqcheck.stages.empty import with_retry
 
 SetCategory = Literal["contradiction", "missing_topic", "duplicate", "terminology", "traceability"]
 
@@ -38,6 +39,10 @@ def run(requirements: list[Requirement], llm: LLMClient, criteria: Criteria) -> 
         requirements="\n".join(format_requirement(r, criteria.kind_names) for r in requirements),
     )
     system = prompts.load("system")
-    return llm.complete(
-        system=system, user=user, schema=SetResult, stage="check_set"
-    ).value.findings
+
+    def ask(text: str) -> list[SetFinding]:
+        return llm.complete(
+            system=system, user=text, schema=SetResult, stage="check_set"
+        ).value.findings
+
+    return with_retry(ask, user, "check_set")

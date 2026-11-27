@@ -14,6 +14,7 @@ from reqcheck.llm.base import LLMClient
 from reqcheck.schemas import Category, Severity
 from reqcheck.schemas.document import Document
 from reqcheck.stages.check_each import format_criteria
+from reqcheck.stages.empty import with_retry
 from reqcheck.stages.extract import candidate_blocks, format_block
 from reqcheck.stages.quotes import locate, locate_heading
 
@@ -52,12 +53,16 @@ def run(doc: Document, llm: LLMClient, criteria: Criteria, threshold: float) -> 
         criteria=format_criteria(criteria),
         blocks="\n".join(format_block(b) for b in blocks),
     )
-    result = llm.complete(
-        system=prompts.load("system"), user=user, schema=BaselineResult, stage="baseline"
-    ).value
+
+    def ask(text: str) -> list[BaselineFinding]:
+        return llm.complete(
+            system=prompts.load("system"), user=text, schema=BaselineResult, stage="baseline"
+        ).value.findings
+
+    answer = with_retry(ask, user, "baseline")  # та же защита, что в check_set: сравнение честное
 
     kept: list[EvalFinding] = []
-    for f in result.findings:
+    for f in answer:
         placed: list[str] = []
         sections: list[str] = []
         seen: set[str] = set()
@@ -82,4 +87,4 @@ def run(doc: Document, llm: LLMClient, criteria: Criteria, threshold: float) -> 
                     explanation=f.explanation.strip(),
                 )
             )
-    return BaselineOutput(kept, raw=len(result.findings), dropped=len(result.findings) - len(kept))
+    return BaselineOutput(kept, raw=len(answer), dropped=len(answer) - len(kept))
