@@ -1,0 +1,2669 @@
+{
+  "date": "2026-11-27",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "mode": "baseline",
+  "agent_version": "f77fe54",
+  "repeat": 2,
+  "variant": "",
+  "fixtures": [
+    {
+      "score": {
+        "fixture": "library.pdf",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "B-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "B-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "B-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "B-limit",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "B-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "B-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "B-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "incomplete"
+          }
+        ],
+        "findings_total": 13,
+        "findings_matched": 7,
+        "by_severity": {
+          "major": 7,
+          "blocker": 2,
+          "minor": 4
+        },
+        "unmatched": [
+          {
+            "category": "duplicate",
+            "severity": "major",
+            "quotes": [
+              "Читатель может одновременно держать на руках не больше 5 изданий.",
+              "Читатель может одновременно держать на руках не больше 10 изданий."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-7",
+              "4. Требования к данным",
+              "Д-2"
+            ],
+            "explanation": "Ф-7 и Д-2 описывают одно и то же ограничение в разных разделах.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "поля карточки заполняются из внешнего каталога, если ISBN там найден."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Учёт фонда",
+              "Ф-17"
+            ],
+            "explanation": "Не указано поведение системы, если ISBN не найден во внешнем каталоге.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "minor",
+            "quotes": [
+              "Просрочка 15 дней, стоимость издания 1 000 ₸ | Пеня 1 000 ₸"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Арифметическая ошибка: 4 дня × 100 ₸ = 400 ₸, но при стоимости 1 000 ₸ и лимите «не больше стоимости» результат должен быть 400 ₸ — верно; однако 15 дней × 100 ₸ = 1 500 ₸, а указано 1 000 ₸, что соответствует лимиту, но не согласуется с формулировкой «не больше стоимости» без явного указания лимита в критерии.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Читатель ищет издание по названию, автору, ISBN или ключевым словам; результаты показываются по 25 на странице."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Каталог",
+              "Ф-1"
+            ],
+            "explanation": "Требования Ф-1…Ф-19 и НФТ-1…НФТ-3 не используют единый шаблон «Система должна…»; часть сформулирована в описательном стиле.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Приоритет всех требований — «обязательно», если не указано иное."
+            ],
+            "sections": [],
+            "explanation": "В документе не указаны связи требований с источниками (кроме общего упоминания решения учёного совета) и приоритеты для отдельных требований.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "3. Нефункциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Отсутствует раздел с ограничениями и допущениями (например, лицензионные ограничения на электронные издания, политика хранения персональных данных).",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 33,
+      "routed": null,
+      "cost_usd": 0.0,
+      "seconds": 0.0,
+      "calls": 0,
+      "cached_calls": 1,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "insurance.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "I-incorrect",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-deadline",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-duplicate",
+            "category": "duplicate",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-traceability",
+            "category": "traceability",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-unnecessary",
+            "category": "unnecessary",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-infeasible",
+            "category": "infeasible",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-nonconforming",
+            "category": "nonconforming",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-incomplete",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-missing",
+            "category": "missing_topic",
+            "status": "missed",
+            "matched_category": null
+          }
+        ],
+        "findings_total": 0,
+        "findings_matched": 0,
+        "by_severity": {},
+        "unmatched": []
+      },
+      "blocks": 41,
+      "routed": null,
+      "cost_usd": 0.006878067,
+      "seconds": 31.5,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": false,
+      "note": "baseline: ответ модели обрезан по max_tokens",
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "utilities.pdf",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "U-period",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "U-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "U-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "U-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "U-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "U-retry",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "U-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "U-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "U-missing",
+            "category": "missing_topic",
+            "status": "wrong_category",
+            "matched_category": "incorrect"
+          }
+        ],
+        "findings_total": 28,
+        "findings_matched": 8,
+        "by_severity": {
+          "blocker": 3,
+          "major": 17,
+          "minor": 8
+        },
+        "unmatched": [
+          {
+            "category": "contradiction",
+            "severity": "major",
+            "quotes": [
+              "До 25 числа абонент может исправить переданное в этом месяце показание любое число раз; учитывается последнее.",
+              "Система должна принимать показания с 20 по 28 число месяца."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-11",
+              "Ф-13"
+            ],
+            "explanation": "Ф-11 разрешает исправлять показание до 25 числа, а Ф-13 продлевает приём показаний до 28 числа. Неясно, до какого числа действует исправление.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "contradiction",
+            "severity": "major",
+            "quotes": [
+              "15 числа абонент получает напоминание о начале периода передачи показаний.",
+              "Система должна принимать показания с 20 по 28 число месяца."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Уведомления",
+              "Ф-27",
+              "2.2. Показания",
+              "Ф-13"
+            ],
+            "explanation": "Ф-27 и Ф-28 привязывают напоминания к 15 и 23 числу, а Ф-13 сдвигает период передачи на 20–28 число. Напоминание 15 числа о начале периода становится неверным.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Если показания не переданы до конца периода, начисление выполняется по среднему расходу."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-12"
+            ],
+            "explanation": "«Конец периода» не определён: непонятно, имеется ли в виду 25 число, 28 число или конец календарного месяца.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Оплата поступает в расчётный центр в течение суток."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-25"
+            ],
+            "explanation": "«В течение суток» не задаёт точный срок и не указывает, календарные это сутки или рабочие. Проверить срок невозможно.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "23 числа абонент, не передавший показания, получает повторное напоминание."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Уведомления",
+              "Ф-28"
+            ],
+            "explanation": "«Повторное напоминание» не указывает, сколько раз и с каким интервалом оно отправляется. Поведение системы не определено.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "система просит абонента подтвердить показание."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-9"
+            ],
+            "explanation": "«Просит подтвердить показание» не описывает измеримого результата: неясно, что именно показывается и как фиксируется подтверждение.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "Ответ на обращение даётся в течение 10 рабочих дней и показывается в"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Обращения",
+              "Ф-32"
+            ],
+            "explanation": "«Показывается в приложении» не задаёт, где именно и в каком виде отображается ответ. Проверить отображение нельзя.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "после 5 неудачных попыток за сутки привязка блокируется до следующих суток."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Лицевые счета",
+              "Ф-5"
+            ],
+            "explanation": "Не указано, что происходит после блокировки: снимается ли она автоматически, можно ли разблокировать вручную, что видит абонент.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Новое показание не может быть меньше предыдущего, кроме случая замены прибора учёта."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-8"
+            ],
+            "explanation": "Не указано, что происходит при замене прибора учёта: как вводится новое показание, как пересчитывается начисление, какие данные сохраняются.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Абонент может отвязать лицевой счёт; история показаний по нему остаётся в расчётном центре."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Лицевые счета",
+              "Ф-3"
+            ],
+            "explanation": "Не указано, что происходит при отвязке счёта: сохраняются ли начисления, доступ к квитанциям, возможность повторной привязки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Абонент оплачивает квитанцию банковской картой; частичная оплата допускается."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-22"
+            ],
+            "explanation": "Требование объединяет оплату картой и допустимость частичной оплаты — два независимых свойства.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Данные абонентов передаются по TLS 1.2 и выше, номера карт не хранятся в системе."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-4"
+            ],
+            "explanation": "Требование задаёт конкретный протокол TLS 1.2 и выше. Это техническое решение; для требования достаточно свойства защищённой передачи.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "infeasible",
+            "severity": "major",
+            "quotes": [
+              "В период с 15 по 25 число сервис доступен не менее 99,9 % времени."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "«Не менее 99,9 % времени» в период с 15 по 25 число — абсолютное требование доступности, которое трудно гарантировать и проверить без оговорки об окне обслуживания.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unnecessary",
+            "severity": "minor",
+            "quotes": [
+              "При расходе 12 кубометров воды и тарифе 150 ₸ за кубометр начисление равно 1 650 ₸."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-21"
+            ],
+            "explanation": "Ф-21 — частный пример к Ф-20, дублирующий формулу начисления. Как отдельное требование оно избыточно.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "blocker",
+            "quotes": [
+              "Абонент передаёт показания с 15 по 25 число каждого месяца включительно.",
+              "Система должна принимать показания с 20 по 28 число месяца."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-6",
+              "Ф-13"
+            ],
+            "explanation": "Ф-6 и Ф-13 описывают одно и то же — период приёма показаний, но с разными датами. Это дублирование с противоречием.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Система должна принимать показания с 20 по 28 число месяца."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-13"
+            ],
+            "explanation": "Ф-13 оформлено не по шаблону: остальные требования начинаются с «Абонент…», а здесь использована конструкция «Система должна…» без единого стиля.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "major",
+            "quotes": [
+              "Ответ на обращение даётся в течение 10 рабочих дней и показывается в",
+              "приложении."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Обращения",
+              "Ф-32"
+            ],
+            "explanation": "Ф-32 разорвано между блоками B-0043 и B-0044: текст требования заканчивается на «показывается в», а продолжение «приложении.» вынесено отдельным блоком.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "major",
+            "quotes": [
+              "2. Функциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "В документе не указаны приоритеты отдельных требований, связи между требованиями и источниками, кроме общей ссылки на регламент. Это мешает планированию и проверке полноты.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "3. Нефункциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Отсутствует раздел с ограничениями и допущениями: не указаны платформы, часовой пояс пользователей, ограничения по нагрузке и внешние зависимости.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "5. Интеграция"
+            ],
+            "sections": [
+              "5. Интеграция"
+            ],
+            "explanation": "Не описан сценарий ошибок и исключений для интеграции с расчётным центром: что делать при недоступности, таймауте, частичном приёме пакета.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 55,
+      "routed": null,
+      "cost_usd": 0.0,
+      "seconds": 0.0,
+      "calls": 0,
+      "cached_calls": 1,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "warehouse.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "W-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "traceability"
+          },
+          {
+            "id": "W-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "W-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "W-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "infeasible"
+          },
+          {
+            "id": "W-fefo",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "W-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "W-unnecessary",
+            "category": "unnecessary",
+            "status": "found",
+            "matched_category": "unnecessary"
+          },
+          {
+            "id": "W-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "W-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "W-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "W-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "W-duplicate",
+            "category": "duplicate",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-incomplete",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-missing",
+            "category": "missing_topic",
+            "status": "missed",
+            "matched_category": null
+          }
+        ],
+        "findings_total": 13,
+        "findings_matched": 11,
+        "by_severity": {
+          "major": 6,
+          "blocker": 3,
+          "minor": 4
+        },
+        "unmatched": [
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "ещё бы неплохо дашборд для директора с основными цифрами, какие — обсудим потом"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.12. Отчёты"
+            ],
+            "explanation": "Пункт оформлен как разговорная заметка без идентификатора и формулировки «система должна», выбивается из шаблона документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "5. Интеграции"
+            ],
+            "sections": [
+              "5. Интеграции"
+            ],
+            "explanation": "Не описан сценарий обработки ошибок и исключений при сбое интеграции с учётной системой (кроме очереди), а также поведение при конфликте данных.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 114,
+      "routed": null,
+      "cost_usd": 0.001177239,
+      "seconds": 5.7,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "tickets-clean.pdf",
+        "split": "holdout",
+        "defects": [],
+        "findings_total": 72,
+        "findings_matched": 0,
+        "by_severity": {
+          "blocker": 1,
+          "major": 10,
+          "minor": 61
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "blocker",
+            "quotes": [
+              "После успешной оплаты покупатель получает на почту электронные"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-11"
+            ],
+            "explanation": "Требование обрывается на полуслове: не указано, что именно получает покупатель и в каком виде. Без этого невозможно реализовать и проверить отправку билета.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Покупатель вводит адрес электронной почты и номер телефона, затем оплачивает заказ банковской картой на странице платёжного шлюза."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-9"
+            ],
+            "explanation": "В одном пункте объединены независимые возможности: ввод контактов и оплата картой через шлюз. Их можно реализовать и проверять по отдельности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Требование содержит два независимых условия с разными сообщениями: использованный билет и билет на другой концерт. Проверяются они отдельными тестами.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "В одном пункте объединены продажа билетов и приём двух способов оплаты. Это разные возможности с разными сценариями проверки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Поиск заказа и повторная отправка билетов — независимые действия, объединённые союзом «и». Их следует проверять отдельно.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Данные банковских карт не хранятся на стороне сайта; данные покупателей передаются только по TLS версии 1.2 или выше."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Требование объединяет два независимых свойства: отсутствие хранения данных карт и требование к протоколу передачи. Проверяются они по-разному.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "место становится свободным сразу после оформления возврата"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "«Сразу после оформления возврата» не задаёт измеримого момента времени, поэтому требование нельзя проверить тестом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Кассир — сотрудник концертного зала."
+            ],
+            "sections": [
+              "1. Роли",
+              "Р-2"
+            ],
+            "explanation": "«Сотрудник концертного зала» не определяет роль и права кассира, из-за чего невозможно разграничить доступ и проверить требование.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель — человек, покупающий билеты на сайте."
+            ],
+            "sections": [
+              "1. Роли",
+              "Р-1"
+            ],
+            "explanation": "«Человек, покупающий билеты на сайте» не описывает, является ли покупатель зарегистрированным пользователем или гостем, что влияет на сценарии оплаты и возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "При отказе банка заказ не создаётся, резерв мест сохраняется до окончания 15 минут"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-10"
+            ],
+            "explanation": "Не указано, что происходит с заказом и резервом мест, если покупатель не завершил оплату на странице шлюза (закрыл страницу, тайм-аут). Это граничный случай, без которого нельзя реализовать сценарий.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Покупатель вводит адрес электронной почты и номер телефона"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-9"
+            ],
+            "explanation": "Не задано поведение системы, если покупатель ввёл некорректный адрес электронной почты или номер телефона. Без этого нельзя проверить валидацию.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов, и они получают письмо об отмене."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Не указано, что происходит с уже проданными билетами и с покупателями, которые не получили письмо, при отмене концерта. Не хватает условий и сроков возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Деньги за возвращённый билет поступают на карту, которой был оплачен заказ, в течение 10 рабочих дней"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "Не указано, что происходит с заказом и билетами, если возврат оформлен, но деньги не удалось перечислить. Нет поведения при ошибке.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Не указано, что происходит, если кассир вводит номер заказа, которого нет, или адрес почты, не связанный ни с одним заказом. Нет поведения при ошибке поиска.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Контролёр сканирует QR-код билета; система показывает «Проход разрешён» для действительного билета, не использованного ранее."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что происходит, если QR-код не распознан или билет не найден в системе. Нет поведения при ошибке сканирования.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Выбранные места резервируются за покупателем на 15 минут; по истечении 15 минут без оплаты резерв снимается, а места становятся свободными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выбор мест",
+              "Ф-6"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель выбрал места, но не оплатил заказ и резерв истёк, а затем он снова открывает заказ. Нет поведения для этого граничного случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Если место заняли до того, как покупатель его выбрал, схема обновляется, а покупатель видит сообщение «Место уже занято, выберите другое»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выбор мест",
+              "Ф-7"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель выбрал места, но они были заняты другим покупателем до подтверждения. Нет поведения при конфликте резервирования.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель может вернуть билет не позднее чем за 72 часа до начала концерта и получить 100 % стоимости билета."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-12"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован или возвращён. Нет поведения для этих случаев.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель может вернуть билет не позднее чем за 72 часа до начала концерта"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-12"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Если до начала концерта осталось меньше 72 часов, кнопка возврата недоступна"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-13"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже был возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "кнопка возврата недоступна, а рядом показана надпись «Возврат возможен не позднее чем за 72 часа до концерта»"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-13"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель может вернуть билет не позднее чем за 72 часа до начала концерта и получить 100 % стоимости билета."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-12"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель может вернуть билет не позднее чем за 72 часа до начала концерта"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-12"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Деньги за возвращённый билет поступают на карту, которой был оплачен заказ, в течение 10 рабочих дней"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже был возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Деньги за возвращённый билет поступают на карту, которой был оплачен заказ"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Деньги за возвращённый билет поступают на карту, которой был оплачен заказ, в течение 10 рабочих дней"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Деньги за возвращённый билет поступают на карту, которой был оплачен заказ, в течение 10 рабочих дней"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Контролёр сканирует QR-код билета; система показывает «Проход разрешён» для действительного билета, не использованного ранее."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Контролёр сканирует QR-код билета; система показывает «Проход разрешён» для действительного билета, не использованного ранее."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Контролёр сканирует QR-код билета; система показывает «Проход разрешён» для действительного билета, не использованного ранее."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Контролёр сканирует QR-код билета; система показывает «Проход разрешён» для действительного билета, не использованного ранее."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Контролёр сканирует QR-код билета; система показывает «Проход разрешён» для действительного билета, не использованного ранее."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Каждая продажа и каждый возврат через кассу записываются в журнал: кассир, время, номер заказа, сумма и способ оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-20"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Каждая продажа и каждый возврат через кассу записываются в журнал: кассир, время, номер заказа, сумма и способ оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-20"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Каждая продажа и каждый возврат через кассу записываются в журнал: кассир, время, номер заказа, сумма и способ оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-20"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Каждая продажа и каждый возврат через кассу записываются в журнал: кассир, время, номер заказа, сумма и способ оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-20"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Каждая продажа и каждый возврат через кассу записываются в журнал: кассир, время, номер заказа, сумма и способ оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-20"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Схема зала открывается не дольше 2 секунд на 95-м процентиле при 2 000 одновременных покупателей."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-1"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Сайт доступен не менее 99,9 % времени за календарный месяц; плановые работы проводятся с 03:00 до 05:00 по времени Алматы и не входят в расчёт."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Данные банковских карт не хранятся на стороне сайта; данные покупателей передаются только по TLS версии 1.2 или выше."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Ответ на сканирование QR-кода — не дольше 1 секунды на 99-м процентиле при 20 сканированиях в секунду."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-4"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Заказ хранит номер из 8 цифр, почту и телефон покупателя, концерт, места, сумму, статус и время оплаты."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-1"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Билет хранит номер заказа, концерт, ряд, место, цену и статус: действителен, использован, возвращён."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-2"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Заказы и журнал кассы хранятся 5 лет."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-3"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Условие | Ожидаемый результат"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель выбирает 7 мест в одном заказе | Седьмое место не выбрано, показано «В одном заказе не больше 6 мест»"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель выбрал 2 места и не оплатил заказ за 15 минут | Места снова свободны"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "До концерта 80 часов, покупатель возвращает билет | Возврат оформлен на 100 % стоимости"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже использован. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "До концерта 70 часов, покупатель открывает заказ | Кнопка возврата недоступна"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который уже возвращён. Нет поведения для повторного возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Билет уже прошёл контроль, его | Показано «Билет уже использован»"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не принадлежит ему. Нет проверки прав.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "сканируют повторно"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не оплачен. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Учебная спецификация веб-витрины концертного зала. Версия 3.0 от 14.07.2026. Приоритет всех требований — «обязательно». Источник требований — регламент продаж концертного зала, редакция 4. Оплата картой выполняется по спецификации платёжного шлюза версии 2.1, приложенной к этому документу."
+            ],
+            "sections": [],
+            "explanation": "Не указано, что происходит, если покупатель пытается вернуть билет, который не существует. Нет поведения для этого случая.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 37,
+      "routed": null,
+      "cost_usd": 0.0,
+      "seconds": 0.1,
+      "calls": 0,
+      "cached_calls": 1,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "organizers-requirements.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "O-get-save",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "O-description",
+            "category": "contradiction",
+            "status": "wrong_category",
+            "matched_category": "missing_topic"
+          },
+          {
+            "id": "O-200-error",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "O-created",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-403-404",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "O-body",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-types",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "O-prod-url",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-read-method",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "O-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "O-month",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-push-limit",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "O-units",
+            "category": "incorrect",
+            "status": "wrong_category",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "O-refund",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "O-nfr",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "O-idempotency",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "O-ui-error",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-testing",
+            "category": "missing_topic",
+            "status": "wrong_category",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "O-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "nonconforming"
+          }
+        ],
+        "findings_total": 39,
+        "findings_matched": 11,
+        "by_severity": {
+          "major": 25,
+          "minor": 13,
+          "blocker": 1
+        },
+        "unmatched": [
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Если результат 400, 401 и далее — неуспешный."
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Ответ"
+            ],
+            "explanation": "«и далее» не задаёт границу диапазона кодов, из-за чего нельзя однозначно определить, какие ответы считать неуспешными.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Проверить сумму и переключатель."
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Логика работы метода",
+              "п. 3"
+            ],
+            "explanation": "«Проверить сумму и переключатель» не описывает, что именно проверяется и какие значения допустимы, поэтому шаг нельзя однозначно реализовать и протестировать.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Заменить настройку и вернуть результат сохранения."
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Логика работы метода",
+              "п. 4"
+            ],
+            "explanation": "«Заменить настройку и вернуть результат сохранения» не определяет, что именно возвращается и в каком виде, что мешает проверке.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "message | string | При ошибке | Описание ошибки | —"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Ответ",
+              "message"
+            ],
+            "explanation": "«При ошибке» не указывает, при каких кодах или result возвращается message, что мешает однозначной проверке.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "Сервис передаёт push на отправку в течение минуты после получения события."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Нефункциональные требования"
+            ],
+            "explanation": "«в разумных технических и временных рамках» — оценочная формулировка без измеримого критерия, проверить нельзя.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "заполняются тестировщиками"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к тестированию",
+              "Тестирование требований"
+            ],
+            "explanation": "«заполняются тестировщиками» не содержит проверяемого результата и критерия готовности раздела тестирования.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Сервис расходов → настройки: получить порог карты."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Sequence Diagram"
+            ],
+            "explanation": "Не описано поведение при отсутствии настройки порога для карты и при отсутствии карты у клиента.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "400. Ответ в случае, если параметры запроса заполнены неверно."
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Статусы",
+              "400"
+            ],
+            "explanation": "Не указано, что происходит при отсутствии обязательных query-параметров и при неверном Content-Type.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Ф-2. Месяц определяется по дате совершения покупки в Алматы. В расходы входят проведённые покупки. Возврат уменьшает расходы месяца исходной покупки. Переводы и снятие наличных исключаются."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-2"
+            ],
+            "explanation": "Одно требование содержит несколько независимых правил: определение месяца, состав расходов, обработку возврата и исключения.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Ф-3. Когда расходы переходят от суммы ниже порога к сумме, равной порогу или выше, клиент получает push. На карту приходится максимум один такой push за календарный месяц."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-3"
+            ],
+            "explanation": "Одно требование содержит и правило отправки push, и ограничение частоты, что затрудняет независимую проверку.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Ф-4. При изменении порога накопленная сумма сохраняется. Если она ниже нового порога, следующее достижение вызывает push независимо от истории предыдущей настройки."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-4"
+            ],
+            "explanation": "Одно требование содержит и сохранение накопленной суммы, и правило повторного достижения порога.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Controller | AlertsController"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Общие параметры",
+              "Controller"
+            ],
+            "explanation": "Требование навязывает конкретное имя контроллера, что ограничивает реализацию без необходимости.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Хранить идентификатор карты, месяц, идентификатор операции, сумму покупки в тиынах, признак отправки и порог в тенге."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к данным"
+            ],
+            "explanation": "Требование навязывает конкретную структуру хранения (поля БД), что относится к реализации, а не к требованию.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "infeasible",
+            "severity": "major",
+            "quotes": [
+              "На карту приходится максимум один такой push за календарный месяц."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-3"
+            ],
+            "explanation": "«максимум один такой push за календарный месяц» — абсолютное ограничение, которое нельзя гарантировать при сбоях доставки и повторной обработке событий.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "curl -G \"$BASE/alerts/saveLimit\" -H \"Authorization: Bearer $TOKEN\" --data 'cardId=demo-42&amount=50000&enabled=1'"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Общие параметры",
+              "CURL"
+            ],
+            "explanation": "URL /alerts/saveLimit и метод GET не соответствуют операции сохранения; кроме того, в CURL используется -G с --data, что противоречит семантике.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "amount | string | При успехе | Порог в тенге | limit_kzt"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Ответ",
+              "amount"
+            ],
+            "explanation": "В ответе amount и enabled объявлены как string, тогда как в запросе amount — integer, а enabled — integer; это противоречие форматов.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "{\"result\":\"ERROR\",\"message\":\"Проверьте сумму\"}"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Статусы",
+              "200. Successful — Created"
+            ],
+            "explanation": "Раздел «200. Successful — Created» содержит пример с result=ERROR, что противоречит успешному коду 200.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "Покупка 31 января в 23:58 на 4 000 ₸ | Провести 1 февраля в 00:03 по Алматы | Февральский счётчик вырос на 4 000 ₸"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Критерии приемки"
+            ],
+            "explanation": "В критерии приёмки указано «Провести 1 февраля в 00:03 по Алматы», но действие не описывает покупку, а исходные условия содержат покупку 31 января.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unnecessary",
+            "severity": "minor",
+            "quotes": [
+              "Изменение порога сохраняет накопленные расходы."
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Особые правила",
+              "п. 3"
+            ],
+            "explanation": "Требование дублирует Ф-4 в части сохранения накопленной суммы при изменении порога.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "major",
+            "quotes": [
+              "Документ (версия/дата) в источнике не заполнен. Пункты чек-листа приведены как в шаблоне, отметки не проставлены."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Ревью требований"
+            ],
+            "explanation": "Раздел «Ревью требований» содержит чек-лист без отметок и без версии/даты документа, что не соответствует шаблону.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "contradiction",
+            "severity": "minor",
+            "quotes": [
+              "Переводы и снятие наличных исключаются.",
+              "Расходы 19 900 ₸, порог 20 000 ₸ | Перевести 500 ₸ | Счётчик показывает 19 900 ₸"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-2",
+              "Критерии приемки"
+            ],
+            "explanation": "В части A сказано, что переводы исключаются, а критерий приёмки проверяет перевод 500 ₸ и ожидает, что счётчик не изменится, что согласуется, но в критерии не указано, что перевод не должен учитываться в других сценариях.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "minor",
+            "quotes": [
+              "Ф-4. При изменении порога накопленная сумма сохраняется.",
+              "Изменение порога сохраняет накопленные расходы."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-4",
+              "Часть B. REST API",
+              "Особые правила",
+              "п. 3"
+            ],
+            "explanation": "Правило сохранения накопленных расходов при изменении порога повторяется в Ф-4 и в особых правилах части B.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "terminology",
+            "severity": "minor",
+            "quotes": [
+              "enabled | integer | 1 знак | Да | 0 или 1 | Признак включения | enabled"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Параметры запроса",
+              "Query-параметры",
+              "enabled"
+            ],
+            "explanation": "Одна и та же сущность названа по-разному: «переключатель», «признак включения», «enabled», «enabled=1».",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Требования к изменениям"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям"
+            ],
+            "explanation": "Отсутствует раздел с приоритетами требований, без которого нельзя планировать разработку.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Общие сведения"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Общие сведения"
+            ],
+            "explanation": "Отсутствует раздел с источниками требований и связями с бизнес-требованиями.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Нефункциональные требования"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Общие параметры",
+              "Description"
+            ],
+            "explanation": "Отсутствует описание обработки ошибок и исключений для сервиса расходов и push-сервиса.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "major",
+            "quotes": [
+              "Требования к интеграции"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к интеграции"
+            ],
+            "explanation": "Нет связей между требованиями части A и части B, а также между требованиями и критериями приёмки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Логика работы метода"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Логика работы метода"
+            ],
+            "explanation": "Нет приоритетов и источников для требований части B.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 93,
+      "routed": null,
+      "cost_usd": 0.0,
+      "seconds": 0.1,
+      "calls": 0,
+      "cached_calls": 1,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    }
+  ],
+  "metrics": {
+    "recall": 0.6379310344827587,
+    "recall_by_fixture": {
+      "library.pdf": 1.0,
+      "insurance.md": 0.0,
+      "utilities.pdf": 0.8888888888888888,
+      "warehouse.md": 0.7857142857142857,
+      "organizers-requirements.md": 0.5789473684210527
+    },
+    "recall_by_kind": {
+      "ambiguous": [
+        4,
+        4
+      ],
+      "composite": [
+        3,
+        3
+      ],
+      "contradiction": [
+        6,
+        10
+      ],
+      "design_decision": [
+        3,
+        3
+      ],
+      "duplicate": [
+        0,
+        2
+      ],
+      "incomplete": [
+        3,
+        7
+      ],
+      "incorrect": [
+        4,
+        7
+      ],
+      "infeasible": [
+        1,
+        2
+      ],
+      "missing_topic": [
+        2,
+        6
+      ],
+      "nonconforming": [
+        1,
+        2
+      ],
+      "terminology": [
+        4,
+        4
+      ],
+      "traceability": [
+        2,
+        3
+      ],
+      "unnecessary": [
+        1,
+        2
+      ],
+      "unverifiable": [
+        3,
+        3
+      ]
+    },
+    "located_recall": 0.7068965517241379,
+    "precision": 0.3978494623655914,
+    "false_positives_clean": 72,
+    "false_positives_clean_major": 11
+  },
+  "metrics_by_split": {
+    "holdout": {
+      "recall": 0.6379310344827587,
+      "recall_by_fixture": {
+        "library.pdf": 1.0,
+        "insurance.md": 0.0,
+        "utilities.pdf": 0.8888888888888888,
+        "warehouse.md": 0.7857142857142857,
+        "organizers-requirements.md": 0.5789473684210527
+      },
+      "recall_by_kind": {
+        "ambiguous": [
+          4,
+          4
+        ],
+        "composite": [
+          3,
+          3
+        ],
+        "contradiction": [
+          6,
+          10
+        ],
+        "design_decision": [
+          3,
+          3
+        ],
+        "duplicate": [
+          0,
+          2
+        ],
+        "incomplete": [
+          3,
+          7
+        ],
+        "incorrect": [
+          4,
+          7
+        ],
+        "infeasible": [
+          1,
+          2
+        ],
+        "missing_topic": [
+          2,
+          6
+        ],
+        "nonconforming": [
+          1,
+          2
+        ],
+        "terminology": [
+          4,
+          4
+        ],
+        "traceability": [
+          2,
+          3
+        ],
+        "unnecessary": [
+          1,
+          2
+        ],
+        "unverifiable": [
+          3,
+          3
+        ]
+      },
+      "located_recall": 0.7068965517241379,
+      "precision": 0.3978494623655914,
+      "false_positives_clean": 72,
+      "false_positives_clean_major": 11
+    }
+  }
+}

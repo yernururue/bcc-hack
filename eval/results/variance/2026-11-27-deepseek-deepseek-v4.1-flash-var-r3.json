@@ -1,0 +1,2038 @@
+{
+  "date": "2026-11-27",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "mode": "pipeline",
+  "agent_version": "f77fe54",
+  "repeat": 3,
+  "variant": "",
+  "fixtures": [
+    {
+      "score": {
+        "fixture": "library.pdf",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "B-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "B-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "B-composite",
+            "category": "composite",
+            "status": "wrong_category",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "B-limit",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "B-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "B-terminology",
+            "category": "terminology",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "B-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "incomplete"
+          }
+        ],
+        "findings_total": 28,
+        "findings_matched": 5,
+        "by_severity": {
+          "blocker": 8,
+          "major": 17,
+          "minor": 3
+        },
+        "unmatched": [
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Поиск должен находить нужные издания максимально релевантно."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Каталог",
+              "Ф-3"
+            ],
+            "explanation": "Слово «максимально релевантно» не имеет однозначного определения: разные читатели поймут его по-разному, что приведёт к разной реализации ранжирования.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Поиск должен находить нужные издания максимально релевантно."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Каталог",
+              "Ф-3"
+            ],
+            "explanation": "Не указано, что делать при отсутствии результатов поиска или при неполном совпадении, а также не заданы граничные условия ранжирования.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "рассчитывать пеню за просрочку"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Нет измеримого критерия: не заданы ставка, база начисления и предельная величина, поэтому результат нельзя проверить тестом.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "рассчитывать пеню за просрочку"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Не указано, от какой даты и по какому правилу считается просрочка, поэтому возможны разные толкования момента начала начисления.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "обновлять число свободных экземпляров"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Нет измеримого критерия: не задано, на сколько и при каком событии меняется значение, поэтому результат нельзя проверить тестом.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "обновлять число свободных экземпляров"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Не указано, в какой момент и по какому событию обновляется счётчик, поэтому возможны разные толкования.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "обновлять число свободных экземпляров"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Не описаны граничные случаи: что делать, если свободных экземпляров нет или возвращён экземпляр, не числящийся выданным.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "уведомлять следующего читателя из очереди"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Нет измеримого критерия: не заданы канал уведомления и момент его отправки, поэтому результат нельзя проверить тестом.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "уведомлять следующего читателя из очереди"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Не определено, кто такой «следующий читатель» и по какому правилу он выбирается из очереди.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "уведомлять следующего читателя из очереди"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Не описано поведение при ошибках и исключениях: что делать, если очередь пуста или уведомление не доставлено.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Пока у читателя есть неоплаченная пеня, он не может бронировать издания."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-12"
+            ],
+            "explanation": "Не описано, как читатель узнаёт о блокировке и как она снимается после оплаты пени.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "добавлять закладки и заметки к электронному изданию"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Электронные издания",
+              "Ф-16"
+            ],
+            "explanation": "Требование объединяет две независимые возможности — добавление закладок и добавление заметок, — которые можно реализовать и проверить по отдельности.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "поля карточки заполняются из внешнего каталога, если ISBN там найден"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Учёт фонда",
+              "Ф-17"
+            ],
+            "explanation": "Не описано поведение, если ISBN не найден во внешнем каталоге: какие поля и кем заполняются.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "обеспечивать комфортную работу читателей"
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "Слово «комфортная» не имеет однозначного определения, поэтому требование допускает разные толкования.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "обеспечивать комфортную работу читателей"
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "Не указано, какие именно операции читателя и при какой нагрузке должны быть комфортными.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "скачивание файла издания из браузера заблокировано"
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Не указано, что именно блокируется: скачивание любого файла из браузера или только файлов электронных изданий. Возможны два разных прочтения.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "скачивание файла издания из браузера заблокировано"
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Не описано поведение системы при попытке скачивания: что видит читатель, какой ответ возвращается, есть ли исключения.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          },
+          {
+            "category": "incomplete",
+            "severity": "blocker",
+            "quotes": [
+              "Электронное издание открыто 3 читателями,"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Строка обрывается на запятой: не указано, что должно произойти при открытии издания третьим читателем и каков ожидаемый результат.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          },
+          {
+            "category": "incomplete",
+            "severity": "blocker",
+            "quotes": [
+              "открывает четвёртый | попробуйте позже»"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Строка является обрывком предыдущей: нет условия (сколько читателей уже открыли издание) и нет полного ожидаемого результата.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Приоритет всех требований — «обязательно», если не указано иное."
+            ],
+            "sections": [],
+            "explanation": "В документе нет связей требований с целями или источниками и нет ранжирования, кроме общего указания R-001. Это мешает управлять изменениями и приоритизировать разработку.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Система должна регистрировать возврат издания"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выдача",
+              "Ф-10"
+            ],
+            "explanation": "Для Ф-10 описаны регистрация возврата, расчёт пени, обновление свободных экземпляров и уведомление очереди, но не описано поведение при ошибках и отказах: что делать, если внешний каталог недоступен, платёж не проходит или уведомление не отправлено.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "они сохраняются в его профиле"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Электронные издания",
+              "Ф-16"
+            ],
+            "explanation": "Ф-25 разрешает читателю добавлять закладки и заметки, но не определены права доступа и срок жизни этих данных: кто видит заметки, что происходит при удалении профиля или отзыве доступа к изданию.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "поля карточки заполняются из внешнего каталога, если ISBN там найден"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Учёт фонда",
+              "Ф-17"
+            ],
+            "explanation": "Ф-17 описывает добавление издания по ISBN с заполнением из внешнего каталога, но не задано поведение при ненайденном ISBN и при частично заполненных данных — разработчик не знает, блокировать операцию или разрешать ручной ввод.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          }
+        ]
+      },
+      "blocks": 33,
+      "routed": null,
+      "cost_usd": 0.005149014,
+      "seconds": 25.2,
+      "calls": 5,
+      "cached_calls": 2,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "insurance.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "I-incorrect",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-deadline",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "I-duplicate",
+            "category": "duplicate",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "I-unnecessary",
+            "category": "unnecessary",
+            "status": "found",
+            "matched_category": "unnecessary"
+          },
+          {
+            "id": "I-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "I-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "I-incomplete",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "I-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "missing_topic"
+          }
+        ],
+        "findings_total": 16,
+        "findings_matched": 6,
+        "by_severity": {
+          "minor": 5,
+          "blocker": 5,
+          "major": 6
+        },
+        "unmatched": [
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Сервис позволяет купить полис медицинского страхования для поездки за границу, оплатить его картой и получить полис на почту."
+            ],
+            "sections": [
+              "1. Общие сведения"
+            ],
+            "explanation": "Требование объединяет три независимые возможности: покупку полиса, оплату картой и отправку полиса на почту. Их можно реализовать и тестировать по отдельности, поэтому требование составное.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "по правилам, описанным в документе «Методика возвратов ТП-2024»"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-21"
+            ],
+            "explanation": "Без доступа к внешней методике нельзя проверить корректность расчёта возврата тестом или анализом.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          },
+          {
+            "category": "unnecessary",
+            "severity": "minor",
+            "quotes": [
+              "Пользователь может отказаться от полиса до даты начала поездки и получить полный возврат стоимости."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-22"
+            ],
+            "explanation": "Требование полностью дублирует R-023 (отказ от полиса до начала поездки с полным возвратом), не добавляя новой возможности.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "infeasible",
+            "severity": "major",
+            "quotes": [
+              "рассматривать любое обращение о страховом случае мгновенно и без единой ошибки"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Страховой случай",
+              "Ф-26"
+            ],
+            "explanation": "Требование «мгновенно и без единой ошибки» задаёт абсолютные показатели, недостижимые на практике.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "менеджеры видели статистику продаж по дням ну и по странам"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование"
+            ],
+            "explanation": "Нет измеримого критерия: не указано, какие показатели продаж, за какой период и в каком виде отображаются, поэтому проверить выполнение нельзя.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "а еще надо чтобы менеджеры видели статистику продаж"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование"
+            ],
+            "explanation": "Требование выбивается из оформления соседних пунктов: нет идентификатора вида Ф-N, нет формулировки «Система должна…», использован разговорный стиль.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Приоритет всех требований — «обязательно», если не указано иное."
+            ],
+            "sections": [],
+            "explanation": "В документе нет ни приоритетов отдельных требований (кроме общего указания «обязательно»), ни связи требований с целями или источниками, ни ссылок на внешние документы, кроме упоминания «Методика возвратов ТП-2024» без идентификатора.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "Расчёт показывается сразу после ввода данных и пересчитывается при изменении любого поля.",
+              "Пользователь вводит адрес электронной почты для получения полиса и номер мобильного телефона."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-8",
+              "2.2. Оформление",
+              "Ф-10"
+            ],
+            "explanation": "Ф-8 требует пересчёта при изменении любого поля, а Ф-10 вводит поле телефона, которое на расчёт не влияет, — буквальное «любого поля» вступает в противоречие с назначением поля телефона.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Оплата выполняется банковской картой на странице платёжного провайдера."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-13"
+            ],
+            "explanation": "Для оплаты картой через внешнего провайдера не описано поведение при отказе провайдера, таймауте или недоступности сервиса — только сценарий «оплата не прошла» без указания, что видит пользователь и как долго ждать.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Сотрудник страховой компании меняет базовые тарифы стран; изменение применяется к полисам, оформленным после изменения."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование",
+              "Ф-28"
+            ],
+            "explanation": "Не описаны права доступа сотрудников к административным функциям: кто именно может менять тарифы и выгружать список полисов, кроме роли «Андеррайтер» для паспортных данных.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          }
+        ]
+      },
+      "blocks": 41,
+      "routed": null,
+      "cost_usd": 0.007354599000000001,
+      "seconds": 28.4,
+      "calls": 7,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "utilities.pdf",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "U-period",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "U-incorrect",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "U-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "U-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "U-terminology",
+            "category": "terminology",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "U-retry",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "U-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "U-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "U-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "incomplete"
+          }
+        ],
+        "findings_total": 21,
+        "findings_matched": 6,
+        "by_severity": {
+          "major": 10,
+          "blocker": 5,
+          "minor": 6
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Абонент привязывает лицевой счёт по номеру из 10 цифр и сумме последнего платежа."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Лицевые счета",
+              "Ф-1"
+            ],
+            "explanation": "Не указано, что происходит при неверном формате номера счёта или при отсутствии счёта с таким номером: нет поведения при ошибках и исключениях.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "по среднему расходу"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-12"
+            ],
+            "explanation": "Без определения периода усреднения и алгоритма нельзя построить тест с ожидаемым числовым результатом.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "начисление выполняется по среднему расходу"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-12"
+            ],
+            "explanation": "Не определено, что такое «средний расход»: за какой период усреднять (3 месяца, 6, 12) и по какому алгоритму. Разные разработчики реализуют по-разному.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "оплачивает квитанцию банковской картой; частичная оплата допускается"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-22"
+            ],
+            "explanation": "Требование объединяет два независимых свойства: способ оплаты (карта) и допустимость частичной оплаты. Их можно реализовать и тестировать раздельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "формируется 1 числа месяца за предыдущий месяц и доступна в формате PDF"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-23"
+            ],
+            "explanation": "Требование объединяет два независимых свойства: момент формирования квитанции и формат её доступности. Их можно реализовать и тестировать раздельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "в указанный день месяца с привязанной карты списывается сумма квитанции"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-26"
+            ],
+            "explanation": "Нет критерия проверки: не указано, в какой момент дня выполняется списание и как подтверждается факт списания.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "в указанный день месяца с привязанной карты списывается сумма квитанции"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-26"
+            ],
+            "explanation": "«в указанный день месяца» не определяет, кто и как указывает день; возможны разные толкования (абонент при настройке или система по умолчанию).",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "с темой из списка и текстом до 2 000 символов"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Обращения",
+              "Ф-31"
+            ],
+            "explanation": "«список» тем не определён: неясно, где он задан и какие темы в него входят.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "текстом до 2 000 символов"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Обращения",
+              "Ф-31"
+            ],
+            "explanation": "Не описано поведение при пустом тексте, превышении лимита или недоступности расчётного центра.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "blocker",
+            "quotes": [
+              "Ответ на обращение даётся в течение 10 рабочих дней и показывается в"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Обращения",
+              "Ф-32"
+            ],
+            "explanation": "Требование обрывается: не указано, где именно показывается ответ.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "привлекательный внешний вид"
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Нет измеримого критерия: невозможно доказать тестом или осмотром, что вид «привлекательный».",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Данные абонентов передаются по TLS 1.2 и выше, номера карт не хранятся в системе"
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-4"
+            ],
+            "explanation": "Объединены два независимых требования: передача данных по TLS и запрет хранения номеров карт.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Журнал аудита фиксирует каждое изменение показаний и привязки счетов; журнал хранится 5 лет"
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-5"
+            ],
+            "explanation": "Объединены два независимых требования: состав фиксируемых событий и срок хранения журнала.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "передача повторяется"
+            ],
+            "sections": [
+              "5. Интеграция",
+              "И-3"
+            ],
+            "explanation": "Нет измеримого критерия: не указано, через какой интервал и сколько раз повторяется передача, поэтому результат нельзя проверить тестом.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "не принял пакет"
+            ],
+            "sections": [
+              "5. Интеграция",
+              "И-3"
+            ],
+            "explanation": "«Не принял пакет» допускает разные прочтения: отсутствие ответа, отказ по коду ошибки или частичный приём. Неясно, что именно считается непринятием.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          }
+        ]
+      },
+      "blocks": 55,
+      "routed": null,
+      "cost_usd": 0.008819987999999999,
+      "seconds": 26.8,
+      "calls": 7,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 1
+    },
+    {
+      "score": {
+        "fixture": "warehouse.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "W-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "traceability"
+          },
+          {
+            "id": "W-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "W-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "W-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "W-fefo",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "W-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "W-unnecessary",
+            "category": "unnecessary",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "W-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "W-terminology",
+            "category": "terminology",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "W-duplicate",
+            "category": "duplicate",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-incomplete",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "missing_topic"
+          }
+        ],
+        "findings_total": 41,
+        "findings_matched": 10,
+        "by_severity": {
+          "major": 21,
+          "minor": 10,
+          "blocker": 10
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Карточки товаров загружаются из учётной системы ежедневно в 01:00 по времени Алматы."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Справочники",
+              "Ф-3"
+            ],
+            "explanation": "Не задано поведение при недоступности учётной системы в момент загрузки: пропуск, повтор, уведомление — не определено, что мешает тестированию сбоев.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Ячейка может быть заблокирована для размещения с указанием причины; товар из заблокированной ячейки можно отбирать."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Справочники",
+              "Ф-6"
+            ],
+            "explanation": "Требование объединяет два независимых свойства: блокировку ячейки с причиной и возможность отбора товара из заблокированной ячейки; их можно реализовать и проверять отдельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "вводит дату производства или дату окончания срока годности"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-16"
+            ],
+            "explanation": "Нет измеримого критерия: не задано, какие именно даты и в каком формате должны быть введены, поэтому проверить выполнение требования тестом нельзя.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "кладовщик вводит дату производства или дату окончания срока годности"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-16"
+            ],
+            "explanation": "Союз «или» допускает два разных прочтения: кладовщик вводит одну из двух дат по выбору либо обязан ввести обе даты. От этого зависит и логика формы, и проверка срока годности в R-017.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Для товаров со сроком годности кладовщик вводит дату производства или дату окончания срока годности"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что делать, если для товара со сроком годности дата не введена или введена некорректно: блокируется ли приёмка, выдаётся ли ошибка.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "меньше 30 % срока годности"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-17"
+            ],
+            "explanation": "Без указания базы расчёта процента и единиц измерения нельзя однозначно построить тест-кейс и проверить граничные значения.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "осталось меньше 30 % срока годности"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-17"
+            ],
+            "explanation": "Не указано, от чего считать 30 % — от общего срока годности или от оставшегося времени, и в каких единицах. Возможны разные толкования при граничном значении ровно 30 %.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "не принимается"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-17"
+            ],
+            "explanation": "Не описано поведение системы при отказе: блокируется ли приёмка всей паллеты, можно ли оформить возврат поставщику, что видит кладовщик.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "печатается этикетка на термопринтере"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-18"
+            ],
+            "explanation": "Требование навязывает конкретное устройство печати (термопринтер), хотя для бизнеса важен факт печати этикетки, а не тип принтера.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Приёмка закрывается кнопкой «Завершить приёмку»; после закрытия данные о принятом количестве передаются в учётную систему в течение 5 минут."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-19"
+            ],
+            "explanation": "Требование объединяет два независимых действия: закрытие приёмки кнопкой и передачу данных в учётную систему. Их можно реализовать и тестировать раздельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "быстро обрабатывать приёмку крупных поставок"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-20"
+            ],
+            "explanation": "Слово «быстро» не имеет однозначного толкования: разные читатели поймут разное время обработки.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "крупных поставок"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-20"
+            ],
+            "explanation": "Не определено, что считается «крупной поставкой» и какие условия нагрузки должны соблюдаться при измерении.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "отправляется поставщику на почту, указанную в справочнике поставщиков"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-21"
+            ],
+            "explanation": "Не описано поведение при ошибке отправки: что делать, если почта недоступна или адрес в справочнике отсутствует, повторять ли отправку.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "ближайшую к зоне приёмки"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Размещение",
+              "Ф-24"
+            ],
+            "explanation": "Без метрики близости нельзя проверить, что предложена именно ближайшая подходящая ячейка.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "ближайшую к зоне приёмки"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Размещение",
+              "Ф-24"
+            ],
+            "explanation": "«Ближайшую к зоне приёмки» не определено: неясно, по какому расстоянию (метры, число шагов, порядок обхода) сравниваются ячейки.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "в другую подходящую ячейку"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Размещение",
+              "Ф-26"
+            ],
+            "explanation": "«Подходящую ячейку» не определено: неясно, по каким критериям ячейка считается подходящей при ручном выборе.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "выбрав причину отказа от предложенной"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Размещение",
+              "Ф-26"
+            ],
+            "explanation": "Не задан перечень причин отказа и не указано, обязателен ли выбор причины или его можно пропустить.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Задание на размещение должно быть выполнено в течение 2 часов после создания; просроченные задания выделяются красным в списке руководителя смены."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Размещение",
+              "Ф-28"
+            ],
+            "explanation": "Требование объединяет два независимых свойства: срок выполнения задания и визуальное выделение просроченных заданий. Их можно реализовать и тестировать раздельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "может переместить товар из одной ячейки в другую по заданию на перемещение"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Хранение и перемещения",
+              "Ф-30"
+            ],
+            "explanation": "Не описано поведение при ошибке: что делать, если целевая ячейка занята или сканирование не выполнено, можно ли отменить перемещение.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "infeasible",
+            "severity": "major",
+            "quotes": [
+              "ни один товар никогда не будет потерян или повреждён на складе"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Хранение и перемещения",
+              "Ф-35"
+            ],
+            "explanation": "Абсолютное требование «никогда не будет потерян или повреждён» нереализуемо: невозможно гарантировать отсутствие потерь и повреждений при любых обстоятельствах.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Система должна гарантировать, что ни один товар никогда не будет потерян или повреждён на складе."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Хранение и перемещения",
+              "Ф-35"
+            ],
+            "explanation": "Не заданы условия, границы и поведение при ошибках: не указано, что считается потерей или повреждением и какие действия должна выполнять система.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Отгрузка закрывается после сканирования всех коробов волны; накладная формируется в PDF."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.9. Отгрузка",
+              "Ф-69"
+            ],
+            "explanation": "Требование объединяет два независимых действия: закрытие отгрузки и формирование накладной; их можно реализовать и тестировать отдельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Вход в систему выполняется по корпоративной учётной записи; на ТСД — по личному штрихкоду кладовщика и ПИН-коду из 4 цифр."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.11. Пользователи и права",
+              "Ф-77"
+            ],
+            "explanation": "Требование объединяет два независимых способа входа (корпоративная учётная запись и ТСД по штрихкоду с ПИН-кодом), которые можно реализовать и тестировать раздельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Администратор управляет пользователями, ролями и справочником ячеек."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.11. Пользователи и права",
+              "Ф-80"
+            ],
+            "explanation": "Требование объединяет три независимых объекта управления (пользователи, роли, справочник ячеек), которые можно реализовать и тестировать по отдельности.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "дашборд для директора с основными цифрами, какие — обсудим потом"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.12. Отчёты"
+            ],
+            "explanation": "Нет измеримого критерия: не указано, какие показатели должны отображаться, поэтому проверить выполнение нельзя.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "ещё бы неплохо дашборд для директора с основными цифрами, какие — обсудим потом"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.12. Отчёты"
+            ],
+            "explanation": "Формулировка «ещё бы неплохо» и «какие — обсудим потом» не задаёт однозначного требования и допускает разные толкования.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Интерфейс рабочего места руководителя должен быть интуитивным."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-10"
+            ],
+            "explanation": "Слово «интуитивным» не имеет однозначного определения: разные читатели поймут его по-разному, что мешает согласовать и реализовать требование.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Интерфейс рабочего места руководителя должен быть интуитивным."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-10"
+            ],
+            "explanation": "Не указано, какие именно операции и для каких пользователей должны быть интуитивными, поэтому требование нельзя полностью реализовать и проверить.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "contradiction",
+            "severity": "blocker",
+            "quotes": [
+              "товар из заблокированной ячейки можно отбирать",
+              "На время инвентаризации ячейки блокируются для размещения и отбора."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Справочники",
+              "Ф-6",
+              "2.5. Инвентаризация",
+              "Ф-39"
+            ],
+            "explanation": "Ф-6 разрешает отбирать товар из заблокированной ячейки, а Ф-39 на время инвентаризации блокирует ячейки для размещения и отбора. Одно требование допускает отбор из заблокированной ячейки, другое его запрещает.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Роли: кладовщик, оператор контроля, руководитель смены, администратор."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.11. Пользователи и права",
+              "Ф-78"
+            ],
+            "explanation": "В разделе «Пользователи и права» перечислены роли и часть прав, но не описано, какие действия доступны оператору контроля и какие права у руководителя смены по сравнению с администратором. Без матрицы прав нельзя реализовать разграничение доступа.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "При недоступности учётной системы исходящие сообщения ставятся в очередь и отправляются после восстановления в порядке создания."
+            ],
+            "sections": [
+              "5. Интеграции",
+              "И-2"
+            ],
+            "explanation": "В разделе «Интеграции» описана очередь при недоступности учётной системы, но не указан срок хранения сообщений в очереди и поведение при переполнении очереди. Без этого нельзя определить, что делать с накопленными сообщениями.",
+            "source": "llm",
+            "scope": "set",
+            "verdict": "violation"
+          }
+        ]
+      },
+      "blocks": 114,
+      "routed": null,
+      "cost_usd": 0.018361143,
+      "seconds": 49.2,
+      "calls": 12,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "tickets-clean.pdf",
+        "split": "holdout",
+        "defects": [],
+        "findings_total": 7,
+        "findings_matched": 0,
+        "by_severity": {
+          "blocker": 2,
+          "minor": 5
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "blocker",
+            "quotes": [
+              "После успешной оплаты покупатель получает на почту электронные"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-11"
+            ],
+            "explanation": "Требование обрывается на полуслове: не указано, что именно покупатель получает на почту и в каком виде. Без этого невозможно реализовать и проверить результат.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "покупатель получает на почту электронные"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-11"
+            ],
+            "explanation": "Из-за обрыва фразы нет конкретного результата, который можно проверить тестом или осмотром.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Деньги за возвращённый билет поступают на карту, которой был оплачен заказ, в течение 10 рабочих дней; место становится свободным сразу после оформления возврата."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "Требование объединяет две независимые возможности: срок зачисления денег и момент освобождения места. Их можно реализовать и тестировать раздельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов, и они получают письмо об отмене."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Требование содержит два независимых действия: возврат денег и отправку письма. Это составное требование, которое следует разделить.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "Требование объединяет продажу билетов и приём оплаты — это две разные возможности, которые можно реализовать и проверить отдельно.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Требование объединяет поиск заказа и повторную отправку билетов — это две независимые возможности.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Данные банковских карт не хранятся на стороне сайта; данные покупателей передаются только по TLS версии 1.2 или выше."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Требование объединяет два независимых свойства: запрет хранения данных карт и требование к протоколу передачи данных покупателей.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          }
+        ]
+      },
+      "blocks": 37,
+      "routed": null,
+      "cost_usd": 0.0050039460000000004,
+      "seconds": 17.4,
+      "calls": 6,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 1
+    },
+    {
+      "score": {
+        "fixture": "organizers-requirements.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "O-get-save",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-description",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-200-error",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-created",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-403-404",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-body",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-types",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-prod-url",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-read-method",
+            "category": "missing_topic",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-terminology",
+            "category": "terminology",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-month",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-push-limit",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-units",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-refund",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-nfr",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-idempotency",
+            "category": "ambiguous",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-ui-error",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "O-testing",
+            "category": "missing_topic",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-traceability",
+            "category": "traceability",
+            "status": "wrong_category",
+            "matched_category": "unverifiable"
+          }
+        ],
+        "findings_total": 3,
+        "findings_matched": 1,
+        "by_severity": {
+          "blocker": 1,
+          "major": 2
+        },
+        "unmatched": [
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "сообщение появляется под полем"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Дизайн процесса UI"
+            ],
+            "explanation": "Нет измеримого критерия: не задан текст сообщения, его расположение относительно поля и условие появления, поэтому проверить выполнение нельзя.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "violation"
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "При ошибке ввода"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Дизайн процесса UI"
+            ],
+            "explanation": "«Ошибка ввода» допускает разные прочтения: пустое поле, нечисловое значение, выход за диапазон, нецелое число — поведение будет разным.",
+            "source": "llm",
+            "scope": "requirement",
+            "verdict": "unclear"
+          }
+        ]
+      },
+      "blocks": 93,
+      "routed": null,
+      "cost_usd": 0.006908549999999999,
+      "seconds": 19.0,
+      "calls": 7,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 1
+    }
+  ],
+  "metrics": {
+    "recall": 0.4827586206896552,
+    "recall_by_fixture": {
+      "library.pdf": 0.7142857142857143,
+      "insurance.md": 0.6666666666666666,
+      "utilities.pdf": 0.6666666666666666,
+      "warehouse.md": 0.7142857142857143,
+      "organizers-requirements.md": 0.05263157894736842
+    },
+    "recall_by_kind": {
+      "ambiguous": [
+        3,
+        4
+      ],
+      "composite": [
+        2,
+        3
+      ],
+      "contradiction": [
+        3,
+        10
+      ],
+      "design_decision": [
+        3,
+        3
+      ],
+      "duplicate": [
+        0,
+        2
+      ],
+      "incomplete": [
+        2,
+        7
+      ],
+      "incorrect": [
+        1,
+        7
+      ],
+      "infeasible": [
+        2,
+        2
+      ],
+      "missing_topic": [
+        4,
+        6
+      ],
+      "nonconforming": [
+        2,
+        2
+      ],
+      "terminology": [
+        0,
+        4
+      ],
+      "traceability": [
+        2,
+        3
+      ],
+      "unnecessary": [
+        1,
+        2
+      ],
+      "unverifiable": [
+        3,
+        3
+      ]
+    },
+    "located_recall": 0.5172413793103449,
+    "precision": 0.25688073394495414,
+    "false_positives_clean": 7,
+    "false_positives_clean_major": 2
+  },
+  "metrics_by_split": {
+    "holdout": {
+      "recall": 0.4827586206896552,
+      "recall_by_fixture": {
+        "library.pdf": 0.7142857142857143,
+        "insurance.md": 0.6666666666666666,
+        "utilities.pdf": 0.6666666666666666,
+        "warehouse.md": 0.7142857142857143,
+        "organizers-requirements.md": 0.05263157894736842
+      },
+      "recall_by_kind": {
+        "ambiguous": [
+          3,
+          4
+        ],
+        "composite": [
+          2,
+          3
+        ],
+        "contradiction": [
+          3,
+          10
+        ],
+        "design_decision": [
+          3,
+          3
+        ],
+        "duplicate": [
+          0,
+          2
+        ],
+        "incomplete": [
+          2,
+          7
+        ],
+        "incorrect": [
+          1,
+          7
+        ],
+        "infeasible": [
+          2,
+          2
+        ],
+        "missing_topic": [
+          4,
+          6
+        ],
+        "nonconforming": [
+          2,
+          2
+        ],
+        "terminology": [
+          0,
+          4
+        ],
+        "traceability": [
+          2,
+          3
+        ],
+        "unnecessary": [
+          1,
+          2
+        ],
+        "unverifiable": [
+          3,
+          3
+        ]
+      },
+      "located_recall": 0.5172413793103449,
+      "precision": 0.25688073394495414,
+      "false_positives_clean": 7,
+      "false_positives_clean_major": 2
+    }
+  }
+}
