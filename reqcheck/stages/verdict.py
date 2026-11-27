@@ -31,6 +31,7 @@ def summarize(reqs: list[Requirement], findings: list[Finding], split: int) -> S
         violations_total=len(violations),
         unclear_total=sum(1 for f in findings if f.verdict == "unclear"),
         by_severity=by_severity,
+        blockers=by_severity[Severity.BLOCKER],
         critical=Critical(
             unverifiable=ids(Category.UNVERIFIABLE),
             contradictory=ids(Category.CONTRADICTION),

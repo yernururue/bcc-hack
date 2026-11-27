@@ -1,6 +1,7 @@
 """Отчёт — единственный источник правды; MD, PDF и UI строятся из него (docs/06-report-spec.md)."""
 
 from datetime import datetime
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field
@@ -16,7 +17,8 @@ from reqcheck.schemas.common import (
     Strict,
 )
 
-SCHEMA_VERSION = "1.0"
+# 1.1: summary.blockers, anchor.rects заполняется для PDF (новые поля — минорная версия)
+SCHEMA_VERSION = "1.1"
 
 
 class Requirement(Strict):
@@ -95,6 +97,7 @@ class Summary(Strict):
     violations_total: int = 0
     unclear_total: int = 0
     by_severity: dict[Severity, int] = Field(default_factory=dict)
+    blockers: int = 0  # блокирующих нарушений (то же, что by_severity.blocker; для автоматизации)
     critical: Critical = Field(default_factory=Critical)
 
 
@@ -121,7 +124,7 @@ class Debug(Strict):
 
 
 class Report(Strict):
-    schema_version: Literal["1.0"] = SCHEMA_VERSION
+    schema_version: Literal["1.0", "1.1"] = SCHEMA_VERSION
     run: RunPassport
     requirements: list[Requirement] = Field(default_factory=list)
     findings: list[Finding] = Field(default_factory=list)
@@ -129,3 +132,14 @@ class Report(Strict):
     summary: Summary = Field(default_factory=Summary)
     verdict: Verdict
     debug: Debug = Field(default_factory=Debug)
+
+    def save(self, path: "str | Path", json_path: "str | Path | None" = None) -> list[Path]:
+        """Пишет отчёт в формате по расширению (.pdf, .md, .json; без расширения — формат
+        входа) и JSON рядом (`json_path` или `<путь>.json`). Возвращает записанные пути."""
+        from reqcheck import render
+        from reqcheck.formats import resolve_output
+
+        target = resolve_output(
+            self.run.document.format, Path(path), Path(json_path) if json_path else None
+        )
+        return render.write(self, target)

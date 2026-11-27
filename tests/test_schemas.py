@@ -89,7 +89,7 @@ def test_report_json_roundtrip() -> None:
     r = _report()
     again = Report.model_validate_json(r.model_dump_json())
     assert again == r
-    assert again.schema_version == "1.0"
+    assert again.schema_version == "1.1"
 
 
 def test_extra_fields_forbidden() -> None:

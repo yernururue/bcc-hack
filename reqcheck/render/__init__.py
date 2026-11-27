@@ -23,6 +23,6 @@ def write(report: Report, target: OutputTarget) -> list[Path]:
         written.append(target.path)
     target.json_path.parent.mkdir(parents=True, exist_ok=True)
     target.json_path.write_text(report.model_dump_json(indent=2), encoding="utf-8")
-    if target.json_path != target.path:
+    if target.json_path not in written:
         written.append(target.json_path)
     return written
