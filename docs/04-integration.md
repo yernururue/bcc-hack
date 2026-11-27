@@ -27,7 +27,7 @@ report.save("out/report.pdf")  # формат по расширению
 report.save("out/report.json")
 ```
 
-Прогресс можно получать колбэком: `validate(..., on_event=lambda e: print(e.stage, e.progress))`.
+Прогресс можно получать колбэком: `validate(..., on_event=lambda e: print(e.stage, e.progress))`. `data` — байты, текст или путь; форматы входа: PDF, Markdown, TXT, DOCX (опция `reqcheck[docx]`). Сканы: `Options(ocr=True)` (нужен Tesseract, ADR-014).
 
 ## 3. CLI в CI
 
@@ -52,13 +52,14 @@ requirements-review:
 
 | Метод | Путь | Назначение |
 |---|---|---|
-| `POST` | `/checks` | multipart: `file`, `model?`, `max_cost_usd?` → `202 {"id": "...", "status": "queued"}` |
+| `POST` | `/checks` | multipart: `file` (PDF, MD, TXT, DOCX), `model?`, `max_cost_usd?`, `compare?` (`true` — после конвейера прогнать «один промпт» для сравнения) → `202 {"id": "...", "status": "queued"}` |
 | `GET` | `/checks/{id}` | Статус: `queued`, `running`, `done`, `failed`; текущий этап; доля выполнения |
 | `GET` | `/checks/{id}/events` | SSE-поток событий `stage`, `progress`, `done`, `error` |
 | `GET` | `/checks/{id}/summary` | Готовые тексты и цифры для экрана результата: заголовок вердикта, три счётчика, топ-5 исправлений (считает код, интерфейс ничего не выводит сам) |
-| `GET` | `/checks/{id}/report?format=json\|md\|pdf` | Отчёт; по умолчанию формат входа. Другой формат рендерится по запросу из сохранённого отчёта |
-| `GET` | `/checks/{id}/annotated` | P1: исходный PDF с пометками (выделения + комментарии) |
-| `GET` | `/checks/{id}/findings/{finding_id}/snippet` | P1: PNG фрагмента страницы с подсвеченной цитатой (PDF) или JSON с абзацами (Markdown) |
+| `GET` | `/checks/{id}/report?format=json\|md\|pdf\|docx` | Отчёт; по умолчанию формат входа. Другой формат рендерится по запросу из сохранённого отчёта |
+| `GET` | `/checks/{id}/annotated` | Исходный PDF с пометками (выделение цвета серьёзности + комментарий находки); 404 для других форматов |
+| `GET` | `/checks/{id}/findings/{finding_id}/snippet` | PNG полосы страницы с подсвеченной цитатой (PDF) или JSON `{finding_id, quote, paragraphs: [{text, highlight, place}]}` (Markdown, TXT, DOCX); 404, если фрагмента нет |
+| `GET` | `/checks/{id}/comparison` | Только для `compare=true`: конвейер против одного промпта — `pipeline`/`baseline` (`findings`, `blockers`, `major`, `dropped`, `cost_usd`, `seconds`), `overlap` (`both`, `only_pipeline`, `only_baseline`, по совпадению цитат), `baseline_top`; или `{error}`. То же поле есть в `summary` |
 | `DELETE` | `/checks/{id}` | Удалить задание и файлы |
 | `GET` | `/models` | Список моделей из `config/models.yaml` с ценами; `default` — модель из `LLM_MODEL` |
 | `GET` | `/schema/report` | JSON Schema отчёта |
@@ -72,7 +73,7 @@ curl -s http://localhost:8000/api/v1/checks/<id>
 curl -s -o review.pdf "http://localhost:8000/api/v1/checks/<id>/report?format=pdf"
 ```
 
-События SSE: `stage` (`stage`, `index`, `state` = `active`/`done`/`error`, `note`), затем `done` или `error` (`code`, `message`). Этапы по порядку: `ingest`, `extract`, `check_each`, `check_set`, `verify`, `questions`, `verdict`, `render` (подтверждение противоречий входит в `check_set`). Ошибка в одном из LLM-этапов не обрывает прогон: этап получает `state: error`, отчёт помечается неполным (`run.complete = false`). Прогон обрывается только на фатальных ошибках (нет текста в документе, ключ отклонён).
+События SSE: `stage` (`stage`, `index`, `state` = `active`/`done`/`error`, `note`), при `compare=true` — `compare` (идёт сравнение), затем `done` или `error` (`code`, `message`). Этапы по порядку: `ingest`, `extract`, `check_each`, `check_set`, `verify`, `questions`, `verdict`, `render` (подтверждение противоречий входит в `check_set`). Ошибка в одном из LLM-этапов не обрывает прогон: этап получает `state: error`, отчёт помечается неполным (`run.complete = false`). Прогон обрывается только на фатальных ошибках (нет текста в документе, ключ отклонён).
 
 Ограничения: загрузка до 20 МБ; `max_cost_usd` не может превышать `LLM_MAX_COST_USD` сервера; задания и отчёты живут в памяти процесса (1 час после завершения, раньше — по `DELETE`); загруженный файл удаляется сразу после прогона. Запуск: `uv run python -m reqcheck.server --host 127.0.0.1 --port 8000` (extra `server`); интерфейс открывается на `/`.
 

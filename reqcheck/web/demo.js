@@ -137,6 +137,23 @@ export function toMarkdown(r) {
   return lines.join('\n') + '\n';
 }
 
+// Числа для показа режима сравнения без сервера; реальные считает reqcheck/server/compare.py.
+const DEMO_COMPARISON = {
+  pipeline: { findings: 17, blockers: 4, major: 9, dropped: 2, cost_usd: 0.0121, seconds: 48 },
+  baseline: { findings: 23, blockers: 7, major: 12, dropped: 6, cost_usd: 0.0046, seconds: 21 },
+  overlap: { both: 11, only_pipeline: 6, only_baseline: 12 },
+  baseline_top: [
+    {
+      category: 'Противоречие', severity: 'blocker', severity_name: 'блокирующий',
+      quote: 'Месяц определяется по дате совершения покупки в Алматы.', in_pipeline: true,
+    },
+    {
+      category: 'Неоднозначность', severity: 'major', severity_name: 'существенный',
+      quote: 'в течение минуты после получения события', in_pipeline: false,
+    },
+  ],
+};
+
 const SEV_NAMES = { blocker: 'блокирующий', major: 'существенный', minor: 'незначительный' };
 
 // Тот же вид, что отдаёт сервер в GET /checks/{id}/summary (reqcheck/server/view.py).
@@ -193,7 +210,7 @@ export class DemoApi {
     return MODELS;
   }
 
-  async run(file, model, onEvent) {
+  async run(file, model, onEvent, { compare = false } = {}) {
     for (let i = 0; i < STAGES.length; i++) {
       const s = STAGES[i];
       onEvent({ type: 'stage', index: i, state: 'active' });
@@ -206,6 +223,12 @@ export class DemoApi {
     }
     this.file = file;
     this.report = buildReport(file, model);
-    return toView(this.report);
+    const view = toView(this.report);
+    if (compare) {
+      onEvent({ type: 'compare' });
+      await sleep(1200);
+      view.comparison = DEMO_COMPARISON;
+    }
+    return view;
   }
 }

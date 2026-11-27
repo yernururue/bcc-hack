@@ -55,6 +55,11 @@
         <select id="model"></select>
         <svg class="select-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
       </div>
+      <label class="check">
+        <input type="checkbox" id="compare">
+        <span>Сравнить с одним промптом</span>
+      </label>
+      <p class="field-hint">Ещё один вызов модели: весь документ одним запросом, без этапов. Цитаты проверяются так же.</p>
     </div>
 
     <div class="run" id="run">
@@ -84,6 +89,17 @@
 
       <h3 class="section-title">Исправить в первую очередь</h3>
       <ol class="fixes" id="fixes"></ol>
+
+      <section class="compare" id="compare-result" hidden>
+        <h3 class="section-title">Конвейер и один промпт</h3>
+        <table class="compare-table">
+          <thead><tr><th scope="col"></th><th scope="col">Конвейер</th><th scope="col">Один промпт</th></tr></thead>
+          <tbody id="compare-rows"></tbody>
+        </table>
+        <p class="compare-overlap" id="compare-overlap"></p>
+        <p class="compare-caption">Самое серьёзное у одного промпта</p>
+        <ol class="compare-list" id="compare-list"></ol>
+      </section>
 
       <div class="actions">
         <button class="btn btn-primary" id="download-main" type="button"></button>

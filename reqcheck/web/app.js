@@ -20,6 +20,8 @@ const el = {
   result: $('result'), verdict: $('verdict'), verdictSub: $('verdict-sub'), stats: $('stats'), fixes: $('fixes'),
   downloadMain: $('download-main'), downloadJson: $('download-json'), downloadAnnotated: $('download-annotated'), downloadHint: $('download-hint'), reset: $('reset'),
   failure: $('failure'), failureText: $('failure-text'), retry: $('retry'),
+  compare: $('compare'), compareResult: $('compare-result'), compareRows: $('compare-rows'),
+  compareOverlap: $('compare-overlap'), compareList: $('compare-list'),
   tokenForm: $('token-form'), token: $('token'), tokenError: $('token-error'),
 };
 
@@ -182,6 +184,11 @@ function renderStages() {
 }
 
 function onEvent(ev) {
+  if (ev.type === 'compare') {
+    el.stage.textContent = 'Сравнение с одним промптом';
+    el.count.textContent = '';
+    return;
+  }
   if (ev.type !== 'stage') return;
   const li = el.stageList.children[ev.index];
   li.dataset.state = ev.state;
@@ -243,7 +250,7 @@ async function start() {
   morphToProgress();
 
   try {
-    const view = await api.run(state.file, currentModel(), onEvent);
+    const view = await api.run(state.file, currentModel(), onEvent, { compare: el.compare.checked });
     await finish(view);
   } catch (err) {
     fail(err);
@@ -273,6 +280,7 @@ async function finish(view) {
     { label: plural(stats.blockers, 'блокирующий', 'блокирующих', 'блокирующих'), value: stats.blockers, danger: stats.blockers > 0 },
   ]);
   renderFixes(view.fixes);
+  renderComparison(view.comparison);
 
   const fmt = OUT_FORMAT[state.file.ext];
   el.downloadMain.textContent = `Скачать отчёт ${fmt}`;
@@ -369,6 +377,56 @@ function renderFixes(findings) {
       }
     });
     el.fixes.append(li);
+  }
+}
+
+// Сравнение с одним промптом (демо): цифры считает сервер, здесь только раскладка.
+function renderComparison(cmp) {
+  el.compareResult.hidden = !cmp;
+  if (!cmp) return;
+  el.compareRows.replaceChildren();
+  el.compareList.replaceChildren();
+  const caption = el.compareResult.querySelector('.compare-caption');
+  caption.hidden = Boolean(cmp.error) || !cmp.baseline_top.length;
+  el.compareResult.querySelector('.compare-table').hidden = Boolean(cmp.error);
+  if (cmp.error) {
+    el.compareOverlap.textContent = cmp.error;
+    return;
+  }
+  const money = (v) => '$' + v.toFixed(4).replace('.', ',');
+  const secs = (v) => (v == null ? '—' : `${Math.round(v)} с`);
+  const rows = [
+    ['Находок в отчёте', cmp.pipeline.findings, cmp.baseline.findings],
+    ['Блокирующих', cmp.pipeline.blockers, cmp.baseline.blockers],
+    ['Существенных', cmp.pipeline.major, cmp.baseline.major],
+    ['Отброшено: цитаты нет в тексте', cmp.pipeline.dropped, cmp.baseline.dropped],
+    ['Стоимость', money(cmp.pipeline.cost_usd), money(cmp.baseline.cost_usd)],
+    ['Время', secs(cmp.pipeline.seconds), secs(cmp.baseline.seconds)],
+  ];
+  for (const [label, a, b] of rows) {
+    const tr = document.createElement('tr');
+    const th = Object.assign(document.createElement('th'), { scope: 'row', textContent: label });
+    tr.append(th, ...[a, b].map((v) => Object.assign(document.createElement('td'), { textContent: v })));
+    el.compareRows.append(tr);
+  }
+  const o = cmp.overlap;
+  el.compareOverlap.textContent =
+    `Одно и то же место нашли оба: ${o.both}. Только конвейер: ${o.only_pipeline}. Только один промпт: ${o.only_baseline}.`;
+  for (const f of cmp.baseline_top) {
+    const li = document.createElement('li');
+    li.className = 'compare-item';
+    const head = document.createElement('p');
+    head.className = 'compare-item-head';
+    const sev = Object.assign(document.createElement('span'), { className: 'fix-sev', textContent: f.severity_name });
+    sev.dataset.sev = f.severity;
+    const cat = Object.assign(document.createElement('span'), { textContent: f.category });
+    const mark = Object.assign(document.createElement('span'), {
+      className: 'compare-mark', textContent: f.in_pipeline ? 'есть и у конвейера' : 'только у одного промпта',
+    });
+    head.append(sev, cat, mark);
+    const q = Object.assign(document.createElement('blockquote'), { className: 'fix-quote', textContent: f.quote });
+    li.append(head, q);
+    el.compareList.append(li);
   }
 }
 

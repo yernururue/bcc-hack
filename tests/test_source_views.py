@@ -93,3 +93,48 @@ def test_server_snippet_paragraphs_for_markdown() -> None:
     view = c.get(f"/api/v1/checks/{job_id}/summary").json()
     assert view["annotated"] is False
     assert {fx["snippet"] for fx in view["fixes"]} <= {"text", None}
+
+
+def test_comparison_with_single_prompt() -> None:
+    from test_eval import ScriptedLLM, _bl
+
+    from reqcheck.eval.baseline import BaselineResult
+
+    answer = BaselineResult.model_validate(
+        {
+            "findings": [
+                _bl("ambiguous", "Сервис отправляет push быстро после события."),
+                _bl("incomplete", "Этой цитаты в документе нет вообще"),
+            ]
+        }
+    )
+
+    class Both(FakeLLM):
+        def complete(self, *, system, user, schema, stage):  # type: ignore[override]
+            if stage == "baseline":
+                return ScriptedLLM(answer).complete(
+                    system=system, user=user, schema=schema, stage=stage
+                )
+            return super().complete(system=system, user=user, schema=schema, stage=stage)
+
+    from fastapi.testclient import TestClient
+
+    from reqcheck.server.app import create_app
+    from reqcheck.settings import Settings as S
+
+    settings = S(_env_file=None, LLM_MAX_COST_USD=0.5)  # type: ignore[call-arg]
+    c = TestClient(create_app(settings, llm_factory=lambda _o: Both()))
+    plain = post(c).json()["id"]
+    assert wait_done(c, plain)["status"] == "done"
+    assert c.get(f"/api/v1/checks/{plain}/comparison").status_code == 404
+
+    job_id = post(c, compare="true").json()["id"]
+    assert wait_done(c, job_id)["status"] == "done"
+    cmp = c.get(f"/api/v1/checks/{job_id}/comparison").json()
+    assert (
+        cmp["baseline"]["findings"] == 1 and cmp["baseline"]["dropped"] == 1
+    )  # цитату проверил код
+    assert cmp["overlap"]["both"] >= 1  # «быстро» нашли оба
+    assert cmp["overlap"]["both"] + cmp["overlap"]["only_pipeline"] == cmp["pipeline"]["findings"]
+    assert cmp["baseline_top"][0]["in_pipeline"] is True
+    assert c.get(f"/api/v1/checks/{job_id}/summary").json()["comparison"] == cmp

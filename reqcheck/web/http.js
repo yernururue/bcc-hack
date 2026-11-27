@@ -104,15 +104,17 @@ export class HttpApi {
     return { name: 'example.pdf', size: blob.size, blob };
   }
 
-  async run(file, model, onEvent) {
+  async run(file, model, onEvent, { compare = false } = {}) {
     const form = new FormData();
     form.append('file', file.blob, file.name);
     form.append('model', model.id);
+    if (compare) form.append('compare', 'true');
     const created = await (await this.fetch('checks', { method: 'POST', body: form })).json();
     this.jobId = created.id;
     this.file = file;
     const handle = (type, ev) => {
       if (type === 'stage') onEvent({ type: 'stage', index: ev.index, state: ev.state, note: ev.note });
+      else if (type === 'compare') onEvent({ type: 'compare' });
     };
     if (this.token) await this.#streamWithFetch(created.id, handle);
     else await this.#streamWithEventSource(created.id, handle);
@@ -123,6 +125,7 @@ export class HttpApi {
     await new Promise((resolve, reject) => {
       const es = new EventSource(`${BASE}/checks/${id}/events`);
       es.addEventListener('stage', (e) => handle('stage', JSON.parse(e.data)));
+      es.addEventListener('compare', (e) => handle('compare', JSON.parse(e.data)));
       es.addEventListener('done', () => {
         es.close();
         resolve();

@@ -51,6 +51,8 @@ class Job:
     # Готовятся в конце прогона, пока загрузка ещё на диске (потом её удаляют):
     annotated: bytes | None = None  # исходный PDF с пометками
     snippets: dict[str, bytes | dict] = field(default_factory=dict)  # F-ID → PNG или абзацы
+    compare: bool = False  # после конвейера прогнать «один промпт» для демонстрации
+    comparison: dict | None = None
     cond: threading.Condition = field(default_factory=threading.Condition)
     workdir: Path | None = None
 
@@ -113,7 +115,12 @@ class JobStore:
             self.delete(job_id)
 
     def submit(
-        self, workdir: Path, source: InputFile, filename: str, options: pipeline.Options
+        self,
+        workdir: Path,
+        source: InputFile,
+        filename: str,
+        options: pipeline.Options,
+        compare: bool = False,
     ) -> Job:
         self.purge()
         job = Job(
@@ -122,6 +129,7 @@ class JobStore:
             input_format=source.format,
             model=options.model,
             workdir=workdir,
+            compare=compare,
         )
         with self._lock:
             self._jobs[job.id] = job
@@ -153,6 +161,9 @@ class JobStore:
             job.native = target.path.read_bytes()
             job.native_format = target.format
             _prepare_source_views(job, source, outcome.report)
+            if job.compare:
+                job.emit({"type": "compare", "state": "active"})
+                job.comparison = self._compare(source, outcome.report, options)
             job.progress = 1.0
             job.finish("done", {"type": "done"})
         except ReqCheckError as exc:
@@ -168,6 +179,25 @@ class JobStore:
             # Загрузка и промежуточные файлы больше не нужны: отчёт уже в памяти.
             shutil.rmtree(workdir, ignore_errors=True)
             job.workdir = None
+
+    def _compare(self, source: InputFile, report: Report, options: pipeline.Options) -> dict:
+        """Один промпт на том же документе (демо). Ошибка сравнения не портит отчёт."""
+        from reqcheck.config import criteria
+        from reqcheck.ingest import ingest
+        from reqcheck.server.compare import compare
+
+        llm = (
+            self._llm_factory(options)
+            if self._llm_factory
+            else pipeline.build_client(self._settings, options)
+        )
+        try:
+            return compare(report, ingest(source, ocr=options.ocr), llm, criteria())
+        except ReqCheckError as exc:
+            return {"error": exc.message}
+        except Exception:
+            log.warning("сравнение не удалось", exc_info=True)
+            return {"error": "Один промпт не выполнен: подробности в логе сервера"}
 
 
 def _prepare_source_views(job: Job, source: InputFile, report: Report) -> None:

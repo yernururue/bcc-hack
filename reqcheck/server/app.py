@@ -116,6 +116,7 @@ def create_app(settings: Settings | None = None, llm_factory: LLMFactory | None 
         file: Annotated[UploadFile, File()],
         model: Annotated[str | None, Form()] = None,
         max_cost_usd: Annotated[float | None, Form()] = None,
+        compare: Annotated[bool, Form()] = False,
     ) -> dict:
         if llm_factory is None and settings.llm_api_key is None:
             raise HTTPException(503, "На сервере не задан ключ LLM (LLM_API_KEY)")
@@ -141,7 +142,7 @@ def create_app(settings: Settings | None = None, llm_factory: LLMFactory | None 
 
         cost = min(max_cost_usd or settings.llm_max_cost_usd, settings.llm_max_cost_usd)
         options = pipeline.Options(model=model or settings.llm_model, max_cost_usd=cost)
-        job = store.submit(workdir, source, filename, options)
+        job = store.submit(workdir, source, filename, options, compare=compare)
         return {"id": job.id, "status": job.status}
 
     @app.get("/api/v1/checks/{job_id}", dependencies=secured)
@@ -188,6 +189,7 @@ def create_app(settings: Settings | None = None, llm_factory: LLMFactory | None 
                 None if snip is None else "image" if isinstance(snip, bytes) else "text"
             )
         view["annotated"] = job.annotated is not None
+        view["comparison"] = job.comparison
         return view
 
     @app.get("/api/v1/checks/{job_id}/report", dependencies=secured)
@@ -239,6 +241,14 @@ def create_app(settings: Settings | None = None, llm_factory: LLMFactory | None 
         if isinstance(snip, bytes):
             return Response(snip, media_type="image/png", headers={"Cache-Control": "private"})
         return JSONResponse(snip)
+
+    @app.get("/api/v1/checks/{job_id}/comparison", dependencies=secured)
+    def check_comparison(job_id: str) -> dict:
+        """Конвейер против одного промпта на том же документе (проверка с compare=true)."""
+        job = finished(job_id)
+        if job.comparison is None:
+            raise HTTPException(404, "Сравнение не запрашивалось")
+        return job.comparison
 
     @app.delete("/api/v1/checks/{job_id}", status_code=204, dependencies=secured)
     def delete_check(job_id: str) -> Response:
