@@ -1,0 +1,17 @@
+# docker compose up --build → http://127.0.0.1:8000
+# Ключ и настройки — из .env (шаблон .env.example); в образ .env не копируется (.dockerignore).
+services:
+  reqcheck:
+    build: .
+    image: reqcheck:local
+    env_file: .env
+    environment:
+      REQCHECK_CACHE_DIR: /data/cache  # кэш ответов LLM переживает перезапуск контейнера
+    ports:
+      - "127.0.0.1:8000:8000"  # только локально; для сети задайте REQCHECK_API_TOKEN
+    volumes:
+      - reqcheck-cache:/data/cache
+    restart: unless-stopped
+
+volumes:
+  reqcheck-cache:

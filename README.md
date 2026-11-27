@@ -54,6 +54,15 @@ uv run python -m reqcheck.server        # http://127.0.0.1:8000
 
 HTTP API (`/api/v1`, спецификация на `/api/v1/docs`) описан в [docs/04-integration.md](docs/04-integration.md): загрузка, поток событий SSE, отчёт в JSON/MD/PDF. Токен `REQCHECK_API_TOKEN` защищает API, но встроенный интерфейс его не отправляет.
 
+## Docker
+
+```bash
+cp .env.example .env      # впишите LLM_API_KEY
+docker compose up --build # http://127.0.0.1:8000
+```
+
+Образ (`Dockerfile`) собирает сервер с опциями `server` и `docx` и ставит Tesseract с русским языком для `--ocr`. Ключей в образе нет: `docker-compose.yml` передаёт переменные из `.env` при запуске, а `.dockerignore` не пускает `.env` в контекст сборки. Кэш ответов LLM лежит в томе `reqcheck-cache`. Порт открыт только на `127.0.0.1`; чтобы открыть его в сеть, задайте `REQCHECK_API_TOKEN`. CLI в контейнере: `docker compose run --rm reqcheck python main.py /data/in.pdf /data/out.pdf` (файлы смонтируйте в `/data`).
+
 ## Как это работает
 
 `ingest` → `extract` (LLM) → `rules` (код) → `check_each` (LLM, батчи по 15) → `check_set` (LLM) → `confirm` (подтверждение противоречий) → `verify` (цитаты проверяет код) → фильтр шума → `questions` → `verdict` (код) → `render`. Подробности: [docs/02-trd.md](docs/02-trd.md), [docs/03-architecture.md](docs/03-architecture.md). Словари, пороги и критерии лежат в `config/*.yaml`, а не в коде; промпты — в `reqcheck/prompts/`.
