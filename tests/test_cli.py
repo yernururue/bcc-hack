@@ -26,7 +26,7 @@ def test_missing_input_is_bad_input(tmp_path: Path) -> None:
 
 
 def test_unsupported_format(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    f = tmp_path / "spec.docx"
+    f = tmp_path / "spec.doc"
     f.write_bytes(b"x")
     assert main([str(f), str(tmp_path / "o.md")], settings=settings("k")) == ExitCode.BAD_INPUT
     assert "поддерживаются PDF" in capsys.readouterr().err

@@ -8,8 +8,8 @@ const params = new URLSearchParams(location.search);
 const api = params.has('demo') ? new DemoApi({ failAtStage: params.has('fail') ? 3 : null }) : new HttpApi();
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-const ACCEPT = { pdf: 'PDF', md: 'Markdown', markdown: 'Markdown', txt: 'Текст' };
-const OUT_FORMAT = { pdf: 'PDF', md: 'MD', markdown: 'MD', txt: 'MD' };
+const ACCEPT = { pdf: 'PDF', md: 'Markdown', markdown: 'Markdown', txt: 'Текст', docx: 'Word' };
+const OUT_FORMAT = { pdf: 'PDF', md: 'MD', markdown: 'MD', txt: 'MD', docx: 'DOCX' };
 
 const el = {
   drop: $('drop'), file: $('file'), chip: $('chip'), chipName: $('chip-name'), chipMeta: $('chip-meta'),
@@ -85,7 +85,7 @@ function acceptFile(f) {
   // f — File из выбора/перетаскивания или {name, size, blob} из примера
   const ext = extOf(f.name);
   if (!ACCEPT[ext]) {
-    setError('Нужен PDF, Markdown или TXT');
+    setError('Нужен PDF, Markdown, TXT или DOCX');
     return;
   }
   if (f.size > 20 * 1024 * 1024) {

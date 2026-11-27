@@ -21,6 +21,11 @@ def write(report: Report, target: OutputTarget) -> list[Path]:
 
         render_pdf(report, target.path)
         written.append(target.path)
+    elif target.format == "docx":
+        from reqcheck.render.docx import render_docx
+
+        render_docx(report, target.path)
+        written.append(target.path)
     target.json_path.parent.mkdir(parents=True, exist_ok=True)
     target.json_path.write_text(report.model_dump_json(indent=2), encoding="utf-8")
     if target.json_path not in written:

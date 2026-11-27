@@ -184,7 +184,8 @@
           "enum": [
             "pdf",
             "md",
-            "txt"
+            "txt",
+            "docx"
           ],
           "title": "Format",
           "type": "string"

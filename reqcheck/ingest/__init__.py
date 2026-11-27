@@ -48,6 +48,13 @@ def ingest(source: InputFile, cfg: IngestConfig | None = None) -> Document:
         from reqcheck.ingest.pdf import read_pdf
 
         raw, pages = read_pdf(source.path, parser)
+    elif source.format == "docx":
+        from reqcheck.ingest.docx import docx_to_markdown
+
+        # Номера строк сгенерированного Markdown пользователю ничего не скажут: только разделы
+        raw = parser.parse(
+            normalize(docx_to_markdown(source.path)), ParseState(), page=None, with_lines=False
+        )
     else:
         text = normalize(decode_text(data))
         raw = parser.parse(text, ParseState(), page=None, with_lines=True)

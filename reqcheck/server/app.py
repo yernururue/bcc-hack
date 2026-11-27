@@ -38,6 +38,7 @@ MEDIA = {
     "json": "application/json",
     "md": "text/markdown; charset=utf-8",
     "pdf": "application/pdf",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 }
 
 
@@ -195,7 +196,7 @@ def create_app(settings: Settings | None = None, llm_factory: LLMFactory | None 
         assert job.report is not None
         fmt = format or job.native_format or "json"
         if fmt not in MEDIA:
-            raise HTTPException(400, "format: json, md или pdf")
+            raise HTTPException(400, "format: json, md, pdf или docx")
         if fmt == "json":
             body = job.report.model_dump_json(indent=2).encode()
         elif fmt == job.native_format and job.native is not None:

@@ -6,8 +6,8 @@ from typing import Literal
 
 from reqcheck.errors import InputError
 
-InputFormat = Literal["pdf", "md", "txt"]
-OutputFormat = Literal["pdf", "md", "json"]
+InputFormat = Literal["pdf", "md", "txt", "docx"]
+OutputFormat = Literal["pdf", "md", "docx", "json"]
 
 MAX_INPUT_BYTES = 20 * 1024 * 1024
 
@@ -16,11 +16,22 @@ INPUT_SUFFIXES: dict[str, InputFormat] = {
     ".md": "md",
     ".markdown": "md",
     ".txt": "txt",
+    ".docx": "docx",
 }
-OUTPUT_SUFFIXES: dict[str, OutputFormat] = {".pdf": "pdf", ".md": "md", ".json": "json"}
-OUTPUT_FOR_INPUT: dict[InputFormat, OutputFormat] = {"pdf": "pdf", "md": "md", "txt": "md"}
+OUTPUT_SUFFIXES: dict[str, OutputFormat] = {
+    ".pdf": "pdf",
+    ".md": "md",
+    ".docx": "docx",
+    ".json": "json",
+}
+OUTPUT_FOR_INPUT: dict[InputFormat, OutputFormat] = {
+    "pdf": "pdf",
+    "md": "md",
+    "txt": "md",
+    "docx": "docx",
+}
 
-SUPPORTED_HINT = "поддерживаются PDF, Markdown (.md, .markdown) и TXT"
+SUPPORTED_HINT = "поддерживаются PDF, Markdown (.md, .markdown), TXT и DOCX"
 
 
 @dataclass(frozen=True)
@@ -53,6 +64,10 @@ def detect_input(path: Path) -> InputFile:
         with path.open("rb") as fh:
             if not fh.read(1024).lstrip().startswith(b"%PDF-"):
                 raise InputError(f"Файл с расширением .pdf не является PDF: {path}")
+    if fmt == "docx":
+        with path.open("rb") as fh:
+            if fh.read(4) != b"PK\x03\x04":  # DOCX — это ZIP-архив
+                raise InputError(f"Файл с расширением .docx не является DOCX: {path}")
     return InputFile(path=path, format=fmt, size=size)
 
 
@@ -65,7 +80,7 @@ def resolve_output(
         fmt = OUTPUT_SUFFIXES[suffix]
     elif suffix:
         raise InputError(
-            f"Неподдерживаемое расширение отчёта «{suffix}»: нужен .pdf, .md или .json"
+            f"Неподдерживаемое расширение отчёта «{suffix}»: нужен .pdf, .md, .docx или .json"
         )
     else:
         fmt = OUTPUT_FOR_INPUT[input_format]

@@ -30,7 +30,7 @@ def test_fake_pdf_rejected(tmp_path: Path) -> None:
         detect_input(write(tmp_path, "a.pdf", b"not a pdf"))
 
 
-@pytest.mark.parametrize("name", ["a.docx", "a", "a.html"])
+@pytest.mark.parametrize("name", ["a.doc", "a", "a.html"])
 def test_unsupported_format(tmp_path: Path, name: str) -> None:
     with pytest.raises(InputError) as e:
         detect_input(write(tmp_path, name))
@@ -75,4 +75,4 @@ def test_json_sidecar_next_to_report() -> None:
 
 def test_unknown_output_suffix() -> None:
     with pytest.raises(InputError, match="расширение отчёта"):
-        resolve_output("md", Path("r.docx"))
+        resolve_output("md", Path("r.html"))

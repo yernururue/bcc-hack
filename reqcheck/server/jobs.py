@@ -200,7 +200,7 @@ def _mark_stage_failed(job: Job, on_stage, message: str) -> None:
 
 
 def _native_ext(fmt: str) -> str:
-    return {"pdf": "pdf", "md": "md", "txt": "md"}[fmt]
+    return {"pdf": "pdf", "md": "md", "txt": "md", "docx": "docx"}[fmt]
 
 
 def new_workdir() -> Path:
