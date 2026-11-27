@@ -30,11 +30,12 @@
 | Финальный прогон по выданному документу (с повторами после правок) | `anthropic/claude-sonnet-5.5` | ≤ $0,70 | ≈ $0,35 |
 | Eval 2026-11-27: корпус 14 документов, решающий прогон конвейер/baseline (ADR-012) | `deepseek/deepseek-v4.1-flash`, проверка `claude-haiku-5.5` | ≤ $0,40 (согласовано на всю задачу) | ≈ $0,145 |
 | Eval 2026-11-27: разброс, 2 повтора на holdout (ADR-012) | `deepseek/deepseek-v4.1-flash` | в пределах $0,40 | ≈ $0,197 |
-| Итого | | $1–2 | ≈ $0,86 |
+| Итоговый отчёт после независимой проверки (ADR-015) | `openai/gpt-6-luna` | в пределах $0,40 | ≈ $0,019 |
+| Итого | | $1–2 | ≈ $0,88 |
 
 ## Чек-лист соответствия ТЗ (заполнен 2026-11-26)
 
-Итоговый отчёт: [`after/requirements-review.md`](after/requirements-review.md) (формат входа) и [`after/requirements-review.pdf`](after/requirements-review.pdf), модель `anthropic/claude-sonnet-5.5`, JSON рядом; исходный документ — [`before/requirements.md`](before/requirements.md). Как получен: [`after/README.md`](after/README.md).
+Итоговый отчёт: [`after/requirements-review.md`](after/requirements-review.md) (формат входа) и [`after/requirements-review.pdf`](after/requirements-review.pdf), модель `openai/gpt-6-luna` после исправления промптов (ADR-015; предыдущая версия на `anthropic/claude-sonnet-5.5` — в истории git), JSON рядом; исходный документ — [`before/requirements.md`](before/requirements.md). Как получен: [`after/README.md`](after/README.md).
 
 ### Раздел 6. Состав отчёта
 - [x] Отчёт на русском, файл
@@ -56,4 +57,4 @@
 ### Известные ограничения
 - ~~В текстовом слое PDF-отчёта латинская «A» читается как «Ă»~~ — исправлено (ToUnicode дополняется альтернативами глифов, ADR-010).
 - ~~Оценка качества — на трёх маленьких фикстурах~~ — корпус 14 документов, 3 повтора на holdout (ADR-012); DOCX и OCR сделаны (ADR-013, ADR-014).
-- Независимое ревью итогового отчёта (2026-11-27, ADR-015): 6 из 19 размеченных дефектов, из трёх blocker обоснован один. Исправлено только правило тест-дизайна; пропуски и ложные находки ждут доработки промптов и платного перепрогона.
+- Независимое ревью итогового отчёта (2026-11-27, ADR-015): у версии на Sonnet из трёх blocker обоснован один. Промпты исправлены, отчёт перегенерирован на `openai/gpt-6-luna` ($0,019): ложных находок нет, оба blocker настоящие; полнота по blocker и major — около трети.

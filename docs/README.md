@@ -7,7 +7,7 @@
 | | Где | Что |
 |---|---|---|
 | **До** | [`before/requirements.md`](before/requirements.md) | Выданный организаторами документ требований, без изменений |
-| **После** | [`after/requirements-review.md`](after/requirements-review.md), [`.pdf`](after/requirements-review.pdf), JSON рядом | Отчёт, который сформировал агент. Итог агента: разработку начинать нельзя, тест-дизайн можно; независимая проверка отчёта — в [`after/README.md`](after/README.md#независимая-проверка). Как получен — [`after/README.md`](after/README.md) |
+| **После** | [`after/requirements-review.md`](after/requirements-review.md), [`.pdf`](after/requirements-review.pdf), JSON рядом | Отчёт, который сформировал агент. Итог: разработку начинать нельзя (2 противоречия), тест-дизайн с оговорками. Независимая проверка: ложных находок нет — [`after/README.md`](after/README.md#независимая-проверка). Как получен — [`after/README.md`](after/README.md) |
 
 ## Проектные документы
 
