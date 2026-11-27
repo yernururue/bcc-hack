@@ -4,6 +4,11 @@
 > **Отчёт неполный:** {{ r.run.incomplete_reason }}
 
 {% endif -%}
+- Разработка: **{{ dev }}**
+- Тестирование: **{{ test }}**
+
+Что исправить в первую очередь и правило вердикта — в разделе 7.
+
 ## 1. Паспорт прогона
 
 | Поле | Значение |
@@ -19,7 +24,7 @@
 
 ## 2. Как агент нарезал требования
 
-Всего требований: {{ r.requirements|length }}{% if r.summary.split_composites %}, из них получено разделением составных: {{ r.summary.split_composites }} блок(а){% endif %}.
+Всего требований: {{ r.requirements|length }}{% if r.summary.split_composites %}; разделено составных блоков: {{ r.summary.split_composites }}{% endif %}.
 
 | ID в отчёте | ID в документе | Тип | Краткая формулировка | Место |
 |---|---|---|---|---|
@@ -37,7 +42,7 @@
 
 ## 3. Проверка каждого требования
 
-Обозначения: ✓ соблюдено, ✗ нарушено, ? неясно, · не оценено.
+Обозначения: ✓ соблюдено, ✗ нарушено, ? неясно, · не оценено. Находки с пометкой «неясно» — вопросы, а не нарушения: в счётчики нарушений и вердикт они не входят.
 
 {% for q in r.requirements -%}
 {% set fs = by_req.get(q.report_id, []) -%}
@@ -52,8 +57,9 @@
 
 {% for f in fs -%}
 **{{ f.finding_id }} · {{ f.severity.value }} · {{ cat(f.category) }}**{% if f.verdict == "unclear" %} (неясно){% endif %}{% if f.source == "rule" %} · проверка кодом{% endif %}. {{ f.explanation }}
-Цитата: «{{ inline(f.quote) }}»{% if f.suggestion %}
-Предложение: {{ f.suggestion }}{% endif %}
+
+- Цитата: «{{ inline(f.quote) }}»{% if f.suggestion %}
+- Предложение: {{ f.suggestion }}{% endif %}
 
 {% endfor -%}
 {% else -%}
@@ -69,8 +75,11 @@
 {% if fs -%}
 {% for f in fs -%}
 **{{ f.finding_id }} · {{ f.severity.value }} · {{ cat(f.category) }}.** {{ places(f) }}
+
 {{ quotes(f) }}
+
 {{ f.explanation }}{% if f.suggestion %}
+
 Предложение: {{ f.suggestion }}{% endif %}
 
 {% endfor -%}

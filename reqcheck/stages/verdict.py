@@ -14,6 +14,11 @@ from reqcheck.schemas import (
 from reqcheck.stages.verify import SEVERITY_RANK
 
 
+def _rid_key(rid: str) -> tuple[str, int]:
+    head, _, tail = rid.rpartition("-")
+    return (head, int(tail)) if tail.isdigit() else (rid, 0)
+
+
 def _violations(findings: list[Finding]) -> list[Finding]:
     return [f for f in findings if f.verdict == "violation"]
 
@@ -63,18 +68,27 @@ def decide(
     if rules.block_testing_if_no_acceptance and no_acceptance:
         test_reasons.append("нет критериев приёмки")
     can_test = not test_reasons
-    test = (
-        "можно начинать тест-дизайн"
-        if can_test
-        else ("нельзя начинать тест-дизайн — " + ", ".join(test_reasons))
-    )
+    blocking = [f for f in violations if f.severity == Severity.BLOCKER]
+    if not can_test:
+        test = "нельзя начинать тест-дизайн — " + ", ".join(test_reasons)
+    elif len(blocking) >= rules.caution_testing_if_blockers_at_least:
+        # ожидаемый результат для затронутых требований не определён: эти тесты ждут исправления
+        reqs_hit = sorted({rid for f in blocking for rid in f.requirement_ids}, key=_rid_key)
+        scope = f"для {', '.join(reqs_hit)}" if reqs_hit else "для затронутых мест"
+        test = (
+            "можно начинать тест-дизайн с оговорками — ожидаемый результат "
+            f"{scope} не определён до исправления {', '.join(f.finding_id for f in blocking)}"
+        )
+    else:
+        test = "можно начинать тест-дизайн"
 
     rule = (
         f"Разработка: нельзя, если blocker ≥ {rules.block_development_if_blockers_at_least}; "
         f"с оговорками, если blocker = 0 и major ≥ {rules.caution_if_major_at_least}. "
         f"Тестирование: нельзя, если непроверяемых ≥ {rules.block_testing_if_unverifiable_at_least}"
         + (" или нет критериев приёмки" if rules.block_testing_if_no_acceptance else "")
-        + ". Источник: config/thresholds.yaml"
+        + f"; с оговорками, если blocker ≥ {rules.caution_testing_if_blockers_at_least}"
+        + " (тесты на затронутые требования ждут исправления). Источник: config/thresholds.yaml"
     )
     top = sorted(
         violations,

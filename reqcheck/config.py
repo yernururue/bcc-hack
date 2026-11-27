@@ -87,6 +87,7 @@ class VerdictRules(BaseModel):
     caution_if_major_at_least: int = Field(ge=1)
     block_testing_if_unverifiable_at_least: int = Field(ge=1)
     block_testing_if_no_acceptance: bool
+    caution_testing_if_blockers_at_least: int = Field(ge=1)
 
 
 class FindingsFilter(BaseModel):

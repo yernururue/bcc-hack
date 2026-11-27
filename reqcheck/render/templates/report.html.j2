@@ -35,7 +35,7 @@
 {% endif %}
 
 <h2 id="s3">3. Проверка каждого требования</h2>
-<p class="muted">✓ соблюдено · ✗ нарушено · ? неясно · пусто — не оценено</p>
+<p class="muted">✓ соблюдено · ✗ нарушено · ? неясно · пусто — не оценено. Находки «неясно» — вопросы, а не нарушения: в счётчики нарушений и вердикт они не входят.</p>
 {% for q in r.requirements %}
 {% set fs = by_req.get(q.report_id, []) %}
 <h3 id="{{ q.report_id }}"><code>{{ q.report_id }}</code>{% if q.doc_id %} · {{ q.doc_id }}{% endif %} <span class="where">{{ q.anchor.label() }}</span></h3>
