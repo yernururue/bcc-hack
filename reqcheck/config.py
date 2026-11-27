@@ -107,6 +107,7 @@ class Thresholds(BaseModel):
     verify: dict[str, float]
     check_each: dict[str, int]
     check_set: dict[str, int]
+    estimate: dict[str, float] = Field(default_factory=dict)
     report: dict[str, int]
     default_severity: dict[Category, Severity]
     # Модель может повысить серьёзность выше умолчания, но не выше этого потолка

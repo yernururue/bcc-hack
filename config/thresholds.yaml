@@ -19,6 +19,13 @@ check_each:
 check_set:
   duplicate_min_similarity: 85
 
+# Поправка оценки стоимости (--dry-run, eval). Формулы считают видимый ответ; факт выше из-за
+# повторов по схеме, длинных ответов и обрезки по max_tokens. Множители — отношение факта к оценке
+# на прогоне eval 2026-11-27 (deepseek-v4.1-flash, 14 документов, без кэша), ADR-012.
+estimate:
+  pipeline_factor: 2.5
+  baseline_factor: 3.5
+
 # Фильтр шума: что не попадает в отчёт (остаётся в debug.suppressed_findings JSON-отчёта)
 findings_filter:
   # Максимум находок на одно требование; лишние — с наименьшей серьёзностью

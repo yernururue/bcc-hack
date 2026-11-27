@@ -96,14 +96,20 @@ def _price(model: str, tokens_in: float, tokens_out: float) -> float | None:
     return (tokens_in * info.price_in + tokens_out * info.price_out) / 1e6
 
 
+def _factor(name: str) -> float:
+    """Поправка оценки на факт (config/thresholds.yaml, estimate); 1.0, если не задана."""
+    return float(thresholds().estimate.get(name, 1.0))
+
+
 def estimate_numbers(doc: Document, model: str, batch_size: int) -> Estimate:
     """Грубая оценка до прогона: ~3 символа на токен для русского текста."""
     blocks = extract.candidate_blocks(doc)
     doc_tokens = sum(len(b.text) + 40 for b in blocks) / 3
     reqs = max(1, round(len(blocks) * 0.5))
     calls = math.ceil(len(blocks) / extract.BLOCKS_PER_CALL) + math.ceil(reqs / batch_size) + 2
-    tokens_in = doc_tokens * 2.5 + calls * 1500
-    tokens_out = reqs * 250 + doc_tokens * 0.6
+    k = _factor("pipeline_factor")
+    tokens_in = (doc_tokens * 2.5 + calls * 1500) * k
+    tokens_out = (reqs * 250 + doc_tokens * 0.6) * k
     return Estimate(calls, tokens_in, tokens_out, _price(model, tokens_in, tokens_out))
 
 
@@ -111,8 +117,9 @@ def estimate_baseline(doc: Document, model: str) -> Estimate:
     """Один вызов: весь документ плюс критерии на входе, список находок на выходе."""
     blocks = extract.candidate_blocks(doc)
     doc_tokens = sum(len(b.text) + 40 for b in blocks) / 3
-    tokens_in = doc_tokens + 2500
-    tokens_out = 1500 + len(blocks) * 40
+    k = _factor("baseline_factor")
+    tokens_in = (doc_tokens + 2500) * k
+    tokens_out = (1500 + len(blocks) * 40) * k
     return Estimate(1, tokens_in, tokens_out, _price(model, tokens_in, tokens_out))
 
 

@@ -1,0 +1,5095 @@
+{
+  "date": "2026-11-27",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "mode": "baseline",
+  "agent_version": "fafb5b7",
+  "repeat": 1,
+  "variant": "",
+  "fixtures": [
+    {
+      "score": {
+        "fixture": "defects.pdf",
+        "split": "dev",
+        "defects": [
+          {
+            "id": "D-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "D-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "D-incomplete",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "D-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "D-design-decision",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "D-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "infeasible"
+          },
+          {
+            "id": "D-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "D-unnecessary",
+            "category": "unnecessary",
+            "status": "found",
+            "matched_category": "unnecessary"
+          },
+          {
+            "id": "D-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "nonconforming"
+          },
+          {
+            "id": "D-duplicate",
+            "category": "duplicate",
+            "status": "found",
+            "matched_category": "duplicate"
+          },
+          {
+            "id": "D-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          }
+        ],
+        "findings_total": 14,
+        "findings_matched": 11,
+        "by_severity": {
+          "major": 9,
+          "blocker": 2,
+          "minor": 3
+        },
+        "unmatched": [
+          {
+            "category": "contradiction",
+            "severity": "major",
+            "quotes": [
+              "Система должна позволять покупателю зарегистрироваться по номеру мобильного телефона в формате +7XXXXXXXXXX и подтвердить его одноразовым кодом из четырёх цифр, действующим 5 минут.",
+              "Номер телефона хранится в формате E.164 и не может быть привязан более чем к одному аккаунту."
+            ],
+            "sections": [
+              "1. Функциональные требования",
+              "Ф-1",
+              "3. Данные",
+              "Д-2"
+            ],
+            "explanation": "Ф-1 требует подтверждения номера кодом при регистрации, а Д-2 запрещает привязку номера более чем к одному аккаунту — при повторной регистрации поведение не определено.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "1. Функциональные требования"
+            ],
+            "sections": [
+              "1. Функциональные требования"
+            ],
+            "explanation": "В документе нет приоритетов, источников и связей требований, что мешает планированию и проверке полноты.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "3. Данные"
+            ],
+            "sections": [
+              "3. Данные"
+            ],
+            "explanation": "Не описан жизненный цикл заказа: статусы, переходы и правила их смены, без чего нельзя реализовать отмену и сборку.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 16,
+      "routed": null,
+      "cost_usd": 0.001309047,
+      "seconds": 7.4,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "contradictions.pdf",
+        "split": "dev",
+        "defects": [
+          {
+            "id": "C-addresses",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "C-cancel-window",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "C-response-code",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "C-retention",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          }
+        ],
+        "findings_total": 14,
+        "findings_matched": 3,
+        "by_severity": {
+          "blocker": 3,
+          "major": 6,
+          "minor": 5
+        },
+        "unmatched": [
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "если с момента оформления прошло не более 30 минут"
+            ],
+            "sections": [
+              "Часть А. Требования",
+              "Ф-2"
+            ],
+            "explanation": "«не более 30 минут» не задаёт, от какого момента считать и что происходит ровно на 30-й минуте; критерий приёмки на 45 минут не покрывает границу.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Система должна отправлять покупателю SMS при передаче заказа курьеру."
+            ],
+            "sections": [
+              "Часть А. Требования",
+              "Ф-6"
+            ],
+            "explanation": "Не описано поведение при отказе SMS-шлюза и при отсутствии у покупателя номера телефона — нельзя реализовать обработку ошибок.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Метод GET /orders/{id} возвращает заказ, а при отсутствии заказа — код 404."
+            ],
+            "sections": [
+              "Часть Б. Интерфейс обмена и данные",
+              "АПИ-2"
+            ],
+            "explanation": "Не указано, что возвращается при отсутствии заказа и какие поля входят в ответ — интерфейс нельзя реализовать и протестировать полностью.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Номер заказа — целое число от 1 до 999 999 999."
+            ],
+            "sections": [
+              "Часть Б. Интерфейс обмена и данные",
+              "Д-3"
+            ],
+            "explanation": "Не задано поведение при исчерпании диапазона номеров и при попытке сохранить шестой адрес — нет граничных условий и реакции на ошибку.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Система должна хранить данные выполненных заказов 3 года и затем удалять их."
+            ],
+            "sections": [
+              "Часть А. Требования",
+              "Ф-5"
+            ],
+            "explanation": "«затем удалять их» не задаёт способ и срок удаления, поэтому выполнение нельзя проверить тестом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "система присваивает ему номер и сохраняет заказ со статусом «Новый»"
+            ],
+            "sections": [
+              "Часть А. Требования",
+              "Ф-3"
+            ],
+            "explanation": "Требование объединяет два независимых действия — присвоение номера и сохранение со статусом; их нужно проверять и менять раздельно.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Система должна отправлять покупателю SMS при передаче заказа курьеру."
+            ],
+            "sections": [
+              "Часть А. Требования",
+              "Ф-6"
+            ],
+            "explanation": "Требование навязывает конкретный канал уведомления (SMS) и конкретный HTTP-код вместо описания результата, ограничивая выбор реализации.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель может сохранить в профиле не более 5 адресов доставки."
+            ],
+            "sections": [
+              "Часть А. Требования",
+              "Ф-1"
+            ],
+            "explanation": "Требования Ф-1, Ф-2, Ф-3, АПИ-1, АПИ-2, Д-1, Д-2, Д-3 не используют единый шаблон «система должна…», принятый в документе (Ф-5, Ф-6).",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "terminology",
+            "severity": "minor",
+            "quotes": [
+              "сервис заказов возвращает ответ с кодом 200",
+              "Система должна хранить данные выполненных заказов"
+            ],
+            "sections": [
+              "Часть А. Требования",
+              "Ф-4",
+              "Ф-5"
+            ],
+            "explanation": "Одна и та же сущность называется «сервис заказов» и «система», что затрудняет однозначное сопоставление требований.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Часть А. Требования"
+            ],
+            "sections": [
+              "Часть А. Требования"
+            ],
+            "explanation": "В документе нет приоритетов, источников и связей между требованиями частей А и Б, что мешает управлению изменениями и покрытию тестами.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Часть Б. Интерфейс обмена и данные"
+            ],
+            "sections": [
+              "Часть Б. Интерфейс обмена и данные"
+            ],
+            "explanation": "Не описан формат обмена (JSON/XML, кодировка, версия API) и аутентификация — без этого часть Б нельзя реализовать.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 15,
+      "routed": null,
+      "cost_usd": 0.00121512,
+      "seconds": 7.6,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "clean.pdf",
+        "split": "dev",
+        "defects": [],
+        "findings_total": 2,
+        "findings_matched": 0,
+        "by_severity": {
+          "major": 2
+        },
+        "unmatched": [
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Система должна добавлять товар в корзину по нажатию кнопки «В корзину» при наличии товара на складе и показывать в корзине название, цену и количество добавленного товара."
+            ],
+            "sections": [
+              "1. Функциональные требования",
+              "Ф-1"
+            ],
+            "explanation": "Требование объединяет два независимых действия: добавление товара и отображение его данных. Их можно реализовать и проверить по отдельности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Если запрошенное количество товара превышает остаток на складе, система должна не добавлять товар в корзину и показывать сообщение «Доступно N шт.», где N — остаток на складе."
+            ],
+            "sections": [
+              "1. Функциональные требования",
+              "Ф-2"
+            ],
+            "explanation": "Не указано поведение, когда запрошенное количество не превышает остаток, но товара на складе нет (остаток 0), и что делать при повторном добавлении уже имеющегося товара.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 14,
+      "routed": null,
+      "cost_usd": 0.000268347,
+      "seconds": 1.7,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "hr-leave.md",
+        "split": "dev",
+        "defects": [
+          {
+            "id": "H-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "H-incomplete",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "H-days",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "H-withdraw",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "H-duplicate",
+            "category": "duplicate",
+            "status": "found",
+            "matched_category": "duplicate"
+          },
+          {
+            "id": "H-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "H-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "H-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "traceability"
+          }
+        ],
+        "findings_total": 26,
+        "findings_matched": 8,
+        "by_severity": {
+          "blocker": 1,
+          "major": 10,
+          "minor": 15
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Сотрудник может приложить к заявлению файл в формате PDF или JPG размером не более 5 МБ."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Подача заявления",
+              "Ф-7"
+            ],
+            "explanation": "Не задано поведение при ошибке загрузки файла: что показывать пользователю, сохраняется ли заявление, можно ли повторить попытку. Без этого сценарий ошибки не реализуем и не тестируем.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Неиспользованные дни отпуска переносятся на следующий год без ограничений."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Учёт дней отпуска",
+              "Ф-17"
+            ],
+            "explanation": "Не определено, что происходит с остатком дней при переносе и как учитываются уже запланированные, но не согласованные отпуска на следующий год.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Система должна показывать сотруднику остаток дней отпуска на текущую дату на главной странице портала."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Подача заявления",
+              "Ф-5"
+            ],
+            "explanation": "«На текущую дату» не уточняет, учитываются ли уже согласованные, но ещё не начавшиеся отпуска. Разные толкования дадут разные значения остатка.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Система должна рассчитывать продолжительность отпуска в календарных днях, включая дату начала и дату окончания."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Подача заявления",
+              "Ф-2"
+            ],
+            "explanation": "«Включая дату начала и дату окончания» можно понять как включение обеих границ или только одной. Это влияет на расчёт продолжительности и остатка.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Специалист отдела кадров видит все заявления со статусом «Согласовано» за выбранный месяц и может выгрузить их в файл CSV."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Согласование",
+              "Ф-14"
+            ],
+            "explanation": "«За выбранный месяц» не уточняет, по какому полю выбирается месяц — по дате начала, дате окончания или по пересечению периода отпуска с месяцем.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Руководитель может отфильтровать календарь по сотруднику."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Календарь",
+              "Ф-23"
+            ],
+            "explanation": "«Отфильтровать календарь по сотруднику» не уточняет, выбирается один сотрудник или несколько, и как отображается результат.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "Неиспользованные дни отпуска переносятся на следующий год без ограничений."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Учёт дней отпуска",
+              "Ф-17"
+            ],
+            "explanation": "«Без ограничений» — абсолютная формулировка, которую нельзя проверить и которая может противоречить трудовому законодательству или политике компании.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "может выгрузить их в файл CSV"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Согласование",
+              "Ф-14"
+            ],
+            "explanation": "Требование навязывает конкретный формат файла выгрузки (CSV) без обоснования. Это ограничивает реализацию и не описывает потребность.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Сотрудник может подать заявление на ежегодный оплачиваемый отпуск, указав дату начала и дату окончания отпуска."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Подача заявления",
+              "Ф-1"
+            ],
+            "explanation": "Требования Ф-1, Ф-6, Ф-7, Ф-9, Ф-10, Ф-11, Ф-12, Ф-13, Ф-15, Ф-17, Ф-21, Ф-23 сформулированы как «Сотрудник может…», а не по шаблону «Система должна…», принятому в документе.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "terminology",
+            "severity": "minor",
+            "quotes": [
+              "Система должна после согласования заявления уменьшать остаток отпускных дней работника на число дней отпуска."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Учёт дней отпуска",
+              "Ф-20"
+            ],
+            "explanation": "Одна и та же сущность названа по-разному: «сотрудник» и «работник». Это затрудняет трассировку и может привести к разной реализации.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.2. Согласование"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Согласование"
+            ],
+            "explanation": "Не описан процесс согласования при отсутствии руководителя и заместителя, а также сроки согласования. Без этого нельзя реализовать маршрутизацию заявлений.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "1. Общие сведения"
+            ],
+            "sections": [
+              "1. Общие сведения"
+            ],
+            "explanation": "Не описаны роли и права доступа: кто может видеть заявления, кто может их согласовывать, какие действия доступны специалисту отдела кадров.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "minor",
+            "quotes": [
+              "3. Нефункциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Не описаны требования к уведомлениям: каналы, шаблоны, повторные отправки, обработка ошибок доставки. Это влияет на Ф-8 и Ф-13.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "Сотрудник отзывает согласованное заявление на 7 дней при остатке 3 дня | Остаток равен 10 дням"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки остаток после отзыва согласованного заявления на 7 дней при остатке 3 дня указан как 10 дней. Арифметически 3 + 7 = 10, но если остаток 3 дня уже учитывает согласованный отпуск, то возврат должен дать 10; однако в условии не сказано, что остаток 3 дня — после вычета. Это неоднозначно и может быть ошибкой.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "minor",
+            "quotes": [
+              "Руководитель отклоняет заявление с причиной из 5 символов | Заявление не отклонено, показано требование указать причину от 10 символов"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки указано, что при причине из 5 символов показывается требование указать причину от 10 символов, но не сказано, сохраняется ли заявление и можно ли исправить причину.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "Портал доступен с 08:00 до 20:00 по времени Алматы в рабочие дни с доступностью не ниже 99,5 % за месяц."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "НФТ-2 задаёт доступность 99,5 % за месяц, но не указано, как измеряется доступность и что считается недоступностью. Это делает требование трудно проверяемым.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "Страница списка заявлений открывается не дольше 2 секунд при 200 одновременных пользователях, измеряется на 95-м процентиле."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-1"
+            ],
+            "explanation": "НФТ-1 задаёт 2 секунды на 95-м процентиле, но не указано, на каком оборудовании и при каком профиле нагрузки измеряется. Это может сделать тест невоспроизводимым.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Система должна показывать сотруднику остаток дней отпуска на текущую дату на главной странице портала."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Подача заявления",
+              "Ф-5"
+            ],
+            "explanation": "Не указано, как система определяет остаток дней отпуска на текущую дату при переносе дней с прошлого года и при начислении в середине года.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 35,
+      "routed": null,
+      "cost_usd": 0.002571126,
+      "seconds": 15.4,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 1
+    },
+    {
+      "score": {
+        "fixture": "parking.pdf",
+        "split": "dev",
+        "defects": [
+          {
+            "id": "P-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "P-unnecessary",
+            "category": "unnecessary",
+            "status": "wrong_category",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "P-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "P-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "P-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "P-terminology",
+            "category": "terminology",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "P-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "infeasible"
+          },
+          {
+            "id": "P-duration",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "P-missing",
+            "category": "missing_topic",
+            "status": "wrong_category",
+            "matched_category": "ambiguous"
+          }
+        ],
+        "findings_total": 10,
+        "findings_matched": 6,
+        "by_severity": {
+          "major": 6,
+          "blocker": 3,
+          "minor": 1
+        },
+        "unmatched": [
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Приложение должно воспроизводить мелодию гимна города при каждом успешном начале сессии."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Парковочная сессия",
+              "Ф-12"
+            ],
+            "explanation": "«Мелодия гимна города» не имеет измеримого критерия и не может быть проверена тестом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "указав госномер в формате, принятом в Казахстане"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Регистрация и автомобили",
+              "Ф-2"
+            ],
+            "explanation": "Не указан формат госномера (буквы, цифры, разделители, регистр), что мешает валидации и тестированию.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "подтверждает его кодом из 6 цифр, действующим 3 минуты"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Регистрация и автомобили",
+              "Ф-1"
+            ],
+            "explanation": "Не указано, что происходит при истечении кода подтверждения или при повторной отправке — нет поведения при ошибках.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Водитель может добавить в профиль до 5 автомобилей"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Регистрация и автомобили",
+              "Ф-2"
+            ],
+            "explanation": "Не указано поведение при превышении лимита в 5 автомобилей и при попытке добавить шестой.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 36,
+      "routed": null,
+      "cost_usd": 0.00092283,
+      "seconds": 5.1,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "clinic.md",
+        "split": "dev",
+        "defects": [
+          {
+            "id": "K-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "K-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "K-incomplete",
+            "category": "incomplete",
+            "status": "wrong_category",
+            "matched_category": "nonconforming"
+          },
+          {
+            "id": "K-cancel",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "K-duplicate",
+            "category": "duplicate",
+            "status": "found",
+            "matched_category": "duplicate"
+          },
+          {
+            "id": "K-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "K-traceability",
+            "category": "traceability",
+            "status": "wrong_category",
+            "matched_category": "nonconforming"
+          },
+          {
+            "id": "K-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "K-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "incomplete"
+          }
+        ],
+        "findings_total": 60,
+        "findings_matched": 7,
+        "by_severity": {
+          "blocker": 3,
+          "major": 29,
+          "minor": 28
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Система должна блокировать выбранный слот на 5 минут, пока пациент подтверждает запись; по истечении 5 минут слот снова становится свободным."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-9"
+            ],
+            "explanation": "Не указано, что происходит с записью и слотом, если пациент не подтвердил запись за 5 минут: освобождается ли слот, отменяется ли запись.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "После подтверждения записи пациент получает SMS с датой, временем, адресом клиники и фамилией врача."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-10"
+            ],
+            "explanation": "Не задано поведение системы при ошибке отправки SMS: повтор, уведомление, альтернативный канал.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Пациент может перенести запись на другой свободный слот того же врача не позднее чем за 2 часа до начала приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-13"
+            ],
+            "explanation": "Не указано, что происходит с записью и оплатой при переносе: сохраняется ли оплата, меняется ли стоимость.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Врач отмечает, что пациент пришёл или не пришёл; отметка доступна с начала приёма до конца рабочего дня."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Приём",
+              "Ф-21"
+            ],
+            "explanation": "Не указано, что происходит с записью, если пациент не пришёл: отменяется ли она, освобождается ли слот, влияет ли это на оплату.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Пациент может удалить учётную запись; данные о прошедших приёмах при этом сохраняются согласно требованиям к хранению медицинских данных."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-4"
+            ],
+            "explanation": "Не указано, что происходит с заключением после удаления учётной записи: сохраняется ли оно и как пациент получает к нему доступ.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "При удалении рабочего дня врача, на который есть записи, система отменяет эти записи и отправляет пациентам SMS с предложением выбрать другое время."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-17"
+            ],
+            "explanation": "Не указано, что происходит с записями и слотами при удалении рабочего дня, если пациент не выбрал другое время: отменяются ли записи автоматически, возвращаются ли деньги.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Пациент может изменить номер телефона только после подтверждения нового номера кодом из SMS."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-3"
+            ],
+            "explanation": "Не указано, что происходит с записью, если пациент не подтвердил новый номер телефона: сохраняется ли старый номер, блокируется ли изменение.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Пациент может указать в профиле до 3 родственников и записывать их на приём от своего имени."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-2"
+            ],
+            "explanation": "Не указано, что происходит с записями родственников при удалении учётной записи пациента: отменяются ли они, сохраняются ли данные.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Пациент выбрал слот и не подтвердил запись за 5 минут | Слот снова свободен"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не указано, что происходит с записью, если пациент не подтвердил запись за 5 минут: освобождается ли слот, отменяется ли запись.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Пациент регистрируется по номеру телефона и ИИН из 12 цифр; система проверяет контрольную цифру ИИН и при ошибке показывает «Неверный ИИН»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-1"
+            ],
+            "explanation": "Требование объединяет регистрацию по телефону и ИИН, проверку контрольной цифры и вывод сообщения об ошибке — это несколько независимых возможностей.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Пациент ищет врача по специальности, фамилии и клинике; результаты показываются по 20 на странице."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-5"
+            ],
+            "explanation": "Требование объединяет поиск по трём параметрам и пагинацию результатов — это две независимые возможности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Платные приёмы оплачиваются картой при записи; бесплатные по полису записываются без оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Оплата",
+              "Ф-24"
+            ],
+            "explanation": "Требование объединяет оплату платных приёмов и запись без оплаты по полису — это два независимых сценария.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Врач может оставить заключение по приёму длиной до 4 000 символов; заключение доступно пациенту в личном кабинете."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Приём",
+              "Ф-22"
+            ],
+            "explanation": "Требование объединяет ввод заключения и его отображение пациенту — это две независимые возможности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Регистратор задаёт расписание врача на месяц вперёд: рабочие дни, время начала и окончания приёма, перерывы."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-15"
+            ],
+            "explanation": "Требование объединяет задание рабочих дней, времени начала и окончания приёма и перерывов — это несколько независимых параметров расписания.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "При удалении рабочего дня врача, на который есть записи, система отменяет эти записи и отправляет пациентам SMS с предложением выбрать другое время."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-17"
+            ],
+            "explanation": "Требование объединяет отмену записей и отправку SMS с предложением выбрать другое время — это два независимых действия.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Регистратор видит список записей на день по каждому врачу с фамилией пациента и временем приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-19"
+            ],
+            "explanation": "Требование объединяет отображение списка записей и отображение фамилии пациента и времени приёма — это две независимые возможности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Врач отмечает, что пациент пришёл или не пришёл; отметка доступна с начала приёма до конца рабочего дня."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Приём",
+              "Ф-21"
+            ],
+            "explanation": "Требование объединяет отметку «пришёл» и отметку «не пришёл» — это два независимых действия.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Медицинские данные пациентов передаются только по TLS 1.2 и выше и хранятся в зашифрованном виде алгоритмом AES-256."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "Требование объединяет передачу данных по TLS и хранение в зашифрованном виде — это два независимых свойства безопасности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Журнал аудита фиксирует каждый просмотр медицинских данных: кто, когда и какие данные открыл."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-6"
+            ],
+            "explanation": "Требование объединяет фиксацию того, кто и когда открыл данные, и того, какие данные открыл — это два независимых атрибута аудита.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Запись хранит идентификатор пациента, врача, клиники, дату и время начала, длительность, статус и признак оплаты."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-1"
+            ],
+            "explanation": "Требование объединяет хранение идентификаторов пациента, врача, клиники, даты и времени начала, длительности, статуса и признака оплаты — это несколько независимых атрибутов.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "contradiction",
+            "severity": "blocker",
+            "quotes": [
+              "При удалении рабочего дня врача, на который есть записи, система отменяет эти записи и отправляет пациентам SMS с предложением выбрать другое время.",
+              "Пациент может отменить запись не позднее чем за 2 часа до начала приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-17",
+              "2.2. Поиск и запись",
+              "Ф-12"
+            ],
+            "explanation": "Ф-17 требует отменять записи при удалении рабочего дня, а Ф-12 запрещает отмену менее чем за 2 часа до приёма — при удалении дня с записями на ближайшие 2 часа эти требования конфликтуют.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "terminology",
+            "severity": "minor",
+            "quotes": [
+              "Пациент регистрируется по номеру телефона и ИИН из 12 цифр",
+              "Номер телефона хранится в формате E.164."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-1",
+              "4. Требования к данным",
+              "Д-3"
+            ],
+            "explanation": "Одна и та же сущность названа по-разному: «номер телефона» и «телефон», «ИИН» и «ИИН из 12 цифр» — это затрудняет однозначное понимание.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Приоритет всех требований — «обязательно», если не указано иное."
+            ],
+            "sections": [],
+            "explanation": "В документе не указаны приоритеты отдельных требований, связи между требованиями и источниками, кроме общего указания на протокол встречи.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "3. Нефункциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Отсутствует раздел с ограничениями и допущениями, без которого нельзя определить границы реализации и проверить выполнимость требований.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2. Функциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Отсутствует описание поведения системы при ошибках и исключениях для большинства требований, что не позволяет проверить их полноту.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.5. Оплата"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Оплата"
+            ],
+            "explanation": "Отсутствует описание внешних интерфейсов (SMS-шлюз, платёжная система), без которого нельзя начать разработку интеграций.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "major",
+            "quotes": [
+              "Интерфейс пациента должен соответствовать требованиям доступности из документа «Стандарт доступности клиник v4», раздел 7."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Требование НФТ-3 ссылается на внешний документ без указания конкретных измеримых требований, что выбивается из шаблона и делает требование непроверяемым.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Медицинские заключения хранятся 25 лет."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-2"
+            ],
+            "explanation": "Требование Д-2 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Номер телефона хранится в формате E.164."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-3"
+            ],
+            "explanation": "Требование Д-3 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Запись хранит идентификатор пациента, врача, клиники, дату и время начала, длительность, статус и признак оплаты."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-1"
+            ],
+            "explanation": "Требование Д-1 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент регистрируется по номеру телефона и ИИН из 12 цифр; система проверяет контрольную цифру ИИН и при ошибке показывает «Неверный ИИН»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-1"
+            ],
+            "explanation": "Требование Ф-1 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент может указать в профиле до 3 родственников и записывать их на приём от своего имени."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-2"
+            ],
+            "explanation": "Требование Ф-2 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент может изменить номер телефона только после подтверждения нового номера кодом из SMS."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-3"
+            ],
+            "explanation": "Требование Ф-3 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент может удалить учётную запись; данные о прошедших приёмах при этом сохраняются согласно требованиям к хранению медицинских данных."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Учётная запись пациента",
+              "Ф-4"
+            ],
+            "explanation": "Требование Ф-4 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент ищет врача по специальности, фамилии и клинике; результаты показываются по 20 на странице."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-5"
+            ],
+            "explanation": "Требование Ф-5 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Для каждого врача показывается ближайшее свободное время приёма в пределах 30 дней."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-6"
+            ],
+            "explanation": "Требование Ф-6 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент выбирает свободный слот длительностью 20 минут и подтверждает запись."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-7"
+            ],
+            "explanation": "Требование Ф-7 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Один пациент не может иметь больше 2 будущих записей к врачам одной специальности."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-8"
+            ],
+            "explanation": "Требование Ф-8 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "После подтверждения записи пациент получает SMS с датой, временем, адресом клиники и фамилией врача."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-10"
+            ],
+            "explanation": "Требование Ф-10 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент может отменить запись не позднее чем за 2 часа до начала приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-12"
+            ],
+            "explanation": "Требование Ф-12 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент может перенести запись на другой свободный слот того же врача не позднее чем за 2 часа до начала приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-13"
+            ],
+            "explanation": "Требование Ф-13 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Если пациент не пришёл на приём 3 раза за 90 дней, онлайн-запись для него блокируется на 30 дней."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Поиск и запись",
+              "Ф-14"
+            ],
+            "explanation": "Требование Ф-14 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Регистратор задаёт расписание врача на месяц вперёд: рабочие дни, время начала и окончания приёма, перерывы."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-15"
+            ],
+            "explanation": "Требование Ф-15 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Регистратор может закрыть слот для онлайн-записи с указанием причины."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-16"
+            ],
+            "explanation": "Требование Ф-16 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Регистратор видит список записей на день по каждому врачу с фамилией пациента и временем приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Расписание",
+              "Ф-19"
+            ],
+            "explanation": "Требование Ф-19 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Врач видит список своих пациентов на текущий день в порядке времени приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Приём",
+              "Ф-20"
+            ],
+            "explanation": "Требование Ф-20 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Врач отмечает, что пациент пришёл или не пришёл; отметка доступна с начала приёма до конца рабочего дня."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Приём",
+              "Ф-21"
+            ],
+            "explanation": "Требование Ф-21 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Врач может оставить заключение по приёму длиной до 4 000 символов; заключение доступно пациенту в личном кабинете."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Приём",
+              "Ф-22"
+            ],
+            "explanation": "Требование Ф-22 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Пациент может оценить приём по шкале от 1 до 5 в течение 7 дней после приёма."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Приём",
+              "Ф-23"
+            ],
+            "explanation": "Требование Ф-23 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Платные приёмы оплачиваются картой при записи; бесплатные по полису записываются без оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Оплата",
+              "Ф-24"
+            ],
+            "explanation": "Требование Ф-24 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "При отмене оплаченной записи не позднее чем за 2 часа до приёма деньги возвращаются на карту в течение 5 рабочих дней."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Оплата",
+              "Ф-25"
+            ],
+            "explanation": "Требование Ф-25 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Стоимость приёма со скидкой 15 % при цене 10 000 ₸ составляет 8 000 ₸."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Оплата",
+              "Ф-26"
+            ],
+            "explanation": "Требование Ф-26 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Журнал аудита фиксирует каждый просмотр медицинских данных: кто, когда и какие данные открыл."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-6"
+            ],
+            "explanation": "Требование НФТ-6 не содержит субъекта «система должна», что выбивается из шаблона формулировок документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 44,
+      "routed": null,
+      "cost_usd": 0.005104104,
+      "seconds": 24.8,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "lms.md",
+        "split": "dev",
+        "defects": [
+          {
+            "id": "L-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "L-attempts",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "L-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "L-unnecessary",
+            "category": "unnecessary",
+            "status": "found",
+            "matched_category": "unnecessary"
+          },
+          {
+            "id": "L-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "L-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "L-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "nonconforming"
+          },
+          {
+            "id": "L-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "infeasible"
+          },
+          {
+            "id": "L-incomplete",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "L-missing",
+            "category": "missing_topic",
+            "status": "wrong_category",
+            "matched_category": "contradiction"
+          }
+        ],
+        "findings_total": 20,
+        "findings_matched": 8,
+        "by_severity": {
+          "major": 10,
+          "blocker": 2,
+          "minor": 8
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Ф-13. Если мест нет, слушатель может встать в лист ожидания; при освобождении места первый в листе ожидания записывается автоматически и получает письмо."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Каталог курсов",
+              "Ф-13"
+            ],
+            "explanation": "Не указано, что происходит с листом ожидания, если слушатель не подтверждает запись, и как долго он остаётся в листе.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Ф-38. Видео загружается в формате MP4 размером не более 2 ГБ; после загрузки платформа перекодирует его в разрешения 360p, 720p и 1080p."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Создание курсов",
+              "Ф-38"
+            ],
+            "explanation": "Не указано поведение системы при ошибке загрузки видео или при превышении размера/формата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Ф-41. Модератор публикует курс или возвращает его автору с комментарием длиной до 1 000 символов."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Создание курсов",
+              "Ф-41"
+            ],
+            "explanation": "Не указано, что происходит с курсом и слушателями, если модератор возвращает курс с комментарием.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Д-3. Персональные данные слушателя удаляются через 3 года после увольнения сотрудника, сертификаты при этом сохраняются."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-3"
+            ],
+            "explanation": "Не указано, что происходит с сертификатом и историей обучения при увольнении сотрудника.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "И-1. Платформа получает из кадровой системы список сотрудников и подразделений ежедневно в 02:00 по времени Алматы."
+            ],
+            "sections": [
+              "5. Интеграции",
+              "И-1"
+            ],
+            "explanation": "Не указано, что происходит при недоступности кадровой системы во время ежедневной загрузки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "НФТ-7. Интерфейс корректно отображается в последних двух версиях браузеров Chrome, Edge, Firefox и Safari."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-7"
+            ],
+            "explanation": "«Последние две версии браузеров» — расплывчатый критерий, невозможно однозначно проверить.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "НФТ-7. Интерфейс корректно отображается в последних двух версиях браузеров Chrome, Edge, Firefox и Safari."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-7"
+            ],
+            "explanation": "«Корректно отображается» — нет измеримого критерия проверки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Ф-1. Вход в платформу выполняется через корпоративную учётную запись по протоколу OpenID Connect."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Вход и профиль",
+              "Ф-1"
+            ],
+            "explanation": "Требование навязывает конкретный протокол аутентификации без обоснования.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Д-4. Видео хранится в объектном хранилище; в базе данных хранится ссылка на файл и его длительность в секундах."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-4"
+            ],
+            "explanation": "Требование навязывает конкретную технологию хранения (объектное хранилище) без обоснования.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "6. Критерии приёмки"
+            ],
+            "sections": [
+              "6. Критерии приёмки"
+            ],
+            "explanation": "В разделе критериев приёмки нет связи с идентификаторами требований, что затрудняет проверку покрытия.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Учебная спецификация системы дистанционного обучения для корпоративного университета."
+            ],
+            "sections": [],
+            "explanation": "Отсутствует раздел с ограничениями и допущениями (например, сроки, бюджет, законодательные требования к персональным данным).",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "1. Роли и термины"
+            ],
+            "sections": [
+              "1. Роли и термины"
+            ],
+            "explanation": "Не описаны роли «модератор» и «руководитель» в разделе терминов, хотя они используются в требованиях.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 80,
+      "routed": null,
+      "cost_usd": 0.001965477,
+      "seconds": 9.5,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "fitness-clean.md",
+        "split": "dev",
+        "defects": [],
+        "findings_total": 0,
+        "findings_matched": 0,
+        "by_severity": {},
+        "unmatched": []
+      },
+      "blocks": 36,
+      "routed": null,
+      "cost_usd": 0.006967383,
+      "seconds": 29.7,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": false,
+      "note": "baseline: ответ модели обрезан по max_tokens",
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "library.pdf",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "B-ambiguous",
+            "category": "ambiguous",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "B-unverifiable",
+            "category": "unverifiable",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "B-composite",
+            "category": "composite",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "B-limit",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "B-design",
+            "category": "design_decision",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "B-terminology",
+            "category": "terminology",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "B-missing",
+            "category": "missing_topic",
+            "status": "missed",
+            "matched_category": null
+          }
+        ],
+        "findings_total": 0,
+        "findings_matched": 0,
+        "by_severity": {},
+        "unmatched": []
+      },
+      "blocks": 33,
+      "routed": null,
+      "cost_usd": 0.00692949,
+      "seconds": 27.0,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": false,
+      "note": "baseline: ответ модели обрезан по max_tokens",
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "insurance.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "I-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "I-deadline",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "I-duplicate",
+            "category": "duplicate",
+            "status": "found",
+            "matched_category": "duplicate"
+          },
+          {
+            "id": "I-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "I-unnecessary",
+            "category": "unnecessary",
+            "status": "wrong_category",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "I-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "infeasible"
+          },
+          {
+            "id": "I-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "I-incomplete",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "I-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "missing_topic"
+          }
+        ],
+        "findings_total": 66,
+        "findings_matched": 8,
+        "by_severity": {
+          "blocker": 3,
+          "major": 37,
+          "minor": 26
+        },
+        "unmatched": [
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-8. Расчёт показывается сразу после ввода данных и пересчитывается при изменении любого поля."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-8"
+            ],
+            "explanation": "«Сразу» не задаёт измеримого момента показа расчёта, поэтому требование нельзя проверить тестом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Ф-17. Если оплата не прошла, черновик полиса хранится 24 часа, и пользователь может повторить оплату."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-17"
+            ],
+            "explanation": "Не задано поведение при ошибке оплаты: как долго хранится черновик, что видит пользователь, можно ли менять данные.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Ф-12. Полис оформляется не позднее чем за 1 день до даты начала поездки."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-12"
+            ],
+            "explanation": "Не указано, что происходит с полисом и оплатой, если оплата не прошла, а срок оформления истёк.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Ф-23. Сервис должен присылать пользователю раз в неделю письмо с советами путешественнику и прогнозом погоды в стране поездки."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-23"
+            ],
+            "explanation": "«Раз в неделю» не задаёт день недели и время отправки, поэтому проверить выполнение нельзя.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "major",
+            "quotes": [
+              "а еще надо чтобы менеджеры видели статистику продаж по дням ну и по странам наверное"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование"
+            ],
+            "explanation": "Требование оформлено разговорным текстом без идентификатора и формулировки «система должна…», выбивается из шаблона документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Ф-14. После успешной оплаты полис формируется в формате PDF и отправляется на почту в течение 5 минут."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-14"
+            ],
+            "explanation": "Требование навязывает формат PDF и канал доставки (почта) без указания причины, ограничивая реализацию.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Ф-13. Оплата выполняется банковской картой на странице платёжного провайдера."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-13"
+            ],
+            "explanation": "Требование навязывает конкретную страницу платёжного провайдера, а не результат оплаты.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "terminology",
+            "severity": "minor",
+            "quotes": [
+              "Ф-20. Пользователь может расторгнуть полис до даты начала поездки; деньги возвращаются в полном объёме.",
+              "Ф-22. Пользователь может отказаться от полиса до даты начала поездки и получить полный возврат стоимости."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-20",
+              "Ф-22"
+            ],
+            "explanation": "Одна и та же сущность названа по-разному: «расторгнуть полис» и «отказаться от полиса».",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "2. Функциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Не указаны приоритеты, источники и связи требований, кроме общей фразы в шапке документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.2. Оформление"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление"
+            ],
+            "explanation": "Не описан сценарий отказа платёжного провайдера и повторной оплаты после истечения 24 часов.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.3. Личный кабинет"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет"
+            ],
+            "explanation": "Не описаны требования к аутентификации и регистрации пользователя, без которых личный кабинет и оформление не реализуемы.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "3. Нефункциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Не описаны требования к обработке персональных данных и согласиям, кроме хранения паспортов.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.5. Администрирование"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование"
+            ],
+            "explanation": "Не описаны требования к ролям и правам доступа сотрудников, кроме роли «Андеррайтер».",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "minor",
+            "quotes": [
+              "4. Требования к данным"
+            ],
+            "sections": [
+              "4. Требования к данным"
+            ],
+            "explanation": "Не описаны требования к журналированию действий сотрудников и пользователей.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "5. Критерии приёмки"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Не описаны требования к обработке ошибок и исключений для расчёта стоимости и оформления.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-7. Пользователь может добавить опцию «Отмена поездки», если до начала поездки осталось не меньше 14 дней."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-7"
+            ],
+            "explanation": "«Не меньше 14 дней» не уточняет, учитываются ли календарные или рабочие дни и включается ли день начала поездки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-16. Полис можно оформить в день начала поездки, если до её начала осталось не меньше 2 часов."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-16"
+            ],
+            "explanation": "«Не меньше 2 часов» не уточняет, учитывается ли время начала поездки и часовой пояс.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-14. После успешной оплаты полис формируется в формате PDF и отправляется на почту в течение 5 минут."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-14"
+            ],
+            "explanation": "«В течение 5 минут» не уточняет, от какого момента отсчитывается срок и что происходит при задержке.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-4. Возрастной коэффициент: до 64 лет включительно — 1,0; от 65 до 79 лет — 2,0; 80 лет и старше страхование не оформляется."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-4"
+            ],
+            "explanation": "«До 64 лет включительно» и «от 65 до 79 лет» не задают, как считать возраст: на дату начала поездки или на дату оформления.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-28. Сотрудник страховой компании меняет базовые тарифы стран; изменение применяется к полисам, оформленным после изменения."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование",
+              "Ф-28"
+            ],
+            "explanation": "«Изменение применяется к полисам, оформленным после изменения» не уточняет, что считается моментом оформления: оплата или создание черновика.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "НФТ-2. Данные паспортов хранятся в зашифрованном виде; доступ к ним имеют только сотрудники с ролью «Андеррайтер»."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "«Доступ к ним имеют только сотрудники с ролью «Андеррайтер»» не уточняет, какие именно данные и какие действия доступны.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "НФТ-3. Сервис доступен не менее 99,5 % времени за календарный месяц."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "«Не менее 99,5 % времени за календарный месяц» не уточняет, как считается недоступность и что считается доступностью.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Д-2. Полисы и обращения хранятся 5 лет после окончания срока действия полиса."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-2"
+            ],
+            "explanation": "«Полисы и обращения хранятся 5 лет после окончания срока действия полиса» не уточняет, что делать с обращениями без полиса и как считать срок для расторгнутых полисов.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-3. Стоимость полиса — базовый тариф страны за день, умноженный на число дней поездки и на возрастной коэффициент каждого путешественника, затем суммированный по путешественникам."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-3"
+            ],
+            "explanation": "«Стоимость полиса — базовый тариф страны за день, умноженный на число дней поездки и на возрастной коэффициент каждого путешественника, затем суммированный по путешественникам» допускает разное прочтение порядка умножения и суммирования.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-2. Срок поездки — от 1 до 180 календарных дней включительно."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-2"
+            ],
+            "explanation": "«Срок поездки — от 1 до 180 календарных дней включительно» не уточняет, как считать дни, если даты начала и окончания совпадают.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-15. Номер полиса имеет формат TRV-ГГГГММДД-NNNNN."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-15"
+            ],
+            "explanation": "«Номер полиса имеет формат TRV-ГГГГММДД-NNNNN» не уточняет, что означает NNNNN и как обеспечивается уникальность.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-18. Пользователь видит список своих полисов со статусом: «Действует», «Ожидает начала», «Истёк», «Расторгнут»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-18"
+            ],
+            "explanation": "«Пользователь видит список своих полисов со статусом» не уточняет, как определяется статус «Ожидает начала» и «Действует».",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-27. Пользователь видит статус обращения: «Принято», «На рассмотрении», «Решение принято»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Страховой случай",
+              "Ф-27"
+            ],
+            "explanation": "«Пользователь видит статус обращения» не уточняет, кто и когда меняет статус.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-29. Сотрудник видит список полисов за период с фильтром по стране и статусу и выгружает его в XLSX."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование",
+              "Ф-29"
+            ],
+            "explanation": "«Сотрудник видит список полисов за период с фильтром по стране и статусу» не уточняет, какие поля выгружаются и в каком виде.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-24. Пользователь может сообщить о страховом случае через личный кабинет: дата, страна, описание и фотографии документов."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Страховой случай",
+              "Ф-24"
+            ],
+            "explanation": "«Пользователь может сообщить о страховом случае через личный кабинет: дата, страна, описание и фотографии документов» не уточняет обязательность полей и ограничения на файлы.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-10. Пользователь вводит адрес электронной почты для получения полиса и номер мобильного телефона."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-10"
+            ],
+            "explanation": "«Пользователь вводит адрес электронной почты для получения полиса и номер мобильного телефона» не уточняет обязательность и формат.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-9. Для каждого путешественника пользователь вводит фамилию и имя латиницей как в паспорте, дату рождения и номер паспорта."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-9"
+            ],
+            "explanation": "«Фамилия и имя латиницей как в паспорте» не уточняет, что делать с пробелами, дефисами и двойными именами.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-11. Пользователь подтверждает согласие с правилами страхования, отметив флажок; без отметки кнопка «Оплатить» недоступна."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Оформление",
+              "Ф-11"
+            ],
+            "explanation": "«Пользователь подтверждает согласие с правилами страхования, отметив флажок; без отметки кнопка «Оплатить» недоступна» не уточняет, где пользователь может прочитать правила.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-19. Пользователь может скачать полис в формате PDF повторно."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-19"
+            ],
+            "explanation": "«Пользователь может скачать полис в формате PDF повторно» не уточняет, доступно ли это для всех статусов полиса.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-6. Пользователь может добавить опцию «Активный отдых» с надбавкой 30 % к стоимости полиса."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-6"
+            ],
+            "explanation": "«Пользователь может добавить опцию «Активный отдых» с надбавкой 30 % к стоимости полиса» не уточняет, к какой базе применяется надбавка.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-1. Пользователь указывает страну поездки, даты начала и окончания поездки, число путешественников и их даты рождения."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Расчёт стоимости",
+              "Ф-1"
+            ],
+            "explanation": "«Пользователь указывает страну поездки, даты начала и окончания поездки, число путешественников и их даты рождения» не уточняет, обязательны ли все поля и что делать при несовпадении числа путешественников и дат рождения.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-28. Сотрудник страховой компании меняет базовые тарифы стран; изменение применяется к полисам, оформленным после изменения."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование",
+              "Ф-28"
+            ],
+            "explanation": "«Сотрудник страховой компании меняет базовые тарифы стран» не уточняет, кто именно и с какими ограничениями.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-25. Номер круглосуточного ассистанса указан в полисе и на главной странице личного кабинета."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Страховой случай",
+              "Ф-25"
+            ],
+            "explanation": "«Номер круглосуточного ассистанса указан в полисе и на главной странице личного кабинета» не уточняет, что делать при недоступности номера.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-20. Пользователь может расторгнуть полис до даты начала поездки; деньги возвращаются в полном объёме."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-20"
+            ],
+            "explanation": "«Пользователь может расторгнуть полис до даты начала поездки; деньги возвращаются в полном объёме» не уточняет срок возврата.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-21. После начала поездки полис можно расторгнуть только при досрочном возвращении; возврат рассчитывается по правилам, описанным в документе «Методика возвратов ТП-2024»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-21"
+            ],
+            "explanation": "«После начала поездки полис можно расторгнуть только при досрочном возвращении» не уточняет, как подтверждается досрочное возвращение.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-23. Сервис должен присылать пользователю раз в неделю письмо с советами путешественнику и прогнозом погоды в стране поездки."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Личный кабинет",
+              "Ф-23"
+            ],
+            "explanation": "«Сервис должен присылать пользователю раз в неделю письмо с советами путешественнику и прогнозом погоды в стране поездки» не уточняет, для каких полисов и как отписаться.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-29. Сотрудник видит список полисов за период с фильтром по стране и статусу и выгружает его в XLSX."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Администрирование",
+              "Ф-29"
+            ],
+            "explanation": "«Сотрудник видит список полисов за период с фильтром по стране и статусу и выгружает его в XLSX» не уточняет, кто имеет доступ.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Ф-24. Пользователь может сообщить о страховом случае через личный кабинет: дата, страна, описание и фотографии документов."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Страховой случай",
+              "Ф-24"
+            ],
+            "explanation": "«Пользователь может сообщить о страховом случае через личный кабинет: дата, страна, описание и фотографии документов» не уточняет, что происходит после отправки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Ф-27. Пользователь видит статус обращения: «Принято», «На рассмотрении», «Решение принято»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Страховой случай",
+              "Ф-27"
+            ],
+            "explanation": "«Пользователь видит статус обращения: «Принято», «На рассмотрении», «Решение принято»» не уточняет, видит ли пользователь решение.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Д-2. Полисы и обращения хранятся 5 лет после окончания срока действия полиса."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-2"
+            ],
+            "explanation": "«Полисы и обращения хранятся 5 лет после окончания срока действия полиса» не уточняет, что делать с обращениями, не связанными с полисом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Д-1. Полис хранит номер, страну, даты поездки, путешественников, стоимость, опции, статус и дату оформления."
+            ],
+            "sections": [
+              "4. Требования к данным",
+              "Д-1"
+            ],
+            "explanation": "«Полис хранит номер, страну, даты поездки, путешественников, стоимость, опции, статус и дату оформления» не уточняет формат хранения путешественников и опций.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "НФТ-1. Расчёт стоимости показывается не дольше 1 секунды на 95-м процентиле при 300 одновременных пользователях."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-1"
+            ],
+            "explanation": "«Расчёт стоимости показывается не дольше 1 секунды на 95-м процентиле при 300 одновременных пользователях» не уточняет, на каком оборудовании и с какими данными.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "НФТ-2. Данные паспортов хранятся в зашифрованном виде; доступ к ним имеют только сотрудники с ролью «Андеррайтер»."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "«Данные паспортов хранятся в зашифрованном виде» не уточняет алгоритм и управление ключами.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "НФТ-3. Сервис доступен не менее 99,5 % времени за календарный месяц."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "«Сервис доступен не менее 99,5 % времени за календарный месяц» не уточняет, что считается недоступностью.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Поездка на 181 день | Полис не рассчитывается, показан допустимый срок"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "«Поездка на 181 день | Полис не рассчитывается, показан допустимый срок» не уточняет, какой именно срок показывается.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Путешественнику 80 лет | Полис не оформляется"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "«Путешественнику 80 лет | Полис не оформляется» не уточняет, блокируется ли весь заказ или только этот путешественник.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "До поездки 10 дней, пользователь выбирает опцию «Отмена поездки» | Опция недоступна"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "«До поездки 10 дней, пользователь выбирает опцию «Отмена поездки» | Опция недоступна» не уточняет, почему опция недоступна и что видит пользователь.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Условие | Ожидаемый результат"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "«Условие | Ожидаемый результат» не задаёт формат таблицы критериев приёмки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Сервис позволяет купить полис медицинского страхования для поездки за границу, оплатить его картой и получить полис на почту."
+            ],
+            "sections": [
+              "1. Общие сведения"
+            ],
+            "explanation": "«Сервис позволяет купить полис медицинского страхования для поездки за границу, оплатить его картой и получить полис на почту» не уточняет, какие страны и валюты поддерживаются.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Пользователи — физические лица старше 18 лет."
+            ],
+            "sections": [
+              "1. Общие сведения"
+            ],
+            "explanation": "«Пользователи — физические лица старше 18 лет» не уточняет, как проверяется возраст.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Приоритет всех требований — «обязательно», если не указано иное."
+            ],
+            "sections": [],
+            "explanation": "«Приоритет всех требований — «обязательно», если не указано иное» не уточняет, где указывается иное.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Источник требований — продуктовая карта страховой компании, редакция 2."
+            ],
+            "sections": [],
+            "explanation": "«Источник требований — продуктовая карта страховой компании, редакция 2» не уточняет, где хранится документ и как проверить его версию.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Учебная спецификация. Версия 0.9 от 07.06.2026."
+            ],
+            "sections": [],
+            "explanation": "«Учебная спецификация. Версия 0.9 от 07.06.2026» не уточняет статус документа.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 41,
+      "routed": null,
+      "cost_usd": 0.006047097,
+      "seconds": 26.9,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "utilities.pdf",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "U-period",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "U-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "U-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "U-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "U-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "U-retry",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "U-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "U-ambiguous",
+            "category": "ambiguous",
+            "status": "wrong_category",
+            "matched_category": "nonconforming"
+          },
+          {
+            "id": "U-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "incomplete"
+          }
+        ],
+        "findings_total": 22,
+        "findings_matched": 8,
+        "by_severity": {
+          "blocker": 2,
+          "major": 17,
+          "minor": 3
+        },
+        "unmatched": [
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Абонент привязывает лицевой счёт по номеру из 10 цифр и сумме последнего платежа."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Лицевые счета",
+              "Ф-1"
+            ],
+            "explanation": "Не указано, что именно означает «сумма последнего платежа»: сумма в тенге, дата, номер квитанции. Без этого невозможно реализовать проверку и тест.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Абонент привязывает лицевой счёт по номеру из 10 цифр и сумме последнего платежа."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Лицевые счета",
+              "Ф-1"
+            ],
+            "explanation": "Не задано поведение при ошибке: что показывается абоненту, если номер счёта не найден или формат неверен. Это мешает разработке и тестированию.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "показываются адрес помещения, список приборов учёта и задолженность на текущую дату"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Лицевые счета",
+              "Ф-4"
+            ],
+            "explanation": "«Задолженность на текущую дату» не имеет измеримого критерия: неясно, на какой момент и в каком виде показывается значение.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "привязка блокируется до следующих суток"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.1. Лицевые счета",
+              "Ф-5"
+            ],
+            "explanation": "«До следующих суток» не определяет точное время разблокировки (00:00, 24 часа с момента блокировки и т. п.).",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "система просит абонента подтвердить показание"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-9"
+            ],
+            "explanation": "Не указано, что происходит с показанием, если абонент не подтвердил его после запроса. Без этого нельзя реализовать сценарий.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "До 25 числа абонент может исправить переданное в этом месяце показание любое число раз; учитывается последнее."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-11"
+            ],
+            "explanation": "Не указано, что происходит, если абонент не исправил показание до 25 числа: принимается ли последнее значение или показание аннулируется.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "начисление выполняется по среднему расходу"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Показания",
+              "Ф-12"
+            ],
+            "explanation": "«По среднему расходу» не определено: за какой период, как считается и что при отсутствии истории. Это делает требование непроверяемым.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Абонент может подать заявку на замену прибора учёта с указанием причины."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Приборы учёта",
+              "Ф-19"
+            ],
+            "explanation": "Не указано, что происходит после подачи заявки на замену прибора: сроки, статусы, кто обрабатывает. Требование нельзя проверить.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Оплата поступает в расчётный центр в течение суток."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-25"
+            ],
+            "explanation": "«В течение суток» не определяет, от какого момента отсчитывается срок и что происходит при задержке. Не проверяется тестом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "в указанный день месяца с привязанной карты списывается сумма квитанции"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Начисления и оплата",
+              "Ф-26"
+            ],
+            "explanation": "Не указано, что происходит, если на привязанной карте недостаточно средств при автоплатеже.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Источник требований — регламент расчётного центра № 22."
+            ],
+            "sections": [],
+            "explanation": "В документе нет связей требований с источниками, кроме общего указания на регламент № 22, и нет приоритетов для отдельных требований. Это затрудняет управление изменениями.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "3. Нефункциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "Отсутствует раздел с ограничениями и допущениями (например, поддерживаемые платформы, часовой пояс, законодательные ограничения). Без этого нельзя начать разработку.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "major",
+            "quotes": [
+              "Ответ на обращение даётся в течение 10 рабочих дней и показывается в",
+              "приложении."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Обращения",
+              "Ф-32"
+            ],
+            "explanation": "Требование Ф-32 разорвано между блоками B-0043 и B-0044: текст «Ответ на обращение даётся в течение 10 рабочих дней и показывается в» и отдельно «приложении». Это нарушает целостность формулировки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "major",
+            "quotes": [
+              "14 число месяца, абонент передаёт | Показание не принято, показан период",
+              "показание | передачи"
+            ],
+            "sections": [
+              "6. Критерии приёмки",
+              "показание"
+            ],
+            "explanation": "Критерии приёмки разорваны между блоками B-0063–B-0068: строки таблицы разбиты на части, что делает таблицу нечитаемой и непригодной для проверки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 55,
+      "routed": null,
+      "cost_usd": 0.001968636,
+      "seconds": 9.0,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "warehouse.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "W-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "traceability"
+          },
+          {
+            "id": "W-ambiguous",
+            "category": "ambiguous",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "W-design",
+            "category": "design_decision",
+            "status": "found",
+            "matched_category": "design_decision"
+          },
+          {
+            "id": "W-infeasible",
+            "category": "infeasible",
+            "status": "found",
+            "matched_category": "infeasible"
+          },
+          {
+            "id": "W-fefo",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "W-incorrect",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "W-unnecessary",
+            "category": "unnecessary",
+            "status": "found",
+            "matched_category": "unnecessary"
+          },
+          {
+            "id": "W-composite",
+            "category": "composite",
+            "status": "found",
+            "matched_category": "composite"
+          },
+          {
+            "id": "W-nonconforming",
+            "category": "nonconforming",
+            "status": "found",
+            "matched_category": "nonconforming"
+          },
+          {
+            "id": "W-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "W-unverifiable",
+            "category": "unverifiable",
+            "status": "found",
+            "matched_category": "unverifiable"
+          },
+          {
+            "id": "W-duplicate",
+            "category": "duplicate",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-incomplete",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "W-missing",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "incomplete"
+          }
+        ],
+        "findings_total": 42,
+        "findings_matched": 12,
+        "by_severity": {
+          "major": 24,
+          "blocker": 4,
+          "minor": 14
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Для товаров со сроком годности кладовщик вводит дату производства или дату окончания срока годности."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-16"
+            ],
+            "explanation": "Не указано, что делать, если дата производства и дата окончания срока годности не совпадают по расчёту, и как система проверяет 30 % срока.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Товар, у которого осталось меньше 30 % срока годности, не принимается."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-17"
+            ],
+            "explanation": "Не задано, что происходит с товаром, у которого осталось меньше 30 % срока годности: возврат поставщику, зона расхождений или отказ с уведомлением.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "после закрытия данные о принятом количестве передаются в учётную систему в течение 5 минут."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-19"
+            ],
+            "explanation": "Не указано поведение системы, если при закрытии приёмки передача данных в учётную систему не удалась в течение 5 минут.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "После повторного пересчёта расхождение утверждает руководитель смены; остатки корректируются, а данные передаются в учётную систему."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Инвентаризация",
+              "Ф-42"
+            ],
+            "explanation": "Не указано, что делать, если после повторного пересчёта расхождение сохраняется или руководитель смены не утверждает его.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Если в ячейке недостаточно товара, кладовщик отмечает недостачу, и система предлагает другую ячейку с этим артикулом."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.7. Комплектация",
+              "Ф-54"
+            ],
+            "explanation": "Не указано, что происходит с заказом, если после отметки недостачи ни в одной ячейке нет нужного артикула.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Комплектовщик может приостановить задание на отбор; приостановленное задание возвращается в общую очередь через 15 минут."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.7. Комплектация",
+              "Ф-58"
+            ],
+            "explanation": "Не указано, что делать, если приостановленное задание не может быть возвращено в очередь (например, волна уже закрыта).",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "При расхождении заказ направляется на повторный контроль руководителем смены."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.8. Упаковка и контроль",
+              "Ф-61"
+            ],
+            "explanation": "Не указано, что происходит с заказом, если при контроле расхождение не устраняется после повторного контроля.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Система проверяет, что суммарный вес заказов волны не превышает грузоподъёмность транспортного средства."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.9. Отгрузка",
+              "Ф-67"
+            ],
+            "explanation": "Не указано, что делать, если грузоподъёмность транспортного средства меньше суммарного веса волны: разделить волну, сменить транспорт или отклонить.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "После 5 неверных вводов ПИН-кода подряд учётная запись кладовщика блокируется до разблокировки администратором."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.11. Пользователи и права",
+              "Ф-81"
+            ],
+            "explanation": "Не указано, что делать, если после 5 неверных вводов ПИН-кода кладовщик не может работать, а администратор недоступен.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "При потере связи ТСД сохраняет до 200 операций и передаёт их после восстановления связи в порядке выполнения."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-3"
+            ],
+            "explanation": "Не указано, что делать, если при потере связи ТСД выполнено больше 200 операций.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "minor",
+            "quotes": [
+              "Резервное копирование базы данных выполняется каждые 6 часов; резервные копии хранятся 14 дней."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-5"
+            ],
+            "explanation": "Не указано, что делать, если резервное копирование не удалось или резервная копия повреждена.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Сервис отслеживания перевозчика получает номер короба и статус «Отгружен» в течение 10 минут после закрытия отгрузки."
+            ],
+            "sections": [
+              "5. Интеграции",
+              "И-4"
+            ],
+            "explanation": "Не указано, что делать, если сервис отслеживания перевозчика недоступен или не принял данные в течение 10 минут.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2. Функциональные требования"
+            ],
+            "sections": [
+              "2. Функциональные требования"
+            ],
+            "explanation": "В документе нет раздела с приоритетами требований, без которого невозможно планировать разработку и приёмку.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "minor",
+            "quotes": [
+              "Учебная спецификация складской системы распределительного центра."
+            ],
+            "sections": [],
+            "explanation": "В документе нет раздела с источниками требований и связями с бизнес-целями, что затрудняет проверку необходимости требований.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "terminology",
+            "severity": "minor",
+            "quotes": [
+              "система не показывает ему учётное количество."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Инвентаризация",
+              "Ф-40"
+            ],
+            "explanation": "Одна и та же сущность названа по-разному: «учётная система» и «учётная система» в разных формулировках, а также «учётное количество» и «остаток».",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Система должна быстро обрабатывать приёмку крупных поставок."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-20"
+            ],
+            "explanation": "Не указано, что означает «крупная поставка» и «быстро», критерий неизмерим.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Система предлагает ячейку для размещения: подходящую по температурному режиму, весу и объёму, ближайшую к зоне приёмки."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Размещение",
+              "Ф-24"
+            ],
+            "explanation": "Не указано, что означает «подходящая ячейка» и «ближайшая к зоне приёмки»: не задан критерий близости.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Задание на пополнение имеет приоритет выше, чем задание на размещение."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Хранение и перемещения",
+              "Ф-37"
+            ],
+            "explanation": "Не указано, что означает «приоритет выше»: не задан порядок обработки заданий.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "minor",
+            "quotes": [
+              "Система должна подсвечивать на станции контроля товары, которые клиенты чаще всего возвращают, анимацией в виде фейерверка."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.8. Упаковка и контроль",
+              "Ф-65"
+            ],
+            "explanation": "Не указано, что означает «чаще всего возвращают»: не задан порог и период.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Интерфейс рабочего места руководителя должен быть интуитивным."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-10"
+            ],
+            "explanation": "Не указано, что означает «интуитивный»: нет измеримого критерия.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Система должна быстро обрабатывать приёмку крупных поставок."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Приёмка",
+              "Ф-20"
+            ],
+            "explanation": "«Быстро обрабатывать» не имеет измеримого критерия, проверить тестом нельзя.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "blocker",
+            "quotes": [
+              "Система должна гарантировать, что ни один товар никогда не будет потерян или повреждён на складе."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Хранение и перемещения",
+              "Ф-35"
+            ],
+            "explanation": "«Никогда не будет потерян или повреждён» не имеет измеримого критерия и не проверяется тестом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "minor",
+            "quotes": [
+              "Система должна подсвечивать на станции контроля товары, которые клиенты чаще всего возвращают, анимацией в виде фейерверка."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.8. Упаковка и контроль",
+              "Ф-65"
+            ],
+            "explanation": "«Анимация в виде фейерверка» не имеет измеримого критерия и не проверяется тестом.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Интерфейс рабочего места руководителя должен быть интуитивным."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-10"
+            ],
+            "explanation": "«Интуитивный» не имеет измеримого критерия, проверить тестом нельзя.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "blocker",
+            "quotes": [
+              "Товар отбирается по принципу FEFO: первым отбирается товар с ближайшим сроком окончания годности.",
+              "Товар отбирается по принципу FIFO: первым отбирается товар, принятый на склад раньше остальных."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.7. Комплектация",
+              "Ф-52",
+              "Ф-55"
+            ],
+            "explanation": "Ф-52 и Ф-55 описывают один и тот же процесс отбора товара, но с разными принципами.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "Две ячейки с одним артикулом: партии со сроками годности до 10.08 и до 20.08, принятые 01.07 и 25.06 соответственно | Первой отбирается партия со сроком до 10.08"
+            ],
+            "sections": [
+              "6. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки указано, что первым отбирается партия со сроком до 10.08, но по FIFO должна отбираться партия, принятая раньше (25.06), что противоречит Ф-52.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "minor",
+            "quotes": [
+              "5 неверных вводов ПИН-кода подряд | Учётная запись кладовщика заблокирована"
+            ],
+            "sections": [
+              "6. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки указано, что при 5 неверных вводах ПИН-кода учётная запись блокируется, но не указано, что разблокировка только администратором, что соответствует Ф-81.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "minor",
+            "quotes": [
+              "Суммарный вес волны 3 200 кг, грузоподъёмность 3 000 кг | Назначение транспортного средства отклонено"
+            ],
+            "sections": [
+              "6. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки указано, что при превышении грузоподъёмности назначение транспортного средства отклонено, но не указано, что система должна предложить другое транспортное средство.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "minor",
+            "quotes": [
+              "Охлаждаемый товар, предложенная ячейка в обычной зоне | Такая ячейка не предлагается"
+            ],
+            "sections": [
+              "6. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки указано, что охлаждаемый товар не размещается в обычной зоне, но не указано, что система должна предложить подходящую ячейку.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "minor",
+            "quotes": [
+              "Заказано 100 шт., принято 90 шт. | Сформирован акт расхождений на 10 шт."
+            ],
+            "sections": [
+              "6. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки указано, что при заказе 100 шт. и приёмке 90 шт. формируется акт расхождений на 10 шт., что соответствует Ф-14, но не указано, что акт отправляется поставщику.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 114,
+      "routed": null,
+      "cost_usd": 0.003797619,
+      "seconds": 15.2,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "tickets-clean.pdf",
+        "split": "holdout",
+        "defects": [],
+        "findings_total": 30,
+        "findings_matched": 0,
+        "by_severity": {
+          "blocker": 2,
+          "major": 16,
+          "minor": 12
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "blocker",
+            "quotes": [
+              "После успешной оплаты покупатель получает на почту электронные"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-11"
+            ],
+            "explanation": "Требование обрывается на полуслове: не указано, что именно получает покупатель на почту и в каком виде. Без этого невозможно реализовать и проверить отправку билета.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Покупатель вводит адрес электронной почты и номер телефона, затем оплачивает заказ банковской картой на странице платёжного шлюза."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-9"
+            ],
+            "explanation": "Не задано поведение системы, если покупатель не ввёл почту или телефон, либо ввёл их в неверном формате. Нет правил валидации и сообщений об ошибке.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "При отказе банка заказ не создаётся, резерв мест сохраняется до окончания 15 минут, а покупатель видит сообщение «Оплата не прошла, попробуйте ещё раз»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-10"
+            ],
+            "explanation": "Не указано, что происходит с заказом и резервом мест, если покупатель закрыл страницу оплаты или оплата не завершилась по таймауту. Это граничный случай, без которого нельзя корректно освобождать места.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов, и они получают письмо об отмене."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-15"
+            ],
+            "explanation": "Не указано, что происходит с уже проданными билетами при отмене концерта: как инициируется возврат, в какой срок приходят деньги, что с билетами, оплаченными в кассе. Без этого требование нельзя реализовать полностью.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "ambiguous",
+            "severity": "major",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "«Чужой по дате концерта билет» — неоднозначная формулировка: неясно, сравнивается ли дата концерта билета с текущей датой или с датой концерта, на который сканируют. Разные толкования дают разное поведение.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Требование объединяет три независимых проверки билета (использован, возвращён, другой концерт) с тремя разными сообщениями. Их нужно тестировать и менять по отдельности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Кассир может найти заказ по номеру из 8 цифр или по адресу почты и повторно отправить билеты на почту."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-19"
+            ],
+            "explanation": "Требование содержит два независимых действия: поиск заказа и повторную отправку билетов. Это разные возможности с разными критериями приёмки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "minor",
+            "quotes": [
+              "Кассир продаёт билеты в зале через ту же схему мест; оплата принимается картой или наличными."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса",
+              "Ф-18"
+            ],
+            "explanation": "Требование объединяет продажу билетов и приём двух способов оплаты. Способы оплаты — отдельные проверяемые возможности.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Если место заняли до того, как покупатель его выбрал, схема обновляется, а покупатель видит сообщение «Место уже занято, выберите другое»."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.2. Выбор мест",
+              "Ф-7"
+            ],
+            "explanation": "«Схема обновляется» не задаёт измеримого критерия: неясно, за какое время, каким способом и как проверить, что обновление произошло. Тест невозможен.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "место становится свободным сразу после оформления возврата"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14"
+            ],
+            "explanation": "«Сразу после оформления возврата» — неизмеримый критерий. Нельзя доказать тестом, что место освободилось именно сразу.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Схема зала открывается не дольше 2 секунд на 95-м процентиле при 2 000 одновременных покупателей."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-1"
+            ],
+            "explanation": "«Не дольше 2 секунд на 95-м процентиле» не задаёт условия измерения: не указан период наблюдения, тип нагрузки и способ расчёта процентиля. Результат теста будет зависеть от методики.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Сайт доступен не менее 99,9 % времени за календарный месяц; плановые работы проводятся с 03:00 до 05:00 по времени Алматы и не входят в расчёт."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-2"
+            ],
+            "explanation": "«Не менее 99,9 % времени за календарный месяц» не указывает, как измеряется доступность (какие запросы, какой мониторинг, что считается недоступностью). Без этого критерий нельзя проверить однозначно.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "unverifiable",
+            "severity": "major",
+            "quotes": [
+              "Ответ на сканирование QR-кода — не дольше 1 секунды на 99-м процентиле при 20 сканированиях в секунду."
+            ],
+            "sections": [
+              "3. Нефункциональные требования",
+              "НФТ-4"
+            ],
+            "explanation": "«Не дольше 1 секунды на 99-м процентиле при 20 сканированиях в секунду» не задаёт длительность нагрузки и способ расчёта процентиля. Проверить воспроизводимо нельзя.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "infeasible",
+            "severity": "major",
+            "quotes": [
+              "Покупатель может вернуть билет не позднее чем за 72 часа до начала концерта и получить 100 % стоимости билета."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-12"
+            ],
+            "explanation": "«100 % стоимости билета» при возврате — абсолютная формулировка, которая может противоречить правилам платёжного шлюза и банка (комиссии, сроки). Требование может быть невыполнимо на практике.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "minor",
+            "quotes": [
+              "До концерта 80 часов, покупатель возвращает билет | Возврат оформлен на 100 % стоимости"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "В критерии приёмки указано «До концерта 80 часов», а в требовании Ф-12 порог возврата — «не позднее чем за 72 часа». 80 часов больше 72, значит возврат должен быть разрешён, но формулировка критерия не задаёт ожидаемого результата однозначно и не согласована с Ф-13.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "contradiction",
+            "severity": "major",
+            "quotes": [
+              "При отказе банка заказ не создаётся, резерв мест сохраняется до окончания 15 минут",
+              "Заказ хранит номер из 8 цифр, почту и телефон покупателя, концерт, места, сумму, статус и время оплаты."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-10",
+              "4. Требования к данным",
+              "Д-1"
+            ],
+            "explanation": "Ф-10 говорит, что при отказе банка «заказ не создаётся», а Д-1 описывает заказ как сущность с номером, статусом и временем оплаты. Если заказ не создаётся, непонятно, что хранит Д-1 и как кассир найдёт такой заказ.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "contradiction",
+            "severity": "minor",
+            "quotes": [
+              "место становится свободным сразу после оформления возврата",
+              "При отмене концерта всем покупателям возвращается 100 % стоимости билетов, и они получают письмо об отмене."
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-14",
+              "Ф-15"
+            ],
+            "explanation": "Ф-14 говорит, что место становится свободным сразу после оформления возврата, а Ф-12 разрешает возврат не позднее чем за 72 часа до концерта. Если возврат оформлен, место освобождается, но концерт ещё не начался — это не противоречие само по себе, однако Ф-13 запрещает возврат менее чем за 72 часа, а Ф-14 не задаёт, что происходит с местом при отмене концерта (Ф-15).",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель выбирает 7 мест в одном заказе | Седьмое место не выбрано, показано «В одном заказе не больше 6 мест»",
+              "В одном заказе можно выбрать от 1 до 6 мест; при попытке выбрать седьмое место показывается сообщение «В одном заказе не больше 6 мест»."
+            ],
+            "sections": [
+              "5. Критерии приёмки",
+              "2. Функциональные требования",
+              "2.2. Выбор мест",
+              "Ф-5"
+            ],
+            "explanation": "Критерий приёмки дословно повторяет требование Ф-5, не добавляя нового условия или ожидаемого результата. Это дублирование, а не отдельный критерий.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "minor",
+            "quotes": [
+              "Покупатель выбрал 2 места и не оплатил заказ за 15 минут | Места снова свободны",
+              "Выбранные места резервируются за покупателем на 15 минут; по истечении 15 минут без оплаты резерв снимается, а места становятся свободными."
+            ],
+            "sections": [
+              "5. Критерии приёмки",
+              "2. Функциональные требования",
+              "2.2. Выбор мест",
+              "Ф-6"
+            ],
+            "explanation": "Критерий приёмки повторяет требование Ф-6 без дополнительных условий. Дублирование не даёт новой проверки.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "minor",
+            "quotes": [
+              "До концерта 80 часов, покупатель возвращает билет | Возврат оформлен на 100 % стоимости",
+              "Покупатель может вернуть билет не позднее чем за 72 часа до начала концерта и получить 100 % стоимости билета."
+            ],
+            "sections": [
+              "5. Критерии приёмки",
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-12"
+            ],
+            "explanation": "Критерий приёмки повторяет требование Ф-12 без нового условия. Это дублирование.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "minor",
+            "quotes": [
+              "До концерта 70 часов, покупатель открывает заказ | Кнопка возврата недоступна",
+              "Если до начала концерта осталось меньше 72 часов, кнопка возврата недоступна, а рядом показана надпись «Возврат возможен не позднее чем за 72 часа до концерта»."
+            ],
+            "sections": [
+              "5. Критерии приёмки",
+              "2. Функциональные требования",
+              "2.4. Возврат",
+              "Ф-13"
+            ],
+            "explanation": "Критерий приёмки повторяет требование Ф-13 без нового условия. Это дублирование.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "minor",
+            "quotes": [
+              "Билет уже прошёл контроль, его | Показано «Билет уже использован»",
+              "Для уже использованного, возвращённого или чужого по дате концерта билета система показывает соответственно «Билет уже использован», «Билет возвращён» или «Билет на другой концерт»."
+            ],
+            "sections": [
+              "5. Критерии приёмки",
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-17"
+            ],
+            "explanation": "Критерий приёмки повторяет требование Ф-16/Ф-17 без нового условия. Это дублирование.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "terminology",
+            "severity": "minor",
+            "quotes": [
+              "Р-1. Покупатель — человек, покупающий билеты на сайте.",
+              "Контролёр сканирует QR-код билета; система показывает «Проход разрешён» для действительного билета, не использованного ранее."
+            ],
+            "sections": [
+              "1. Роли",
+              "Р-1",
+              "2. Функциональные требования",
+              "2.5. Проход на концерт",
+              "Ф-16"
+            ],
+            "explanation": "В документе одна и та же сущность называется по-разному: «покупатель» (Ф-1…Ф-15) и «человек, покупающий билеты» (Р-1), а также «контролёр» (Ф-16) и «кассир» (Ф-18). Разнобой мешает однозначно ссылаться на роли.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "blocker",
+            "quotes": [
+              "После успешной оплаты покупатель получает на почту электронные"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата",
+              "Ф-11"
+            ],
+            "explanation": "Требование Ф-11 обрывается на полуслове и не оформлено по шаблону «система должна…». Это нарушение единого формата требований.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "major",
+            "quotes": [
+              "Билет уже прошёл контроль, его | Показано «Билет уже использован»",
+              "сканируют повторно"
+            ],
+            "sections": [
+              "5. Критерии приёмки"
+            ],
+            "explanation": "Критерии приёмки оформлены как обрывки таблицы: строка B-0048 заканчивается на «его», а B-0049 начинается со «сканируют повторно». Это нарушает целостность таблицы и делает критерий нечитаемым.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.3. Оплата"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.3. Оплата"
+            ],
+            "explanation": "В документе нет раздела о поведении системы при недоступности платёжного шлюза или внешних сервисов (почта, банк). Без этого нельзя начать разработку обработки отказов.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.5. Проход на концерт"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.5. Проход на концерт"
+            ],
+            "explanation": "Не описано, как покупатель получает билет и как проверяется его подлинность на входе (формат QR-кода, срок действия, защита от копирования). Без этого нельзя реализовать проход на концерт.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "2.6. Касса"
+            ],
+            "sections": [
+              "2. Функциональные требования",
+              "2.6. Касса"
+            ],
+            "explanation": "Не описаны требования к аутентификации и разграничению доступа для кассира и контролёра. Без этого нельзя начать разработку кассового и контрольного модулей.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Приоритет всех требований — «обязательно». Источник требований — регламент продаж концертного зала, редакция 4."
+            ],
+            "sections": [],
+            "explanation": "В документе заявлено, что приоритет всех требований — «обязательно», но не указаны связи требований с источниками (регламент продаж, спецификация платёжного шлюза) и нет матрицы трассировки. Нельзя проверить полноту покрытия.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "minor",
+            "quotes": [
+              "Приоритет всех требований — «обязательно»."
+            ],
+            "sections": [],
+            "explanation": "Не указаны приоритеты отдельных требований: все объявлены «обязательно», что не позволяет планировать релизы и определять критичность. Это затрудняет управление требованиями.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 37,
+      "routed": null,
+      "cost_usd": 0.003400677,
+      "seconds": 15.4,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 0
+    },
+    {
+      "score": {
+        "fixture": "organizers-requirements.md",
+        "split": "holdout",
+        "defects": [
+          {
+            "id": "O-get-save",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "O-description",
+            "category": "contradiction",
+            "status": "wrong_category",
+            "matched_category": "missing_topic"
+          },
+          {
+            "id": "O-200-error",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "O-created",
+            "category": "incorrect",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-403-404",
+            "category": "contradiction",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "O-body",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-types",
+            "category": "incorrect",
+            "status": "found",
+            "matched_category": "incorrect"
+          },
+          {
+            "id": "O-prod-url",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-read-method",
+            "category": "missing_topic",
+            "status": "found",
+            "matched_category": "contradiction"
+          },
+          {
+            "id": "O-terminology",
+            "category": "terminology",
+            "status": "found",
+            "matched_category": "terminology"
+          },
+          {
+            "id": "O-month",
+            "category": "contradiction",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-push-limit",
+            "category": "contradiction",
+            "status": "wrong_category",
+            "matched_category": "composite"
+          },
+          {
+            "id": "O-units",
+            "category": "incorrect",
+            "status": "wrong_category",
+            "matched_category": "nonconforming"
+          },
+          {
+            "id": "O-refund",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "incomplete"
+          },
+          {
+            "id": "O-nfr",
+            "category": "incomplete",
+            "status": "found",
+            "matched_category": "ambiguous"
+          },
+          {
+            "id": "O-idempotency",
+            "category": "ambiguous",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-ui-error",
+            "category": "incomplete",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-testing",
+            "category": "missing_topic",
+            "status": "missed",
+            "matched_category": null
+          },
+          {
+            "id": "O-traceability",
+            "category": "traceability",
+            "status": "found",
+            "matched_category": "nonconforming"
+          }
+        ],
+        "findings_total": 22,
+        "findings_matched": 9,
+        "by_severity": {
+          "major": 13,
+          "minor": 6,
+          "blocker": 3
+        },
+        "unmatched": [
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Сервис расходов → настройки: получить порог карты."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Sequence Diagram"
+            ],
+            "explanation": "Не задано поведение при отсутствии настройки порога для карты, хотя по умолчанию уведомление выключено.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incomplete",
+            "severity": "major",
+            "quotes": [
+              "Сервис расходов → push: передать последние четыре цифры карты и сумму при достижении порога."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Sequence Diagram"
+            ],
+            "explanation": "Не указано, что происходит при ошибке отправки push (retry, отказ, логирование), поэтому поведение при исключении не определено.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Ф-2. Месяц определяется по дате совершения покупки в Алматы. В расходы входят проведённые покупки. Возврат уменьшает расходы месяца исходной покупки. Переводы и снятие наличных исключаются."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-2"
+            ],
+            "explanation": "В одном пункте объединены независимые требования: определение месяца, состав расходов, обработка возврата и исключения — каждое проверяется отдельно.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "composite",
+            "severity": "major",
+            "quotes": [
+              "Ф-4. При изменении порога накопленная сумма сохраняется. Если она ниже нового порога, следующее достижение вызывает push независимо от истории предыдущей настройки."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-4"
+            ],
+            "explanation": "Совмещены два независимых требования: сохранение накопленной суммы и условие повторного push после изменения порога.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "design_decision",
+            "severity": "minor",
+            "quotes": [
+              "Приложение → AlertsController → хранилище настроек → AlertsController → приложение."
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Схема"
+            ],
+            "explanation": "Требование навязывает конкретный контроллер и структуру хранилища, что ограничивает реализацию без обоснования.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "incorrect",
+            "severity": "major",
+            "quotes": [
+              "enabled | integer | 1 знак | Да | 0 или 1 | Признак включения | enabled",
+              "enabled | string | «0» или «1» | Признак включения | enabled"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Параметры запроса",
+              "Query-параметры",
+              "enabled",
+              "Ответ"
+            ],
+            "explanation": "В ответе enabled объявлен как string со значениями «0»/«1», а в запросе — integer 0/1; формат несогласован.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "contradiction",
+            "severity": "blocker",
+            "quotes": [
+              "При отклонении суммы вернуть прежнее состояние и результат ERROR.",
+              "400. Ответ в случае, если параметры запроса заполнены неверно."
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Логика работы метода",
+              "п. 5",
+              "Статусы",
+              "400"
+            ],
+            "explanation": "В части A сказано, что при отклонении суммы возвращается результат ERROR, а в части B для неверных параметров предусмотрен статус 400; одновременно выполнить оба описания нельзя.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "duplicate",
+            "severity": "minor",
+            "quotes": [
+              "Ф-4. При изменении порога накопленная сумма сохраняется.",
+              "Изменение порога сохраняет накопленные расходы."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям",
+              "Функциональные требования",
+              "Ф-4",
+              "Часть B. REST API",
+              "Особые правила",
+              "п. 3"
+            ],
+            "explanation": "Правило о сохранении накопленных расходов при изменении порога записано дважды — в части A (Ф-4) и в части B (Особые правила п. 3).",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "nonconforming",
+            "severity": "minor",
+            "quotes": [
+              "Хранить идентификатор карты, месяц, идентификатор операции, сумму покупки в тиынах, признак отправки и порог в тенге."
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к данным"
+            ],
+            "explanation": "Пункт не содержит идентификатора и модального глагола, оформление выбивается из шаблона функциональных требований.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "traceability",
+            "severity": "major",
+            "quotes": [
+              "Требования к изменениям"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Требования к изменениям"
+            ],
+            "explanation": "В документе нет приоритетов требований и связей с источниками/бизнес-целями, что мешает планированию и оценке изменений.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Архитектура решения"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Архитектура решения"
+            ],
+            "explanation": "Отсутствует описание поведения системы при недоступности сервиса push или сервиса настроек, без чего нельзя начать разработку обработки отказов.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "major",
+            "quotes": [
+              "Нефункциональные требования"
+            ],
+            "sections": [
+              "Часть B. REST API",
+              "Общие параметры",
+              "Description"
+            ],
+            "explanation": "Не описаны требования к безопасности и разграничению доступа (кроме Bearer-токена), что критично для финансового функционала.",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          },
+          {
+            "category": "missing_topic",
+            "severity": "minor",
+            "quotes": [
+              "Дизайн процесса UI"
+            ],
+            "sections": [
+              "Часть A. Новый функционал",
+              "Дизайн процесса UI"
+            ],
+            "explanation": "Не описаны требования к локализации и формату отображения сумм (валюта, разделители), хотя в UI указан «Порог, ₸».",
+            "source": "",
+            "scope": "",
+            "verdict": ""
+          }
+        ]
+      },
+      "blocks": 93,
+      "routed": null,
+      "cost_usd": 0.002168274,
+      "seconds": 9.3,
+      "calls": 1,
+      "cached_calls": 0,
+      "complete": true,
+      "note": null,
+      "dropped_unverified": 2
+    }
+  ],
+  "metrics": {
+    "recall": 0.7339449541284404,
+    "recall_by_fixture": {
+      "defects.pdf": 1.0,
+      "contradictions.pdf": 0.75,
+      "hr-leave.md": 1.0,
+      "parking.pdf": 0.6666666666666666,
+      "clinic.md": 0.7777777777777778,
+      "lms.md": 0.8,
+      "library.pdf": 0.0,
+      "insurance.md": 0.8888888888888888,
+      "utilities.pdf": 0.8888888888888888,
+      "warehouse.md": 0.8571428571428571,
+      "organizers-requirements.md": 0.47368421052631576
+    },
+    "recall_by_kind": {
+      "ambiguous": [
+        5,
+        8
+      ],
+      "composite": [
+        5,
+        6
+      ],
+      "contradiction": [
+        13,
+        19
+      ],
+      "design_decision": [
+        5,
+        6
+      ],
+      "duplicate": [
+        4,
+        5
+      ],
+      "incomplete": [
+        6,
+        11
+      ],
+      "incorrect": [
+        9,
+        11
+      ],
+      "infeasible": [
+        5,
+        5
+      ],
+      "missing_topic": [
+        6,
+        10
+      ],
+      "nonconforming": [
+        5,
+        5
+      ],
+      "terminology": [
+        5,
+        7
+      ],
+      "traceability": [
+        4,
+        5
+      ],
+      "unnecessary": [
+        3,
+        5
+      ],
+      "unverifiable": [
+        5,
+        6
+      ]
+    },
+    "located_recall": 0.8256880733944955,
+    "precision": 0.2702702702702703,
+    "false_positives_clean": 32,
+    "false_positives_clean_major": 20
+  },
+  "metrics_by_split": {
+    "dev": {
+      "recall": 0.8431372549019608,
+      "recall_by_fixture": {
+        "defects.pdf": 1.0,
+        "contradictions.pdf": 0.75,
+        "hr-leave.md": 1.0,
+        "parking.pdf": 0.6666666666666666,
+        "clinic.md": 0.7777777777777778,
+        "lms.md": 0.8
+      },
+      "recall_by_kind": {
+        "ambiguous": [
+          4,
+          4
+        ],
+        "composite": [
+          3,
+          3
+        ],
+        "contradiction": [
+          8,
+          9
+        ],
+        "design_decision": [
+          3,
+          3
+        ],
+        "duplicate": [
+          3,
+          3
+        ],
+        "incomplete": [
+          2,
+          4
+        ],
+        "incorrect": [
+          4,
+          4
+        ],
+        "infeasible": [
+          3,
+          3
+        ],
+        "missing_topic": [
+          2,
+          4
+        ],
+        "nonconforming": [
+          3,
+          3
+        ],
+        "terminology": [
+          2,
+          3
+        ],
+        "traceability": [
+          1,
+          2
+        ],
+        "unnecessary": [
+          2,
+          3
+        ],
+        "unverifiable": [
+          3,
+          3
+        ]
+      },
+      "located_recall": 0.9411764705882353,
+      "precision": 0.2986111111111111,
+      "false_positives_clean": 2,
+      "false_positives_clean_major": 2
+    },
+    "holdout": {
+      "recall": 0.6379310344827587,
+      "recall_by_fixture": {
+        "library.pdf": 0.0,
+        "insurance.md": 0.8888888888888888,
+        "utilities.pdf": 0.8888888888888888,
+        "warehouse.md": 0.8571428571428571,
+        "organizers-requirements.md": 0.47368421052631576
+      },
+      "recall_by_kind": {
+        "ambiguous": [
+          1,
+          4
+        ],
+        "composite": [
+          2,
+          3
+        ],
+        "contradiction": [
+          5,
+          10
+        ],
+        "design_decision": [
+          2,
+          3
+        ],
+        "duplicate": [
+          1,
+          2
+        ],
+        "incomplete": [
+          4,
+          7
+        ],
+        "incorrect": [
+          5,
+          7
+        ],
+        "infeasible": [
+          2,
+          2
+        ],
+        "missing_topic": [
+          4,
+          6
+        ],
+        "nonconforming": [
+          2,
+          2
+        ],
+        "terminology": [
+          3,
+          4
+        ],
+        "traceability": [
+          3,
+          3
+        ],
+        "unnecessary": [
+          1,
+          2
+        ],
+        "unverifiable": [
+          2,
+          3
+        ]
+      },
+      "located_recall": 0.7241379310344828,
+      "precision": 0.24342105263157895,
+      "false_positives_clean": 30,
+      "false_positives_clean_major": 18
+    }
+  }
+}

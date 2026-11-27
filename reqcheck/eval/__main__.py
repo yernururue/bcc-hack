@@ -112,7 +112,7 @@ def dry_run(models: list[str], labels: ExpectedFile, names: set[str], repeat: in
             )
     print(
         f"\nИтого оценка на оба режима × {repeat}: ≈ ${total:.3f} "
-        "(кэш не учтён; у моделей с рассуждениями факт выше)"
+        "(кэш не учтён; поправка — config/thresholds.yaml, estimate)"
     )
 
 
