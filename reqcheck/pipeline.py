@@ -2,6 +2,7 @@
 → questions → verdict → render. Ошибка одного LLM-этапа не роняет прогон: отчёт помечается неполным.
 """
 
+import logging
 import math
 import time
 from collections.abc import Callable
@@ -128,6 +129,17 @@ def estimate(doc: Document, model: str, batch_size: int) -> str:
     price = f"≈ ${e.usd:.3f}" if e.usd is not None else "цена модели неизвестна"
     volume = f"~{e.tokens_in / 1000:.0f}k вход / ~{e.tokens_out / 1000:.0f}k выход"
     return f"Оценка:   ~{e.calls} вызовов, {volume}, {price}"
+
+
+def _with_rects(findings: list[Finding], source: InputFile) -> list[Finding]:
+    """Координаты цитат в исходном PDF (ADR-009); без них отчёт тот же, только без подсветки."""
+    from reqcheck.stages.rects import attach_rects
+
+    try:
+        return attach_rects(findings, source.path)
+    except Exception:  # повреждённая страница не должна ронять проверку
+        logging.getLogger(__name__).warning("не удалось найти координаты цитат", exc_info=True)
+        return findings
 
 
 def build_client(settings: Settings, options: Options) -> OpenAICompatClient:
@@ -274,6 +286,8 @@ def run(
     kept, suppressed = verify.suppress_noise(per_req.findings + set_kept, th.findings_filter)
     suppressed += refuted
     findings = verify.number(kept, reqs)
+    if doc.format == "pdf":
+        findings = _with_rects(findings, source)
     dropped = per_req.dropped + per_set.dropped
     reqs = verify.apply_assessments(reqs, judged, findings)
     timings["verify"] = timings.get("verify", 0) + round((time.monotonic() - t) * 1000)

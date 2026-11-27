@@ -48,6 +48,9 @@ class Job:
     report: Report | None = None
     native: bytes | None = None  # отчёт в формате входа, как его записал конвейер
     native_format: str | None = None
+    # Готовятся в конце прогона, пока загрузка ещё на диске (потом её удаляют):
+    annotated: bytes | None = None  # исходный PDF с пометками
+    snippets: dict[str, bytes | dict] = field(default_factory=dict)  # F-ID → PNG или абзацы
     cond: threading.Condition = field(default_factory=threading.Condition)
     workdir: Path | None = None
 
@@ -149,6 +152,7 @@ class JobStore:
             job.report = outcome.report
             job.native = target.path.read_bytes()
             job.native_format = target.format
+            _prepare_source_views(job, source, outcome.report)
             job.progress = 1.0
             job.finish("done", {"type": "done"})
         except ReqCheckError as exc:
@@ -164,6 +168,29 @@ class JobStore:
             # Загрузка и промежуточные файлы больше не нужны: отчёт уже в памяти.
             shutil.rmtree(workdir, ignore_errors=True)
             job.workdir = None
+
+
+def _prepare_source_views(job: Job, source: InputFile, report: Report) -> None:
+    """Исходник с пометками и фрагменты оригинала (ADR-009). Ошибка здесь не портит отчёт."""
+    from reqcheck.config import thresholds
+    from reqcheck.ingest import ingest
+    from reqcheck.render.annotate import annotate_pdf
+    from reqcheck.render.snippet import pdf_snippets, text_snippets
+
+    try:
+        if source.format == "pdf":
+            assert job.workdir is not None
+            target = job.workdir / "annotated.pdf"
+            annotate_pdf(source.path, report, target)
+            job.annotated = target.read_bytes()
+            job.snippets = dict(pdf_snippets(source.path, report.findings))
+        else:
+            doc = ingest(source)
+            job.snippets = dict(
+                text_snippets(doc, report.findings, thresholds().quote_min_similarity)
+            )
+    except Exception:
+        log.warning("check %s: не удалось подготовить фрагменты оригинала", job.id, exc_info=True)
 
 
 def _mark_stage_failed(job: Job, on_stage, message: str) -> None:

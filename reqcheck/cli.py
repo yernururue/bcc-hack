@@ -31,6 +31,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", type=Path, metavar="PATH", help="куда записать JSON-отчёт")
     p.add_argument("--dry-run", action="store_true", help="разобрать документ без вызовов LLM")
     p.add_argument(
+        "--annotate",
+        type=Path,
+        metavar="PATH",
+        help="для PDF на входе: копия исходника с пометками находок (выделение + комментарий)",
+    )
+    p.add_argument(
         "--fail-on",
         choices=["blocker"],
         help="код выхода 10, если есть дефекты указанной серьёзности (для CI)",
@@ -58,6 +64,8 @@ def main(argv: Sequence[str] | None = None, settings: Settings | None = None) ->
         )
         if options.max_cost_usd <= 0:
             raise ReqCheckError("--max-cost должен быть больше нуля")
+        if args.annotate is not None and source.format != "pdf":
+            raise ReqCheckError("--annotate работает только для PDF на входе")
 
         print(f"Документ: {source.path} ({source.format})", file=sys.stderr)
         report = f"{target.path} ({target.format}), JSON: {target.json_path}"
@@ -91,6 +99,12 @@ def main(argv: Sequence[str] | None = None, settings: Settings | None = None) ->
     report = outcome.report
     if report is None:  # dry-run
         return int(ExitCode.OK)
+    if args.annotate is not None:
+        from reqcheck.render.annotate import annotate_pdf
+
+        marks = annotate_pdf(source.path, report, args.annotate)
+        outcome.written.append(args.annotate)
+        print(f"Пометки:  {marks} в {args.annotate}", file=sys.stderr)
     u = report.run.llm
     print(
         f"Готово:   {', '.join(str(p) for p in outcome.written)}\n"

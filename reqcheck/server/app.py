@@ -205,6 +205,32 @@ def create_app(settings: Settings | None = None, llm_factory: LLMFactory | None 
             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{name}"},
         )
 
+    @app.get("/api/v1/checks/{job_id}/annotated", dependencies=secured)
+    def check_annotated(job_id: str) -> Response:
+        """Исходный PDF с пометками находок (только для PDF на входе)."""
+        job = finished(job_id)
+        if job.input_format != "pdf":
+            raise HTTPException(404, "Исходник с пометками есть только для PDF")
+        if job.annotated is None:
+            raise HTTPException(404, "Исходник с пометками не подготовлен")
+        name = quote(f"{Path(job.filename).stem or 'document'}-annotated.pdf")
+        return Response(
+            job.annotated,
+            media_type=MEDIA["pdf"],
+            headers={"Content-Disposition": f"attachment; filename*=UTF-8''{name}"},
+        )
+
+    @app.get("/api/v1/checks/{job_id}/findings/{finding_id}/snippet", dependencies=secured)
+    def check_snippet(job_id: str, finding_id: str) -> Response:
+        """PNG области страницы с цитатой (PDF) или JSON с абзацами (Markdown, TXT)."""
+        job = finished(job_id)
+        snip = job.snippets.get(finding_id)
+        if snip is None:
+            raise HTTPException(404, "Фрагмента для этой находки нет")
+        if isinstance(snip, bytes):
+            return Response(snip, media_type="image/png", headers={"Cache-Control": "private"})
+        return JSONResponse(snip)
+
     @app.delete("/api/v1/checks/{job_id}", status_code=204, dependencies=secured)
     def delete_check(job_id: str) -> Response:
         if not store.delete(job_id):
