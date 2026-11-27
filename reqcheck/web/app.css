@@ -168,6 +168,16 @@ button, input, select { font: inherit; color: inherit; }
   fill: none; stroke: var(--fg-muted); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round;
   pointer-events: none;
 }
+.token-row { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+.token-row .btn { flex: 0 0 auto; }
+.input {
+  flex: 1 1 220px; min-width: 0; height: 44px; padding: 0 14px;
+  border: 1px solid var(--line-strong); border-radius: var(--r);
+  background: var(--bg); color: var(--fg);
+  font: 400 14px/20px var(--mono);
+  transition: border-color var(--d-fast) var(--ease-out);
+}
+.input:hover { border-color: var(--fg-muted); }
 .field-hint { margin: var(--s-2) 0 0; font-size: 13px; line-height: 18px; color: var(--fg-muted); }
 .field-hint:empty { display: none; }
 

@@ -161,6 +161,9 @@ function toView(r) {
 
 export class DemoApi {
   demo = true;
+  token = '';
+
+  setToken() {} // демо без сервера: токен не нужен
 
   constructor({ failAtStage = null } = {}) {
     this.failAtStage = failAtStage;

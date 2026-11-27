@@ -39,6 +39,16 @@
       <button class="link" id="example" type="button">Попробовать на примере</button>
     </section>
 
+    <form class="field" id="token-form" hidden>
+      <label class="field-label" for="token">Токен доступа</label>
+      <div class="token-row">
+        <input class="input" id="token" type="password" autocomplete="off" spellcheck="false" required>
+        <button class="btn btn-secondary" type="submit">Продолжить</button>
+      </div>
+      <p class="field-hint">Сервер принимает проверки только с токеном. Он хранится в этой вкладке, пока она открыта.</p>
+      <p class="field-error" id="token-error" role="alert"></p>
+    </form>
+
     <div class="field">
       <label class="field-label" for="model">Модель</label>
       <div class="select">

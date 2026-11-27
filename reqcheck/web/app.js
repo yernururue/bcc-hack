@@ -1,6 +1,6 @@
 // ReqCheck UI: один экран, состояния S0–S4 из docs/05-design.md.
 import { DemoApi, STAGE_NAMES, estimateRun } from './demo.js';
-import { HttpApi } from './http.js';
+import { AuthRequired, HttpApi } from './http.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -20,6 +20,7 @@ const el = {
   result: $('result'), verdict: $('verdict'), verdictSub: $('verdict-sub'), stats: $('stats'), fixes: $('fixes'),
   downloadMain: $('download-main'), downloadJson: $('download-json'), downloadAnnotated: $('download-annotated'), downloadHint: $('download-hint'), reset: $('reset'),
   failure: $('failure'), failureText: $('failure-text'), retry: $('retry'),
+  tokenForm: $('token-form'), token: $('token'), tokenError: $('token-error'),
 };
 
 const state = { file: null, models: [], running: false };
@@ -53,9 +54,11 @@ async function loadModels() {
   try {
     state.models = await api.listModels();
   } catch (err) {
-    setError('Не удалось получить список моделей: ' + err.message);
+    if (err instanceof AuthRequired) askToken(err);
+    else setError('Не удалось получить список моделей: ' + err.message);
     return;
   }
+  el.model.replaceChildren();
   for (const m of state.models) {
     const opt = document.createElement('option');
     opt.value = m.id;
@@ -64,6 +67,24 @@ async function loadModels() {
     el.model.append(opt);
   }
 }
+
+// ---------- токен доступа (REQCHECK_API_TOKEN) ----------
+
+function askToken(err) {
+  // первый 401 без токена — просто просим; с токеном — он не подошёл
+  el.tokenError.textContent = api.token ? err.message : '';
+  el.tokenForm.hidden = false;
+  el.token.focus();
+}
+
+el.tokenForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  api.setToken(el.token.value);
+  el.token.value = '';
+  el.tokenError.textContent = '';
+  el.tokenForm.hidden = true;
+  await loadModels();
+});
 
 function currentModel() {
   return state.models.find((m) => m.id === el.model.value);
@@ -226,6 +247,7 @@ async function start() {
     await finish(view);
   } catch (err) {
     fail(err);
+    if (err instanceof AuthRequired) askToken(err);
   } finally {
     state.running = false;
   }
