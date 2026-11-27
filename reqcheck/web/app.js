@@ -18,7 +18,7 @@ const el = {
   run: $('run'), start: $('start'), stage: $('run-stage'), count: $('run-count'), progress: $('progress'),
   stages: $('stages'), stageList: $('stage-list'), stagesBody: $('stages-body'),
   result: $('result'), verdict: $('verdict'), verdictSub: $('verdict-sub'), stats: $('stats'), fixes: $('fixes'),
-  downloadMain: $('download-main'), downloadJson: $('download-json'), downloadHint: $('download-hint'), reset: $('reset'),
+  downloadMain: $('download-main'), downloadJson: $('download-json'), downloadAnnotated: $('download-annotated'), downloadHint: $('download-hint'), reset: $('reset'),
   failure: $('failure'), failureText: $('failure-text'), retry: $('retry'),
 };
 
@@ -254,6 +254,7 @@ async function finish(view) {
 
   const fmt = OUT_FORMAT[state.file.ext];
   el.downloadMain.textContent = `Скачать отчёт ${fmt}`;
+  el.downloadAnnotated.hidden = !view.annotated;
   const notes = [];
   if (!view.complete) notes.push(`Отчёт неполный: ${view.incomplete_reason}.`);
   if (api.demo && fmt === 'PDF') notes.push('В демо отчёт выгружается в Markdown. PDF отдаёт сервер.');
@@ -335,12 +336,41 @@ function renderFixes(findings) {
     const body = li.querySelector('.collapse');
     body.id = 'fix-' + f.id;
     head.setAttribute('aria-controls', body.id);
+    let sourceLoaded = false;
     head.addEventListener('click', () => {
       const open = head.getAttribute('aria-expanded') !== 'true';
       head.setAttribute('aria-expanded', String(open));
       body.classList.toggle('is-collapsed', !open);
+      if (open && f.snippet && !sourceLoaded) {
+        sourceLoaded = true;
+        showSource(li.querySelector('.fix-source'), f);
+      }
     });
     el.fixes.append(li);
+  }
+}
+
+// Фрагмент оригинала (ADR-009): PNG области страницы для PDF, абзацы для Markdown/TXT.
+// Грузится при первом раскрытии строки; не загрузился — блока просто нет.
+async function showSource(fig, f) {
+  try {
+    const snip = await api.snippet(f.id);
+    if (snip.kind === 'image') {
+      const img = Object.assign(document.createElement('img'), {
+        src: snip.url, alt: 'Фрагмент страницы с цитатой: ' + f.quotes[0], loading: 'lazy',
+      });
+      fig.append(img);
+    } else {
+      for (const para of snip.paragraphs) {
+        const p = document.createElement('p');
+        p.className = 'fix-source-para' + (para.highlight ? ' is-hit' : '');
+        p.textContent = para.text;
+        fig.append(p);
+      }
+    }
+    fig.hidden = false;
+  } catch {
+    // фрагмент — дополнение: без него находка остаётся полной
   }
 }
 
@@ -360,6 +390,7 @@ async function download(kind) {
 
 el.downloadMain.addEventListener('click', () => download('main'));
 el.downloadJson.addEventListener('click', () => download('json'));
+el.downloadAnnotated.addEventListener('click', () => download('annotated'));
 
 function resetRun() {
   el.result.hidden = true;

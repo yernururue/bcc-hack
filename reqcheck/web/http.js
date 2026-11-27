@@ -21,6 +21,7 @@ async function ok(res) {
 export class HttpApi {
   demo = false;
   jobId = null;
+  urls = [];
 
   async listModels() {
     const rows = await (await ok(await fetch(`${BASE}/models`))).json();
@@ -66,13 +67,26 @@ export class HttpApi {
   }
 
   async download(kind) {
-    const query = kind === 'json' ? '?format=json' : '';
-    const res = await ok(await fetch(`${BASE}/checks/${this.jobId}/report${query}`));
+    const path = kind === 'annotated' ? 'annotated' : kind === 'json' ? 'report?format=json' : 'report';
+    const res = await ok(await fetch(`${BASE}/checks/${this.jobId}/${path}`));
     const m = /filename\*=UTF-8''([^;]+)/.exec(res.headers.get('content-disposition') || '');
     return { filename: m ? decodeURIComponent(m[1]) : 'report', blob: await res.blob() };
   }
 
+  // Фрагмент оригинала для находки: { kind: 'image', url } или { kind: 'text', paragraphs }.
+  async snippet(findingId) {
+    const res = await ok(await fetch(`${BASE}/checks/${this.jobId}/findings/${encodeURIComponent(findingId)}/snippet`));
+    if ((res.headers.get('content-type') || '').startsWith('image/')) {
+      const url = URL.createObjectURL(await res.blob());
+      this.urls.push(url);
+      return { kind: 'image', url };
+    }
+    return { kind: 'text', paragraphs: (await res.json()).paragraphs };
+  }
+
   async dispose() {
+    this.urls.forEach((u) => URL.revokeObjectURL(u));
+    this.urls = [];
     if (!this.jobId) return;
     const id = this.jobId;
     this.jobId = null;

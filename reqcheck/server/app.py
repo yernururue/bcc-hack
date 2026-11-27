@@ -179,7 +179,15 @@ def create_app(settings: Settings | None = None, llm_factory: LLMFactory | None 
     def check_summary(job_id: str) -> dict:
         job = finished(job_id)
         assert job.report is not None
-        return build_view(job.report, criteria())
+        view = build_view(job.report, criteria())
+        # Какие фрагменты оригинала готовы (ADR-009): UI запрашивает их при раскрытии находки
+        for fix in view["fixes"]:
+            snip = job.snippets.get(fix["id"])
+            fix["snippet"] = (
+                None if snip is None else "image" if isinstance(snip, bytes) else "text"
+            )
+        view["annotated"] = job.annotated is not None
+        return view
 
     @app.get("/api/v1/checks/{job_id}/report", dependencies=secured)
     def check_report(job_id: str, format: Annotated[str | None, Query()] = None) -> Response:

@@ -78,6 +78,7 @@
       <div class="actions">
         <button class="btn btn-primary" id="download-main" type="button"></button>
         <button class="btn btn-secondary" id="download-json" type="button">JSON</button>
+        <button class="btn btn-secondary" id="download-annotated" type="button" hidden>Исходник с пометками</button>
         <button class="btn btn-secondary btn-push" id="reset" type="button">Новая проверка</button>
       </div>
       <p class="field-hint" id="download-hint"></p>
@@ -113,6 +114,9 @@
           <blockquote class="fix-quote"></blockquote>
           <p class="fix-text"></p>
           <p class="fix-suggestion"><span class="fix-label">Предложение</span> <span class="fix-suggestion-text"></span></p>
+          <figure class="fix-source" hidden>
+            <figcaption class="fix-source-label">В оригинале</figcaption>
+          </figure>
         </div>
       </div>
     </li>

@@ -364,6 +364,12 @@ button, input, select { font: inherit; color: inherit; }
 .fix-suggestion { margin: var(--s-2) 0 0; }
 .fix-label { font-weight: 500; }
 .fix-label::after { content: ':'; }
+.fix-source { margin: var(--s-3) 0 0; }
+.fix-source-label { font-size: 13px; line-height: 18px; color: var(--fg-muted); margin-bottom: var(--s-2); }
+.fix-source img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--r); }
+.fix-source-para { margin: 0; padding: var(--s-1) var(--s-2); font-size: 15px; line-height: 22px; color: var(--fg-muted); }
+.fix-source-para.is-hit { color: var(--fg); background: var(--accent-tint); border-radius: var(--r); }
+.fix-source-para + .fix-source-para { margin-top: var(--s-1); }
 
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin-top: var(--s-5); }
 .btn-push { margin-left: auto; }

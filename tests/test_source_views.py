@@ -73,6 +73,10 @@ def test_server_annotated_and_snippets_for_pdf() -> None:
     assert snip.headers["content-type"] == "image/png"
     assert snip.content.startswith(b"\x89PNG")
     assert c.get(f"/api/v1/checks/{job_id}/findings/F-999/snippet").status_code == 404
+    view = c.get(f"/api/v1/checks/{job_id}/summary").json()
+    assert view["annotated"] is True
+    kinds = {fx["id"]: fx["snippet"] for fx in view["fixes"]}
+    assert all(kinds[f.finding_id] == "image" for f in with_rects if f.finding_id in kinds)
 
 
 def test_server_snippet_paragraphs_for_markdown() -> None:
@@ -86,3 +90,6 @@ def test_server_snippet_paragraphs_for_markdown() -> None:
     assert body["finding_id"] == fid
     assert sum(p["highlight"] for p in body["paragraphs"]) == 1
     assert all({"text", "place", "highlight"} <= set(p) for p in body["paragraphs"])
+    view = c.get(f"/api/v1/checks/{job_id}/summary").json()
+    assert view["annotated"] is False
+    assert {fx["snippet"] for fx in view["fixes"]} <= {"text", None}

@@ -152,7 +152,8 @@ function toView(r) {
       violations: r.summary.violations_total,
       blockers,
     },
-    fixes: r.findings.map((f) => ({ ...f, severity_name: SEV_NAMES[f.severity] })),
+    fixes: r.findings.map((f) => ({ ...f, severity_name: SEV_NAMES[f.severity], snippet: 'text' })),
+    annotated: false,
     complete: true,
     incomplete_reason: null,
   };
@@ -175,6 +176,12 @@ export class DemoApi {
       return { filename: `${base}-review.json`, blob: new Blob([JSON.stringify(this.report, null, 2)], { type: 'application/json' }) };
     }
     return { filename: `${base}-review.md`, blob: new Blob([toMarkdown(this.report)], { type: 'text/markdown;charset=utf-8' }) };
+  }
+
+  // Абзац с цитатой без соседей: исходника в демо нет, показываем то, что знаем.
+  async snippet(findingId) {
+    const f = this.report.findings.find((x) => x.id === findingId);
+    return { kind: 'text', paragraphs: [{ text: f.quotes[0], highlight: true, place: f.anchor }] };
   }
 
   async dispose() {}
