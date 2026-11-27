@@ -51,6 +51,7 @@ class Options:
     use_cache: bool = True
     dry_run: bool = False
     cache_salt: str = ""  # только для повторов eval: отдельные ответы в кэше на каждый повтор
+    ocr: bool = False  # распознавать PDF без текстового слоя (нужен Tesseract)
 
 
 # Этапы для индикатора прогресса (UI показывает ровно их, по порядку). Подтверждение
@@ -187,7 +188,7 @@ def run(
 
     t0 = time.monotonic()
     begin("ingest")
-    doc = ingest(source)
+    doc = ingest(source, ocr=options.ocr)
     timed("ingest", t0)
     end("ingest")
     numbered = sum(1 for b in doc.blocks if b.anchor.item)

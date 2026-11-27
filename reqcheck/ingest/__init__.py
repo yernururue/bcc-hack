@@ -38,7 +38,7 @@ def _drop_title(raw: list[RawBlock]) -> list[RawBlock]:
     return raw
 
 
-def ingest(source: InputFile, cfg: IngestConfig | None = None) -> Document:
+def ingest(source: InputFile, cfg: IngestConfig | None = None, *, ocr: bool = False) -> Document:
     cfg = cfg or ingest_config()
     parser = MarkdownParser(cfg)
     data = source.path.read_bytes()
@@ -47,7 +47,7 @@ def ingest(source: InputFile, cfg: IngestConfig | None = None) -> Document:
     if source.format == "pdf":
         from reqcheck.ingest.pdf import read_pdf
 
-        raw, pages = read_pdf(source.path, parser)
+        raw, pages = read_pdf(source.path, parser, ocr=cfg.ocr if ocr else None)
     elif source.format == "docx":
         from reqcheck.ingest.docx import docx_to_markdown
 

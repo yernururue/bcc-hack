@@ -22,6 +22,13 @@ def load_yaml(name: str, config_dir: Path | None = None) -> dict[str, Any]:
     return data
 
 
+class OcrConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    language: str = "rus+eng"
+    dpi: int = Field(default=300, ge=72, le=600)
+
+
 class IngestConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -29,6 +36,7 @@ class IngestConfig(BaseModel):
     ordered_item_label: str = "п. {n}"
     table_item_max_len: int = Field(default=40, ge=1)
     drop_single_h1_title: bool = True
+    ocr: OcrConfig = Field(default_factory=OcrConfig)
 
     @field_validator("item_patterns")
     @classmethod

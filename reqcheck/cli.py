@@ -31,6 +31,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", type=Path, metavar="PATH", help="куда записать JSON-отчёт")
     p.add_argument("--dry-run", action="store_true", help="разобрать документ без вызовов LLM")
     p.add_argument(
+        "--ocr",
+        action="store_true",
+        help="распознать PDF-скан без текстового слоя (нужен Tesseract с языками из ingest.yaml)",
+    )
+    p.add_argument(
         "--annotate",
         type=Path,
         metavar="PATH",
@@ -61,6 +66,7 @@ def main(argv: Sequence[str] | None = None, settings: Settings | None = None) ->
             max_cost_usd=args.max_cost if args.max_cost is not None else settings.llm_max_cost_usd,
             use_cache=not args.no_cache,
             dry_run=args.dry_run,
+            ocr=args.ocr,
         )
         if options.max_cost_usd <= 0:
             raise ReqCheckError("--max-cost должен быть больше нуля")

@@ -37,6 +37,7 @@ class Options:
     model: str | None = None
     max_cost_usd: float | None = None
     use_cache: bool = True
+    ocr: bool = False  # PDF-сканы: распознать через Tesseract
 
 
 def validate(
@@ -62,6 +63,7 @@ def validate(
         if options.max_cost_usd is not None
         else settings.llm_max_cost_usd,
         use_cache=options.use_cache,
+        ocr=options.ocr,
     )
     if run_options.max_cost_usd <= 0:
         raise InputError("max_cost_usd должен быть больше нуля")
