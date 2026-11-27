@@ -202,6 +202,18 @@ def number(findings: list[Finding], reqs: list[Requirement]) -> list[Finding]:
     return [f.model_copy(update={"finding_id": f"F-{i:03d}"}) for i, f in enumerate(ordered, 1)]
 
 
+def _repeats_set(f: Finding, set_level: list[Finding], threshold: float) -> bool:
+    """Та же проблема уже есть среди находок набора: то же требование и совпадающая цитата."""
+    rid = f.requirement_ids[0] if f.requirement_ids else None
+    for s in set_level:
+        if rid not in s.requirement_ids:
+            continue
+        for q in (s.quote, *s.related_quotes):
+            if q and f.quote and max(similarity(f.quote, q), similarity(q, f.quote)) >= threshold:
+                return True
+    return False
+
+
 def suppress_noise(
     findings: list[Finding], rules: FindingsFilter
 ) -> tuple[list[Finding], list[Finding]]:
@@ -212,8 +224,11 @@ def suppress_noise(
     per_req: dict[str, list[Finding]] = {}
     per_category: dict[Category, list[Finding]] = {}
     drop_up_to = SEVERITY_RANK[rules.drop_unclear_up_to]
+    set_level = [f for f in findings if f.scope != "requirement"]
     for f in findings:
-        if f.verdict == "unclear" and SEVERITY_RANK[f.severity] >= drop_up_to:
+        weak = f.verdict == "unclear" and SEVERITY_RANK[f.severity] >= drop_up_to
+        repeat = f.scope == "requirement" and _repeats_set(f, set_level, rules.set_overlap_dedupe)
+        if weak or repeat:
             suppressed.append(f)
         elif f.scope == "requirement":
             per_req.setdefault(f.requirement_ids[0], []).append(f)

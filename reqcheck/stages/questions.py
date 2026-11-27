@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict
 
 from reqcheck import prompts
 from reqcheck.llm.base import LLMClient
-from reqcheck.schemas import Finding, Question
+from reqcheck.schemas import Finding, Question, Requirement
 from reqcheck.stages.verify import SEVERITY_RANK
 
 MAX_FINDINGS_IN_PROMPT = 40
@@ -26,7 +26,11 @@ class QuestionsResult(BaseModel):
 
 
 def run(
-    findings: list[Finding], known_ids: set[str], llm: LLMClient, max_questions: int
+    findings: list[Finding],
+    known_ids: set[str],
+    llm: LLMClient,
+    max_questions: int,
+    requirements: list[Requirement] | None = None,
 ) -> list[Question]:
     important = sorted(
         (f for f in findings if f.severity != "minor" or f.verdict == "unclear"),
@@ -39,7 +43,15 @@ def run(
         f"{f.explanation} Цитата: «{f.quote}»"
         for f in important
     ]
-    user = prompts.render("questions", max_questions=str(max_questions), findings="\n".join(lines))
+    reqs = "\n".join(
+        f"{r.report_id} · {r.quote.replace(chr(10), ' ⏎ ')}" for r in requirements or []
+    )
+    user = prompts.render(
+        "questions",
+        max_questions=str(max_questions),
+        findings="\n".join(lines),
+        requirements=reqs or "—",
+    )
     system = prompts.load("system")
     raw = llm.complete(system=system, user=user, schema=QuestionsResult, stage="questions")
     out: list[Question] = []

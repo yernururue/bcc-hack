@@ -41,6 +41,9 @@ findings_filter:
     missing_topic: 3
     terminology: 2
     traceability: 1
+  # Находка отдельного требования, которая повторяет находку набора (то же требование и цитата
+  # совпадает не меньше чем на столько, 0–100), уходит в debug: одна проблема — одна находка (ADR-015)
+  set_overlap_dedupe: 80
 
 # Оценка качества (python -m reqcheck.eval, docs/02-trd.md §10)
 eval:

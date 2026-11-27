@@ -82,11 +82,13 @@ def run(
     batches = [requirements[i : i + batch_size] for i in range(0, len(requirements), batch_size)]
     out = CheckEachOutput()
     known = {r.report_id for r in requirements}
+    context = "\n".join(format_requirement(r, criteria.kind_names) for r in requirements)
 
     def judge(batch: list[Requirement]) -> JudgeResult:
         user = prompts.render(
             "check_each",
             criteria=crit,
+            context=context,
             requirements="\n".join(format_requirement(r, criteria.kind_names) for r in batch),
         )
         return llm.complete(system=system, user=user, schema=JudgeResult, stage="check_each").value

@@ -303,7 +303,7 @@ def run(
     known = {r.report_id for r in reqs}
     qs = guarded(
         "questions",
-        lambda: questions.run(findings, known, client, th.report["max_questions"]),
+        lambda: questions.run(findings, known, client, th.report["max_questions"], reqs),
         [],
     )
     end("questions")

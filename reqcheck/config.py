@@ -98,6 +98,9 @@ class FindingsFilter(BaseModel):
     drop_unclear_up_to: Severity
     # Лимит находок набора по категориям; лишние (менее серьёзные) убираются в debug
     max_set_per_category: dict[Category, int] = Field(default_factory=dict)
+    # Находка требования повторяет находку набора (то же требование, цитаты совпадают не меньше
+    # чем на этот порог, 0–100) — оставляем только находку набора
+    set_overlap_dedupe: float = Field(default=80, ge=0, le=100)
 
 
 class EvalRules(BaseModel):

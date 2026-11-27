@@ -56,3 +56,20 @@ def test_unverifiable_still_blocks_testing() -> None:
     fs = [finding("F-001", ["R-001"], Category.UNVERIFIABLE, Severity.BLOCKER)]
     v = decide(REQS, fs, thresholds().verdict, max_top=5)
     assert not v.can_start_testing and v.testing.startswith("нельзя")
+
+
+def test_requirement_finding_repeating_set_finding_is_suppressed() -> None:
+    from reqcheck.stages.verify import suppress_noise
+
+    rules = thresholds().findings_filter
+    set_f = finding("F-001", ["R-001", "R-002"], Category.CONTRADICTION, Severity.BLOCKER)
+    set_f = set_f.model_copy(update={"quote": "следующее достижение вызывает push"})
+    same = finding("F-002", ["R-002"], Category.AMBIGUOUS, Severity.MAJOR).model_copy(
+        update={"quote": "следующее достижение вызывает push", "verdict": "unclear"}
+    )
+    other = finding("F-003", ["R-002"], Category.AMBIGUOUS, Severity.MAJOR).model_copy(
+        update={"quote": "в течение минуты"}
+    )
+    kept, suppressed = suppress_noise([set_f, same, other], rules)
+    assert [f.finding_id for f in suppressed] == ["F-002"]
+    assert {f.finding_id for f in kept} == {"F-001", "F-003"}
