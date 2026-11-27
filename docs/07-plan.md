@@ -34,7 +34,7 @@
 
 ## Чек-лист соответствия ТЗ (заполнен 2026-11-26)
 
-Итоговый отчёт: [`reports/requirements-review.md`](../reports/requirements-review.md) (формат входа) и [`reports/requirements-review.pdf`](../reports/requirements-review.pdf), модель `anthropic/claude-sonnet-5.5`, JSON рядом. Как он получен: [`reports/README.md`](../reports/README.md).
+Итоговый отчёт: [`after/requirements-review.md`](after/requirements-review.md) (формат входа) и [`after/requirements-review.pdf`](after/requirements-review.pdf), модель `anthropic/claude-sonnet-5.5`, JSON рядом; исходный документ — [`before/requirements.md`](before/requirements.md). Как получен: [`after/README.md`](after/README.md).
 
 ### Раздел 6. Состав отчёта
 - [x] Отчёт на русском, файл

@@ -12,7 +12,7 @@ version: 1
 note: "unreviewed by owner"
 fixtures:
   organizers-requirements.md:
-    path: ../../../ai-requirements-validator-task/docs/requirements.md
+    path: ../../docs/before/requirements.md
     split: holdout
     defects:
       # --- часть B против самой себя и против части A ---
